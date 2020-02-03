@@ -2,7 +2,7 @@ import * as _ from "lodash";
 
 module.exports = {
     roles: {
-        UPGRADER: 'upgrader'
+        HARVESTER: 'harvester'
     },
     parts: {
         WORK: {type: "work", hits: 100, buildCost: 100},
@@ -28,7 +28,7 @@ module.exports = {
         let bodyArray = [];
         let energyRemaining = energy;
         while (energyRemaining > 10) {
-            if (type === this.roles.UPGRADER) {
+            if (type === this.roles.HARVESTER) {
                 if (energyRemaining > 99 && partCount.work < partCount.move) {
                     bodyArray.unshift(WORK);
                     partCount.work++;

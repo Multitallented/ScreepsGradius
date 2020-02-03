@@ -1,22 +1,18 @@
 import {Respawn} from "./respawn";
-import * as _ from "lodash";
+import {CreepController} from "./creeps/creep-controller";
+import {RoomController} from "./rooms/room-controller";
 
-const roleUpgrader = require('./roles/role.upgrader');
 module.exports = {
     loop: function() {
 
-        for(var name in Memory.creeps) {
+        for(let name in Memory.creeps) {
             if(!Game.creeps[name]) {
                 delete Memory.creeps[name];
             }
         }
 
         Respawn.run();
-
-        _.forEach(Game.creeps, (creep) => {
-            if(creep.memory['role'] === 'upgrader') {
-                roleUpgrader.run(creep);
-            }
-        });
+        new RoomController();
+        new CreepController();
     }
 };

@@ -30,13 +30,13 @@ export class Respawn {
             }
 
             let spawning = "none";
-            if (count[creepUtil.roles.UPGRADER] < 1) {
-                spawning = creepUtil.roles.UPGRADER;
-                this.saySomething(spawnId, spawning + 1);
+            if (count[creepUtil.roles.HARVESTER] < 1) {
+                spawning = creepUtil.roles.HARVESTER;
+                Respawn.saySomething(spawnId, spawning + 1);
                 if (count['energyAvailable'] < 200) {
                     return;
                 }
-                this.spawnACreep(Game.getObjectById(spawnId), creepUtil.roles.UPGRADER, Math.min(600, count['energyAvailable']));
+                Respawn.spawnACreep(Game.getObjectById(spawnId), creepUtil.roles.HARVESTER, Math.min(600, count['energyAvailable']), null);
             }
         });
 
