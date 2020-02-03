@@ -1,5 +1,5 @@
-let upgraderScript = require('../../src/roles/role.upgrader');
-let Util = require('../../src/util');
+const upgraderScript = require('../../dist/roles.role.upgrader');
+const utilSrc = require('../../dist/util');
 
 describe("Upgrader Tests", function() {
     let upgrader1 = null;
@@ -11,7 +11,7 @@ describe("Upgrader Tests", function() {
         Game.creeps['Upgrader1'] = upgrader1;
     });
 
-    it("Upgrader should empty its energy before harvesting", function() {
+    test("Upgrader should empty its energy before harvesting", function() {
         upgrader1.carry.energy = 100;
         upgrader1.carryCapacity = 150;
         upgrader1.memory.upgrading = true;
@@ -19,9 +19,9 @@ describe("Upgrader Tests", function() {
         expect(upgrader1.memory.upgrading).toBe(true);
     });
 
-    it("Upgrader should fill its energy before stopping harvesting", function() {
+    test("Upgrader should fill its energy before stopping harvesting", function() {
         upgrader1.carry.energy = 8;
-        Game.rooms.Room1.entities[FIND_SOURCES].push(
+        Game.rooms.Room1['entities'][FIND_SOURCES].push(
             require('../mocks/source')("Source1",0,1,Game.rooms.Room1)
         );
         upgrader1.carryCapacity = 100;
@@ -29,11 +29,11 @@ describe("Upgrader Tests", function() {
         expect(upgrader1.memory.upgrading).toBe(undefined);
     });
 
-    it("Upgrader should upgrade controller if full", function() {
-        Game.rooms.Room1.entities[FIND_SOURCES].push(
+    test("Upgrader should upgrade controller if full", function() {
+        Game.rooms.Room1['entities'][FIND_SOURCES].push(
             require('../mocks/source')("Source1",0,1,Game.rooms.Room1)
         );
-        upgrader1.memory.currentOrder = Util.HARVEST + ":Source1";
+        upgrader1.memory.currentOrder = utilSrc.HARVEST + ":Source1";
         upgrader1.carry.energy = 100;
         upgrader1.carryCapacity = 100;
         upgraderScript.run(upgrader1);
