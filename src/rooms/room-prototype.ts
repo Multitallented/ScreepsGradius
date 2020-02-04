@@ -49,13 +49,13 @@ const buildMemory = function() {
         return;
     }
     if (!this.memory.containerStructure) {
-        this.memory.sites = {};
+        this.memory.sites = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}};
         let containerLocationsNeeded = this.find(FIND_SOURCES);
         containerLocationsNeeded.push(this.controller);
         _.forEach(containerLocationsNeeded, (roomObject:RoomObject) => {
             let containerPos:RoomPosition = RoomUtil.getFirstOpenAdjacentSpot(roomObject.pos);
             if (containerPos != null) {
-                this.memory.sites[containerPos.x + ":" + containerPos.y] = STRUCTURE_CONTAINER;
+                this.memory.sites[0][containerPos.x + ":" + containerPos.y] = STRUCTURE_CONTAINER;
             }
         });
         this.memory.containerStructure = true;
@@ -64,8 +64,26 @@ const buildMemory = function() {
     let controllerLevel = this.controller ? this.controller.level : 0;
 };
 
+const makeConstructionSites = function() {
+    if (!this.memory.sites) {
+        return;
+    }
+    let controllerLevel = this.controller ? this.controller.level : 0;
+    for (let i = 0; i < controllerLevel; i++) {
+        if (this.memory.sites[i]) {
+            _.forEach(this.memory.sites[i], (structureType:StructureConstant, key:string) => {
+                let roomPosition = new RoomPosition(+key.split(":")[0], +key.split(":")[1], this.name);
+                if (RoomUtil.isSpotOpen(roomPosition)) {
+                    this.createConstructionSite(roomPosition, structureType);
+                }
+            });
+        }
+    }
+};
+
 declare global {
     interface Room {
+        makeConstructionSites();
         buildMemory();
         findNextEnergySource(pos:RoomPosition):Source;
         displayMessage(pos:RoomPosition, message:string);
@@ -76,6 +94,7 @@ declare global {
 export class RoomPrototype {
     static init() {
         if (!Room['init']) {
+            Room.prototype.makeConstructionSites = makeConstructionSites;
             Room.prototype.buildMemory = buildMemory;
             Room.prototype.findNextEnergySource = findNextEnergySource;
             Room.prototype.displayMessage = displayMessage;

@@ -12,6 +12,7 @@ export class RoomController {
 
     handle(room:Room) {
         room.buildMemory();
+        room.makeConstructionSites();
         this.spawnCreeps(room);
     }
 

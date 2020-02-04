@@ -8,14 +8,28 @@ export class RoomUtil {
             if (positionMap[s.x + ":" + s.y]) {
                 return;
             }
-            if (!((s.type !== 'terrain' || s.terrain !== 'wall') &&
-                !(s.type === 'structure' && s.structure.structureType !== STRUCTURE_CONTAINER))) {
+            if (RoomUtil.isOpen(s)) {
                 runningTotal--;
                 positionMap[s.x + ":" + s.y] = true;
             }
         });
 
         return runningTotal;
+    }
+
+    static isOpen(s:LookAtResultWithPos): boolean {
+        return !((s.type !== 'terrain' || s.terrain !== 'wall') &&
+            s.type !== 'structure' && s.type !== 'constructionSite');
+    }
+
+    static isSpotOpen(pos:RoomPosition):boolean {
+        let isOpen = true;
+        _.forEach(Game.rooms[pos.roomName].lookAt(pos), (s:LookAtResultWithPos) => {
+            if (RoomUtil.isOpen(s)) {
+                isOpen = false;
+            }
+        });
+        return isOpen;
     }
 
     static getFirstOpenAdjacentSpot(pos:RoomPosition):RoomPosition {
@@ -29,8 +43,7 @@ export class RoomUtil {
             if (!positionMap[s.x + ":" + s.y]) {
                 return;
             }
-            if (!((s.type !== 'terrain' || s.terrain !== 'wall') &&
-                !(s.type === 'structure' && s.structure.structureType !== STRUCTURE_CONTAINER))) {
+            if (RoomUtil.isOpen(s)) {
                 delete positionMap[s.x + ":" + s.y];
             }
         });
