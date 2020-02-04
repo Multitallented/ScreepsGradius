@@ -10,29 +10,47 @@ export class Miner {
         // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
-                let closestContainer:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                        return s.structureType === STRUCTURE_CONTAINER;
-                    }});
+                if (!creep.memory['container']) {
+                    let closestContainer:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                            return s.structureType === STRUCTURE_CONTAINER;
+                        }});
 
-                if (closestContainer != null) {
-                    TransferEnergyAction.setAction(creep, closestContainer);
+                    if (closestContainer != null) {
+                        creep.memory['container'] = closestContainer.id;
+                    }
+                }
+                let container = null;
+                if (creep.memory['container']) {
+                    container = Game.getObjectById(creep.memory['container']);
+                }
+                if (container != null) {
+                    TransferEnergyAction.setAction(creep, container);
                 }
                 break;
             case TransferEnergyAction.KEY:
                 runNextAction = false;
             default:
-                let availableSources:Array<Source> = creep.room.find(FIND_SOURCES);
-                _.forEach(creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
-                        return c.memory['role'] && c.memory['target'] && c.memory['role'] === Miner.KEY;
-                    }}), (c:Creep) => {
-                    let currentSource:Source = Game.getObjectById(c.memory['target']);
-                    let index = availableSources.indexOf(currentSource);
-                    if (index !== -1) {
-                        availableSources.splice(index, 1);
+                if (!creep.memory['source']) {
+                    let availableSources:Array<Source> = creep.room.find(FIND_SOURCES);
+                    _.forEach(creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
+                            return c.memory['role'] && c.memory['target'] && c.memory['role'] === Miner.KEY;
+                        }}), (c:Creep) => {
+                        let currentSource:Source = Game.getObjectById(c.memory['target']);
+                        let index = availableSources.indexOf(currentSource);
+                        if (index !== -1) {
+                            availableSources.splice(index, 1);
+                        }
+                    });
+                    if (availableSources.length > 0) {
+                        creep.memory['source'] = availableSources[0].id;
                     }
-                });
-                if (availableSources.length > 0) {
-                    MineEnergyAction.setActionWithTarget(creep, availableSources[0]);
+                }
+                let source = null;
+                if (creep.memory['source']) {
+                    source = Game.getObjectById(creep.memory['source']);
+                }
+                if (source != null) {
+                    MineEnergyAction.setActionWithTarget(creep, source);
                 } else {
                     MineEnergyAction.setAction(creep);
                 }
