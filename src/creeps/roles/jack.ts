@@ -1,8 +1,8 @@
 import {MineEnergyAction} from "../actions/mine";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 
-export class Harvester {
-    static KEY = 'harvester';
+export class Jack {
+    static KEY = 'jack';
     static setAction(creep:Creep) {
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
@@ -13,5 +13,6 @@ export class Harvester {
                 MineEnergyAction.setAction(creep);
                 break;
         }
+        creep.runAction();
     }
 }

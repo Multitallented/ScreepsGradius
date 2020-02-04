@@ -6,7 +6,7 @@ export class UpgradeControllerAction {
         if (creep.store.getUsedCapacity() === 0) {
             delete creep.memory['target'];
             delete creep.memory['path'];
-            creep['setNextAction']();
+            creep.setNextAction();
             return;
         }
         if (!creep.memory['target']) {
@@ -14,7 +14,7 @@ export class UpgradeControllerAction {
         }
         let upgradeMessage = creep.upgradeController(Game.getObjectById(creep.memory['target']));
         if (upgradeMessage === ERR_NOT_IN_RANGE) {
-            creep['moveToTarget']();
+            creep.moveToTarget();
         }
     }
 

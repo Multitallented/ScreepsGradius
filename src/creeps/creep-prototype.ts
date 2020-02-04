@@ -1,4 +1,6 @@
-import {Harvester} from "./roles/harvester";
+import {Jack} from "./roles/jack";
+import {MineEnergyAction} from "./actions/mine";
+import {UpgradeControllerAction} from "./actions/upgrade-controller";
 
 const getBodyPartCost = function(bodyPartConstant:string):number {
     switch (bodyPartConstant) {
@@ -31,19 +33,45 @@ const moveToTarget = function() {
 
 const setNextAction = function() {
     switch (this.memory['role']) {
-        case Harvester.KEY:
+        case Jack.KEY:
         default:
-            Harvester.setAction(this);
+            Jack.setAction(this);
     }
 };
+
+const runAction = function() {
+    if (!this.memory['action']) {
+        this.memory['action'] = MineEnergyAction.KEY;
+    }
+    switch (this.memory['action']) {
+        case UpgradeControllerAction.KEY:
+            UpgradeControllerAction.run(this);
+            break;
+        case MineEnergyAction.KEY:
+        default:
+            MineEnergyAction.run(this);
+            break;
+    }
+};
+
+declare global {
+    interface Creep {
+        getBodyPartCost(bodyPartConstant:string): number;
+        moveToTarget();
+        setNextAction();
+        runAction();
+        init: boolean;
+    }
+}
 
 export class CreepPrototype {
     static init() {
         if (!Creep['init']) {
-            Creep.prototype['getBodyPartCost'] = getBodyPartCost;
-            Creep.prototype['moveToTarget'] = moveToTarget;
-            Creep.prototype['setNextAction'] = setNextAction;
-            Creep.prototype['init'] = true;
+            Creep.prototype.getBodyPartCost = getBodyPartCost;
+            Creep.prototype.moveToTarget = moveToTarget;
+            Creep.prototype.setNextAction = setNextAction;
+            Creep.prototype.runAction = runAction;
+            Creep.prototype.init = true;
         }
     }
 }

@@ -6,16 +6,16 @@ export class MineEnergyAction {
         if (creep.store.getFreeCapacity() === 0) {
             delete creep.memory['target'];
             delete creep.memory['path'];
-            creep['setNextAction']();
+            creep.setNextAction();
             return;
         }
         if (!creep.memory['target']) {
-            let source:Source = creep.room['findNextEnergySource'](creep.pos);
+            let source:Source = creep.room.findNextEnergySource(creep.pos);
             creep.memory['target'] = source.id;
         }
         let harvestMessage = creep.harvest(Game.getObjectById(creep.memory['target']));
         if (harvestMessage === ERR_NOT_IN_RANGE) {
-            creep['moveToTarget']();
+            creep.moveToTarget();
         }
     }
 
