@@ -26,10 +26,48 @@ export class CreepSpawnData {
         }
     }
 
+    static getBodyPartValue(bodyPart:BodyPartConstant):number {
+        switch (bodyPart) {
+            case MOVE:
+                return 100;
+            case WORK:
+                return 25;
+            case ATTACK:
+                return 90;
+            case RANGED_ATTACK:
+                return 95;
+            case HEAL:
+                return 110;
+            case CLAIM:
+                return 200;
+            case TOUGH:
+                return 5;
+            case CARRY:
+                return 50;
+            default:
+                return 0;
+        }
+    }
+
     constructor(bodyArray:Array<BodyPartConstant>, name:string, options:Object) {
-        this.bodyArray = bodyArray;
+        this.bodyArray = this.sortBodyParts(bodyArray);
         this.name = name;
         this.options = options;
+    }
+
+    sortBodyParts(bodyArray:Array<BodyPartConstant>):Array<BodyPartConstant> {
+        bodyArray.sort(function(x, y):number {
+            let xValue = CreepSpawnData.getBodyPartValue(x);
+            let yValue = CreepSpawnData.getBodyPartValue(y);
+            if (xValue < yValue) {
+                return 1;
+            } else if (xValue > yValue) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        return bodyArray;
     }
 
     getEnergyRequired(): number {
