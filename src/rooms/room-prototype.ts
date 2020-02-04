@@ -44,33 +44,21 @@ const buildMemory = function() {
     if (!this.memory.sources) {
         this.memory.sources = {};
         _.forEach(this.find(FIND_SOURCES), (source:Source) => {
-            this.memory.sources[source.id] = RoomUtil.getOpenAdjacentSpots(source.pos);
+            this.memory.sources[source.id] = RoomUtil.getNumberOpenAdjacentSpots(source.pos);
         });
         return;
     }
     if (!this.memory.containerStructure) {
-        let containerStructures = [];
-        let containerSpots = this.find(FIND_SOURCES);
-        containerSpots.push(this.controller);
-        _.forEach(containerSpots, (roomObject:RoomObject) => {
-            let containerPos = null;
-            let sourceArea:Array<LookAtResultWithPos> = this.lookAtArea(roomObject.pos.y-1, roomObject.pos.x-1,
-                    roomObject.pos.y+1, roomObject.pos.x+1, true);
-            _.filter(sourceArea, (c:LookAtResultWithPos) => {
-                return c.type !== 'creep' && (c.type !== 'terrain' || c.terrain === 'wall');
-            });
-            _.forEach(sourceArea, (c:LookAtResultWithPos) => { // TODO fix this
-                if (c.type === 'structure' && containerPos && containerPos.x == c.x && containerPos.y == c.y) {
-                    containerPos = null;
-                } else {
-                    containerPos = {x: c.x, y: c.y};
-                }
-            });
+        this.memory.sites = {};
+        let containerLocationsNeeded = this.find(FIND_SOURCES);
+        containerLocationsNeeded.push(this.controller);
+        _.forEach(containerLocationsNeeded, (roomObject:RoomObject) => {
+            let containerPos:RoomPosition = RoomUtil.getFirstOpenAdjacentSpot(roomObject.pos);
             if (containerPos != null) {
-                containerStructures.push(containerPos);
+                this.memory.sites[containerPos.x + ":" + containerPos.y] = STRUCTURE_CONTAINER;
             }
         });
-        this.memory.containerStructure = containerStructures;
+        this.memory.containerStructure = true;
         return;
     }
     let controllerLevel = this.controller ? this.controller.level : 0;

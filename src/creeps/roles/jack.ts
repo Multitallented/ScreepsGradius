@@ -7,6 +7,8 @@ import {TransferEnergyAction} from "../actions/transfer-energy";
 export class Jack {
     static KEY = 'jack';
     static setAction(creep:Creep) {
+        let runNextAction = true;
+        // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
                 let spawns:Array<Structure> = creep.room.find(FIND_STRUCTURES);
@@ -26,13 +28,16 @@ export class Jack {
                 }
                 UpgradeControllerAction.setAction(creep);
                 break;
-            case UpgradeControllerAction.KEY:
             case TransferEnergyAction.KEY:
+                runNextAction = false;
+            case UpgradeControllerAction.KEY:
             default:
                 MineEnergyAction.setAction(creep);
                 break;
         }
-        creep.runAction();
+        if (runNextAction) {
+            creep.runAction();
+        }
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
