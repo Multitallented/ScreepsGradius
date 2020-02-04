@@ -5,24 +5,36 @@ import {TransferEnergyAction} from "../actions/transfer-energy";
 
 export class Miner {
     static KEY = 'miner';
+    static findNearestContainer(creep:Creep):Structure {
+        if (!creep.memory['container']) {
+            let source = null;
+            if (creep.memory['source']) {
+                source = Game.getObjectById(creep.memory['source']);
+            }
+            let startPos:RoomPosition = creep.pos;
+            if (source != null) {
+                startPos = source.pos;
+            }
+            let closestContainer = startPos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                    return s.structureType === STRUCTURE_CONTAINER;
+                }});
+
+            if (closestContainer != null) {
+                if (source != null) {
+                    creep.memory['container'] = closestContainer.id;
+                }
+                return closestContainer;
+            }
+        }
+        return Game.getObjectById(creep.memory['container']);
+    }
+
     static setAction(creep:Creep) {
         let runNextAction = true;
         // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
-                if (!creep.memory['container']) {
-                    let closestContainer:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                            return s.structureType === STRUCTURE_CONTAINER;
-                        }});
-
-                    if (closestContainer != null) {
-                        creep.memory['container'] = closestContainer.id;
-                    }
-                }
-                let container = null;
-                if (creep.memory['container']) {
-                    container = Game.getObjectById(creep.memory['container']);
-                }
+                let container = Miner.findNearestContainer(creep);
                 if (container != null) {
                     TransferEnergyAction.setAction(creep, container);
                 }
