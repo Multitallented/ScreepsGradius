@@ -3,6 +3,8 @@ import {MineEnergyAction} from "./actions/mine-energy";
 import {UpgradeControllerAction} from "./actions/upgrade-controller";
 import {TransferEnergyAction} from "./actions/transfer-energy";
 import {Upgrader} from "./roles/upgrader";
+import {Builder} from "./roles/builder";
+import {BuildAction} from "./actions/build";
 
 
 const moveToTarget = function() {
@@ -28,6 +30,9 @@ const setNextAction = function() {
         case Upgrader.KEY:
             Upgrader.setAction(this);
             break;
+        case Builder.KEY:
+            Builder.setAction(this);
+            break;
         case Jack.KEY:
         default:
             Jack.setAction(this);
@@ -41,6 +46,9 @@ const runAction = function() {
     switch (this.memory['action']) {
         case UpgradeControllerAction.KEY:
             UpgradeControllerAction.run(this);
+            break;
+        case BuildAction.KEY:
+            BuildAction.run(this);
             break;
         case TransferEnergyAction.KEY:
             TransferEnergyAction.run(this);

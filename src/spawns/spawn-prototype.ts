@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import {CreepSpawnData} from "./creep-spawn-data";
 import {Jack} from "../creeps/roles/jack";
 import {Upgrader} from "../creeps/roles/upgrader";
+import {Builder} from "../creeps/roles/builder";
 
 const getCreepCount = function():Object {
     let creepCount = {};
@@ -25,6 +26,10 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
     let nextCreepData = null;
     if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
         nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(this.store.energy));
+    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 2) {
+        nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
+    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 2) {
+        nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(this.store.energy));
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 6) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     }
