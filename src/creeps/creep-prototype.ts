@@ -7,6 +7,7 @@ import {Builder} from "./roles/builder";
 import {BuildAction} from "./actions/build";
 import {WithdrawEnergyAction} from "./actions/withdraw-energy";
 import {Miner} from "./roles/miner";
+import {RepairAction} from "./actions/repair";
 
 
 const moveToTarget = function() {
@@ -49,6 +50,9 @@ const runAction = function() {
         this.memory['action'] = MineEnergyAction.KEY;
     }
     switch (this.memory['action']) {
+        case RepairAction.KEY:
+            RepairAction.run(this);
+            break;
         case UpgradeControllerAction.KEY:
             UpgradeControllerAction.run(this);
             break;

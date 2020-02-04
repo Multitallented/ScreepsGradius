@@ -3,6 +3,7 @@ import {MineEnergyAction} from "../actions/mine-energy";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 import {Jack} from "./jack";
 import {WithdrawEnergyAction} from "../actions/withdraw-energy";
+import {RepairAction} from "../actions/repair";
 
 export class Builder {
     static KEY =  'builder';
@@ -13,9 +14,17 @@ export class Builder {
             case WithdrawEnergyAction.KEY:
                 runNextAction = false;
             case MineEnergyAction.KEY:
-                let constructionSites = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
-                if (constructionSites != null) {
-                    BuildAction.setAction(creep, constructionSites);
+                let closestStructureNeedingRepair:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                        return s.hitsMax && (s.hits / s.hitsMax < 0.9);
+                    }});
+                if (closestStructureNeedingRepair != null) {
+                    RepairAction.setAction(creep, closestStructureNeedingRepair);
+                    break;
+                }
+
+                let closestConstructionSite = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+                if (closestConstructionSite != null) {
+                    BuildAction.setAction(creep, closestConstructionSite);
                     break;
                 }
                 UpgradeControllerAction.setAction(creep);
