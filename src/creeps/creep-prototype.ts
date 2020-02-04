@@ -2,26 +2,6 @@ import {Jack} from "./roles/jack";
 import {MineEnergyAction} from "./actions/mine";
 import {UpgradeControllerAction} from "./actions/upgrade-controller";
 
-const getBodyPartCost = function(bodyPartConstant:string):number {
-    switch (bodyPartConstant) {
-        case WORK:
-            return 100;
-        case ATTACK:
-            return 80;
-        case RANGED_ATTACK:
-            return 150;
-        case HEAL:
-            return 250;
-        case CLAIM:
-            return 600;
-        case TOUGH:
-            return 10;
-        case MOVE:
-        case CARRY:
-        default:
-            return 50;
-    }
-};
 
 const moveToTarget = function() {
     if (!this.memory['path']) {
@@ -56,7 +36,6 @@ const runAction = function() {
 
 declare global {
     interface Creep {
-        getBodyPartCost(bodyPartConstant:string): number;
         moveToTarget();
         setNextAction();
         runAction();
@@ -67,7 +46,6 @@ declare global {
 export class CreepPrototype {
     static init() {
         if (!Creep['init']) {
-            Creep.prototype.getBodyPartCost = getBodyPartCost;
             Creep.prototype.moveToTarget = moveToTarget;
             Creep.prototype.setNextAction = setNextAction;
             Creep.prototype.runAction = runAction;

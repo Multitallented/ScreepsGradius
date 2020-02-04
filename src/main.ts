@@ -1,4 +1,3 @@
-import {Respawn} from "./respawn";
 import {CreepController} from "./creeps/creep-controller";
 import {RoomController} from "./rooms/room-controller";
 
@@ -11,7 +10,6 @@ module.exports = {
             }
         }
 
-        Respawn.run();
         new RoomController();
         new CreepController();
     }
