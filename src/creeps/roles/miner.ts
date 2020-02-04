@@ -1,5 +1,5 @@
 import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
-import {WithdrawEnergyAction} from "../actions/withdraw-energy";
+import * as _ from "lodash";
 import {MineEnergyAction} from "../actions/mine-energy";
 import {TransferEnergyAction} from "../actions/transfer-energy";
 
@@ -21,7 +21,21 @@ export class Miner {
             case TransferEnergyAction.KEY:
                 runNextAction = false;
             default:
-                MineEnergyAction.setAction(creep);
+                let availableSources:Array<Source> = creep.room.find(FIND_SOURCES);
+                _.forEach(creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
+                        return c.memory['role'] && c.memory['target'] && c.memory['role'] === Miner.KEY;
+                    }}), (c:Creep) => {
+                    let currentSource:Source = Game.getObjectById(c.memory['target']);
+                    let index = availableSources.indexOf(currentSource);
+                    if (index !== -1) {
+                        availableSources.splice(index, 1);
+                    }
+                });
+                if (availableSources.length > 0) {
+                    MineEnergyAction.setActionWithTarget(creep, availableSources[0]);
+                } else {
+                    MineEnergyAction.setAction(creep);
+                }
                 break;
         }
         if (runNextAction) {
