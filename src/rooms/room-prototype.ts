@@ -48,6 +48,32 @@ const buildMemory = function() {
         });
         return;
     }
+    if (!this.memory.containerStructure) {
+        let containerStructures = [];
+        let containerSpots = this.find(FIND_SOURCES);
+        containerSpots.push(this.controller);
+        _.forEach(containerSpots, (roomObject:RoomObject) => {
+            let containerPos = null;
+            let sourceArea:Array<LookAtResultWithPos> = this.lookAtArea(roomObject.pos.y-1, roomObject.pos.x-1,
+                    roomObject.pos.y+1, roomObject.pos.x+1, true);
+            _.filter(sourceArea, (c:LookAtResultWithPos) => {
+                return c.type !== 'creep' && (c.type !== 'terrain' || c.terrain === 'wall');
+            });
+            _.forEach(sourceArea, (c:LookAtResultWithPos) => { // TODO fix this
+                if (c.type === 'structure' && containerPos && containerPos.x == c.x && containerPos.y == c.y) {
+                    containerPos = null;
+                } else {
+                    containerPos = {x: c.x, y: c.y};
+                }
+            });
+            if (containerPos != null) {
+                containerStructures.push(containerPos);
+            }
+        });
+        this.memory.containerStructure = containerStructures;
+        return;
+    }
+    let controllerLevel = this.controller ? this.controller.level : 0;
 };
 
 declare global {
