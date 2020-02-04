@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 import {CreepSpawnData} from "../../spawns/creep-spawn-data";
 import {TransferEnergyAction} from "../actions/transfer-energy";
+import {WithdrawEnergyAction} from "../actions/withdraw-energy";
 
 export class Jack {
     static KEY = 'jack';
@@ -10,6 +11,7 @@ export class Jack {
         let runNextAction = true;
         // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
+            case WithdrawEnergyAction.KEY:
             case MineEnergyAction.KEY:
                 let spawns:Array<Structure> = creep.room.find(FIND_STRUCTURES);
 
@@ -32,6 +34,14 @@ export class Jack {
                 runNextAction = false;
             case UpgradeControllerAction.KEY:
             default:
+                let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                        return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
+                            s['store'].energy > 0;
+                    }});
+                if (closestContainer != null) {
+                    WithdrawEnergyAction.setAction(creep, closestContainer);
+                    break;
+                }
                 MineEnergyAction.setAction(creep);
                 break;
         }

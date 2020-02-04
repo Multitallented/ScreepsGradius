@@ -30,7 +30,7 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 2) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(this.store.energy));
-    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 6) {
+    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     }
     return nextCreepData;

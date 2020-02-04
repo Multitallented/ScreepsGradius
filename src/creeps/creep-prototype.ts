@@ -5,6 +5,7 @@ import {TransferEnergyAction} from "./actions/transfer-energy";
 import {Upgrader} from "./roles/upgrader";
 import {Builder} from "./roles/builder";
 import {BuildAction} from "./actions/build";
+import {WithdrawEnergyAction} from "./actions/withdraw-energy";
 
 
 const moveToTarget = function() {
@@ -52,6 +53,9 @@ const runAction = function() {
             break;
         case TransferEnergyAction.KEY:
             TransferEnergyAction.run(this);
+            break;
+        case WithdrawEnergyAction.KEY:
+            WithdrawEnergyAction.run(this);
             break;
         case MineEnergyAction.KEY:
         default:
