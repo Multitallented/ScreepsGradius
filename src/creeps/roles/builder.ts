@@ -9,8 +9,8 @@ export class Builder {
 
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
-                let constructionSites = creep.room.find(FIND_CONSTRUCTION_SITES);
-                if (constructionSites.length > 0) {
+                let constructionSites = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+                if (constructionSites != null) {
                     BuildAction.setAction(creep, constructionSites[0]);
                     break;
                 }
