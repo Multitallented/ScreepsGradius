@@ -3,7 +3,7 @@ import * as _ from "lodash";
 export class CreepSpawnData {
     public bodyArray: Array<BodyPartConstant>;
     public name: string;
-    public memory: Object;
+    public options: Object;
 
     static getBodyPartCost(bodyPartConstant:BodyPartConstant):number {
         switch (bodyPartConstant) {
@@ -26,10 +26,10 @@ export class CreepSpawnData {
         }
     }
 
-    constructor(bodyArray:Array<BodyPartConstant>, name:string, memory:Object) {
+    constructor(bodyArray:Array<BodyPartConstant>, name:string, options:Object) {
         this.bodyArray = bodyArray;
         this.name = name;
-        this.memory = memory;
+        this.options = options;
     }
 
     getEnergyRequired(): number {
@@ -38,5 +38,15 @@ export class CreepSpawnData {
             total += CreepSpawnData.getBodyPartCost(bodyPart);
         });
         return total;
+    }
+
+    static build(key:string, bodyArray:Array<BodyPartConstant>):CreepSpawnData {
+        return new CreepSpawnData(bodyArray,
+            key + Game.time,
+            {
+                "memory": {
+                    "role": key
+                }
+            });
     }
 }

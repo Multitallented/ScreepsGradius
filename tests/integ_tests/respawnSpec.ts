@@ -13,7 +13,7 @@ describe("Respawn Tests", function() {
         server.stop();
     });
 
-    it("Spawner should spawn upgrader", async function() {
+    it("Spawner should spawn jack", async function() {
         let structures = [
             { name: "Spawn1", stuctureType: "spawn", pos: { x: 25, y: 25 } }
         ];
@@ -32,15 +32,17 @@ describe("Respawn Tests", function() {
                 if (spawner == null) {
                     fail();
                 }
-                expect(spawner.spawning.memory.role).toBe("upgrader");
+                expect(spawner.spawning.memory.role).toBe("jack");
             });
 
     });
 
-    it("Spawner should not spawn second upgrader", async function() {
+    it("Spawner should not spawn third upgrader", async function() {
         let creeps = [
-            { name: "Upgrader1253", memory: { role: 'upgrader' },
-                carry: { energy: 300 }, carryCapacity: 300, pos: { x: 15, y: 40 } }
+            { name: "Jack1253", memory: { role: 'jack' },
+                carry: { energy: 300 }, carryCapacity: 300, pos: { x: 15, y: 40 } },
+            { name: "Jack1254", memory: { role: 'jack' },
+                carry: { energy: 300 }, carryCapacity: 300, pos: { x: 16, y: 40 } }
         ];
 
         let structures = [

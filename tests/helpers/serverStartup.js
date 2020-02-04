@@ -59,7 +59,7 @@ module.exports = {
                 console.log('[tick]', await server.world.gameTime);
                 await server.tick();
                 _.each(await bot.newNotifications, ({ message }) => console.log('[notification]', message));
-                console.log('[memory]', await bot.memory, '\n');
+                console.log('[options]', await bot.memory, '\n');
                 if (tickCallback) {
                     tickCallback(server.world);
                 }

@@ -157,7 +157,7 @@ module.exports = function () {
         }
     };
 
-    // Game's memory properties
+    // Game's options properties
     global.Memory = {
         creeps: {},
         spawns: {},

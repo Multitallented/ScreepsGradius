@@ -5,11 +5,13 @@ export class SpawnController {
     static run(spawn:StructureSpawn) {
         SpawnPrototype.init();
         let nextCreepToSpawn: CreepSpawnData = spawn.getNextCreepToSpawn();
-        if (nextCreepToSpawn != null) {
-            spawn.room.displayMessage(spawn.pos, nextCreepToSpawn.memory['role']);
+        if (nextCreepToSpawn && nextCreepToSpawn.options['memory']['role']) {
+            spawn.room.displayMessage(spawn.pos, nextCreepToSpawn.options['memory']['role']);
             if (nextCreepToSpawn.getEnergyRequired() <= spawn.store.energy) {
-                spawn.spawnCreep(nextCreepToSpawn.bodyArray, nextCreepToSpawn.name, nextCreepToSpawn.memory);
+                spawn.spawnCreep(nextCreepToSpawn.bodyArray, nextCreepToSpawn.name, nextCreepToSpawn.options);
             }
+        } else if (spawn.spawning) {
+            spawn.room.displayMessage(spawn.pos, spawn.spawning['memory']['role']);
         }
     }
 }

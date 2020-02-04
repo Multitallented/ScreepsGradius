@@ -1,4 +1,4 @@
-import {Respawn} from "../../src/respawn";
+import {SpawnController} from "../../src/spawns/spawn-controller";
 
 describe("Respawn Tests", function() {
 
@@ -11,17 +11,17 @@ describe("Respawn Tests", function() {
         }
     });
 
-    test("Respawn should build upgrader if none exist and energy at least 200", function() {
-        Respawn.run();
-        expect(Game.spawns['Spawn1'].spawning['memory'].role).toBe("upgrader");
+    test("Respawn should build jack if none exist and energy at least 200", function() {
+        SpawnController.run(Game.spawns['Spawn1']);
+        expect(Game.spawns['Spawn1'].spawning['options'].role).toBe("jack");
     });
 
-    test("Respawn should not build upgrader if one exists", function() {
+    test("Respawn should not build jack if one exists", function() {
         Game.spawns['Spawn1'].room['entities'][FIND_CREEPS].push(
-            require('../mocks/creep')([MOVE, CARRY, WORK], 'Upgrader1',
-                {memory: {role: "upgrader"}}, Game.rooms.Room1)
+            require('../mocks/creep')([MOVE, CARRY, WORK], 'Jack1',
+                {memory: {role: "jack"}}, Game.rooms.Room1)
         );
-        Respawn.run();
+        SpawnController.run(Game.spawns['Spawn1']);
         expect(Game.spawns['Spawn1'].spawning).toBe(null);
     });
 });
