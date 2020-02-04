@@ -42,11 +42,11 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
         nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(this.store.energy));
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 2) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
-    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 2) {
+    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(this.store.energy));
     } else if (structureCount[STRUCTURE_CONTAINER] && creepCount[Miner.KEY] < 2) {
         nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(this.store.energy));
-    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
+    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 3) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     }
     return nextCreepData;
