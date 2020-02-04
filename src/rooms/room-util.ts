@@ -93,7 +93,19 @@ export class RoomUtil {
     }
 
     static planBuildings(room:Room, structureType:StructureConstant) {
-        let numberPlaced = 0;
+        let alreadyPlaced:Array<Structure> = room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
+                return s.structureType === structureType;
+            }});
+        let numberAlreadyPlanned = 0;
+        _.forEach(alreadyPlaced, (s:Structure) => {
+            for (let i = 0; i < 9; i++) {
+                while (numberAlreadyPlanned < CONTROLLER_STRUCTURES[structureType][i]) {
+                    numberAlreadyPlanned++;
+                    room.memory['sites'][i][s.pos.x + ":" + s.pos.y] = structureType;
+                }
+            }
+        });
+        let numberPlaced = alreadyPlaced.length;
         let center:RoomPosition = room.memory['center'];
         let size = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
         for (let i = 0; i < 9; i++) {
