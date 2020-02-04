@@ -9,9 +9,9 @@ export class Builder {
 
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
-                let constructionSites = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+                let constructionSites = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
                 if (constructionSites != null) {
-                    BuildAction.setAction(creep, constructionSites[0]);
+                    BuildAction.setAction(creep, constructionSites);
                     break;
                 }
                 UpgradeControllerAction.setAction(creep);
