@@ -6,6 +6,7 @@ import {Upgrader} from "./roles/upgrader";
 import {Builder} from "./roles/builder";
 import {BuildAction} from "./actions/build";
 import {WithdrawEnergyAction} from "./actions/withdraw-energy";
+import {Miner} from "./roles/miner";
 
 
 const moveToTarget = function() {
@@ -28,6 +29,9 @@ const moveToTarget = function() {
 
 const setNextAction = function() {
     switch (this.memory['role']) {
+        case Miner.KEY:
+            Miner.setAction(this);
+            break;
         case Upgrader.KEY:
             Upgrader.setAction(this);
             break;
