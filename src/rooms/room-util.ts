@@ -92,6 +92,23 @@ export class RoomUtil {
         return false;
     }
 
+    static planBuildings(room:Room, structureType:StructureConstant) {
+        let numberPlaced = 0;
+        let center:RoomPosition = room.memory['center'];
+        let size = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
+        for (let i = 0; i < 9; i++) {
+            while (numberPlaced < CONTROLLER_STRUCTURES[structureType][i]) {
+                numberPlaced++;
+                let constructionSiteData:ConstructionSiteData = RoomUtil.getPositionWithBuffer(room,
+                    center.x, center.y, size, 1, structureType);
+                if (constructionSiteData) {
+                    room.memory['sites'][i][constructionSiteData.pos.x + ":" + constructionSiteData.pos.y] = structureType;
+                }
+            }
+        }
+        room.memory[structureType + 'Structure'] = true;
+    }
+
     static getPositionWithBuffer(room:Room, x:number, y:number, size:number, buffer:number,
                                  type:StructureConstant):ConstructionSiteData {
         let siteFound:ConstructionSiteData = null;

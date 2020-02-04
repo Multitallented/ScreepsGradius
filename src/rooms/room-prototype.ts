@@ -66,38 +66,36 @@ const buildMemory = function() {
         return;
     }
 
-    if (!this.memory.towerStructure && this.memory.center) {
-        let towersPlaced = 0;
-        let center:RoomPosition = this.memory['center'];
-        let size = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
-        for (let i = 0; i < 9; i++) {
-            while (towersPlaced < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][i]) {
-                towersPlaced++;
-                let constructionSiteData:ConstructionSiteData = RoomUtil.getPositionWithBuffer(this,
-                    center.x, center.y, size, 1, STRUCTURE_TOWER);
-                if (constructionSiteData) {
-                    this.memory.sites[i][constructionSiteData.pos.x + ":" + constructionSiteData.pos.y] = STRUCTURE_TOWER;
-                }
-            }
-        }
-        this.memory.towerStructure = true;
+    if (!this.memory[STRUCTURE_TOWER + 'Structure'] && this.memory.center) {
+        RoomUtil.planBuildings(this, STRUCTURE_TOWER);
         return;
     }
-    if (!this.memory.storageStructure && this.memory.center) {
-        let storagePlaced = 0;
-        let center:RoomPosition = this.memory['center'];
-        let size = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
-        for (let i = 0; i < 9; i++) {
-            while (storagePlaced < CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][i]) {
-                storagePlaced++;
-                let constructionSiteData:ConstructionSiteData = RoomUtil.getPositionWithBuffer(this,
-                    center.x, center.y, size, 1, STRUCTURE_STORAGE);
-                if (constructionSiteData) {
-                    this.memory.sites[i][constructionSiteData.pos.x + ":" + constructionSiteData.pos.y] = STRUCTURE_STORAGE;
+    if (!this.memory[STRUCTURE_STORAGE + 'Structure'] && this.memory.center) {
+        RoomUtil.planBuildings(this, STRUCTURE_STORAGE);
+        return;
+    }
+    if (!this.memory[STRUCTURE_SPAWN + 'Structure'] && this.memory.center) {
+        RoomUtil.planBuildings(this, STRUCTURE_SPAWN);
+        return;
+    }
+    if (!this.memory[STRUCTURE_POWER_SPAWN + 'Structure'] && this.memory.center) {
+        RoomUtil.planBuildings(this, STRUCTURE_POWER_SPAWN);
+        return;
+    }
+    if (!this.memory.exitRoads && this.memory.center) {
+        let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_LEFT, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT ];
+        _.forEach(directions, (direction:ExitConstant) => {
+            if (this.hasExit(direction)) {
+                let targetRoomName = this.getAdjacentRoomName(direction);
+                let path:Array<PathStep> = this.getPositionAt(25,25).findPathTo(this.findExitTo(targetRoomName));
+                if (path != null && path.length > 0) {
+                    _.forEach(path, (pathStep:PathStep) => {
+                        this.memory['sites'][0][pathStep.x + ":" + pathStep.y] = STRUCTURE_ROAD;
+                    });
                 }
             }
-        }
-        this.memory.storageStructure = true;
+        });
+        this.memory['exitRoads'] = true;
         return;
     }
 };
@@ -135,6 +133,40 @@ const makeConstructionSites = function() {
             }
         });
         this.createConstructionSite(constructionSites[0].pos, constructionSites[0].structureType);
+    }
+};
+
+const getAdjacentRoomName = function(direction:ExitConstant):string {
+    let isWest = this.name.indexOf("W") !== -1;
+    let isNorth = this.name.indexOf("N") !== -1;
+    let splitName = this.name.slice(1).split(isNorth ? "N" : "S");
+    let x = Number(splitName[0]);
+    let y = Number(splitName[1]);
+
+    if (direction === FIND_EXIT_TOP) {
+        if (isNorth) {
+            return (isWest ? "W" : "E") + x + "N" + (y+1);
+        } else {
+            return (isWest ? "W" : "E") + x + "S" + (y-1);
+        }
+    } else if (direction === FIND_EXIT_LEFT) {
+        if (isWest) {
+            return "W" + (x+1) + (isNorth ? "N" : "S") + y;
+        } else {
+            return "W" + (x-1) + (isNorth ? "N" : "S") + y;
+        }
+    } else if (direction === FIND_EXIT_RIGHT) {
+        if (isWest) {
+            return "W" + (x-1) + (isNorth ? "N" : "S") + y;
+        } else {
+            return "W" + (x+1) + (isNorth ? "N" : "S") + y;
+        }
+    } else if (direction === FIND_EXIT_BOTTOM) {
+        if (isNorth) {
+            return (isWest ? "W" : "E") + x + "N" + (y-1);
+        } else {
+            return (isWest ? "W" : "E") + x + "S" + (y+1);
+        }
     }
 };
 
@@ -182,6 +214,7 @@ const hasExit = function(exit:ExitConstant):boolean {
 
 declare global {
     interface Room {
+        getAdjacentRoomName(direction:ExitConstant):string;
         hasExit(exit:ExitConstant):boolean;
         makeConstructionSites();
         buildMemory();
@@ -194,6 +227,7 @@ declare global {
 export class RoomPrototype {
     static init() {
         if (!Room['init']) {
+            Room.prototype.getAdjacentRoomName = getAdjacentRoomName;
             Room.prototype.hasExit = hasExit;
             Room.prototype.makeConstructionSites = makeConstructionSites;
             Room.prototype.buildMemory = buildMemory;
