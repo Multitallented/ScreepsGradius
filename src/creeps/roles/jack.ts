@@ -1,15 +1,30 @@
-import {MineEnergyAction} from "../actions/mine";
+import {MineEnergyAction} from "../actions/mine-energy";
+import * as _ from "lodash";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 import {CreepSpawnData} from "../../spawns/creep-spawn-data";
+import {TransferEnergyAction} from "../actions/transfer-energy";
 
 export class Jack {
     static KEY = 'jack';
     static setAction(creep:Creep) {
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
+                let spawnNeedingEnergy:StructureSpawn = null;
+                _.forEach(creep.room.find(FIND_STRUCTURES, {filter: (structure:Structure) => {return structure.structureType === STRUCTURE_SPAWN;}}),
+                    (spawn:StructureSpawn) => {
+                    console.log(spawn.store.getFreeCapacity(RESOURCE_ENERGY));
+                    if (0 !== spawn.store.getFreeCapacity(RESOURCE_ENERGY)) {
+                        spawnNeedingEnergy = spawn;
+                    }
+                });
+                if (spawnNeedingEnergy != null) {
+                    TransferEnergyAction.setAction(creep, spawnNeedingEnergy);
+                    break;
+                }
                 UpgradeControllerAction.setAction(creep);
                 break;
             case UpgradeControllerAction.KEY:
+            case TransferEnergyAction.KEY:
             default:
                 MineEnergyAction.setAction(creep);
                 break;

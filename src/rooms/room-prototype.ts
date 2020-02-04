@@ -1,7 +1,36 @@
 import * as _ from "lodash";
+import {RoomUtil} from "./room-util";
 
 const findNextEnergySource = function(pos:RoomPosition):Source {
-    return pos.findClosestByPath(this.find(FIND_SOURCES)) as Source; // TODO
+    let creepCount = {};
+    _.forEach(this.find(FIND_CREEPS), (creep:Creep) => {
+        if (creep.memory['target']) {
+            if (creepCount[creep.memory['target']]) {
+                creepCount[creep.memory['target']] += 1;
+            } else {
+                creepCount[creep.memory['target']] = 1;
+            }
+        }
+    });
+    let possibleSources = [];
+    _.forEach(this.find(FIND_SOURCES), (source:Source) => {
+        if (!creepCount[source.id] || !this.memory['sources'] ||
+                !this.memory['sources'][source.id] ||
+                creepCount[source.id] < this.memory['sources'][source.id]) {
+            possibleSources.push(source);
+        }
+    });
+    possibleSources.sort((x:Source, y:Source):number => {
+        if (RoomUtil.crowDistance(x.pos, pos) > RoomUtil.crowDistance(y.pos, pos)) {
+            return 1;
+        } else if (RoomUtil.crowDistance(x.pos, pos) < RoomUtil.crowDistance(y.pos, pos)) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+    // return pos.findClosestByPath(this.find(FIND_SOURCES)) as Source;
+    return possibleSources.length > 0 ? possibleSources[0] : null;
 };
 
 const displayMessage = function(pos:RoomPosition, message: string) {
@@ -15,32 +44,14 @@ const buildMemory = function() {
     if (!this.memory.sources) {
         this.memory.sources = {};
         _.forEach(this.find(FIND_SOURCES), (source:Source) => {
-            this.memory.sources[source.id] = this.getOpenAdjacentSpots(source.pos, false);
+            this.memory.sources[source.id] = RoomUtil.getOpenAdjacentSpots(source.pos);
         });
         return;
     }
 };
 
-const getOpenAdjacentSpots = function(pos: RoomPosition): number {
-    let runningTotal = 9;
-    let positionMap = {};
-    _.forEach(this.lookAtArea(pos.y-1, pos.x-1, pos.y+1, pos.x+1, true), (s:LookAtResultWithPos) => {
-        if (positionMap[s.x + ":" + s.y]) {
-            return;
-        }
-        if (!((s.type !== 'terrain' || s.terrain !== 'wall') &&
-                !(s.type === 'structure' && s.structure.structureType !== STRUCTURE_CONTAINER))) {
-            runningTotal--;
-            positionMap[s.x + ":" + s.y] = true;
-        }
-    });
-
-    return runningTotal;
-};
-
 declare global {
     interface Room {
-        getOpenAdjacentSpots(pos:RoomPosition, countCreeps:boolean): number;
         buildMemory();
         findNextEnergySource(pos:RoomPosition):Source;
         displayMessage(pos:RoomPosition, message:string);
@@ -51,7 +62,6 @@ declare global {
 export class RoomPrototype {
     static init() {
         if (!Room['init']) {
-            Room.prototype.getOpenAdjacentSpots = getOpenAdjacentSpots;
             Room.prototype.buildMemory = buildMemory;
             Room.prototype.findNextEnergySource = findNextEnergySource;
             Room.prototype.displayMessage = displayMessage;
