@@ -25,7 +25,7 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
     let nextCreepData = null;
     if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
         nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(this.store.energy));
-    } else if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] < 6) {
+    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 6) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     }
     return nextCreepData;

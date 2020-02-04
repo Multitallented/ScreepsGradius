@@ -11,7 +11,11 @@ export class MineEnergyAction {
         }
         if (!creep.memory['target']) {
             let source:Source = creep.room.findNextEnergySource(creep.pos);
-            creep.memory['target'] = source.id;
+            if (source != null) {
+                creep.memory['target'] = source.id;
+            } else {
+                return;
+            }
         }
         let harvestMessage = creep.harvest(Game.getObjectById(creep.memory['target']));
         if (harvestMessage === ERR_NOT_IN_RANGE) {

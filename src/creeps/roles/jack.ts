@@ -9,11 +9,14 @@ export class Jack {
     static setAction(creep:Creep) {
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
+                let spawns:Array<Structure> = creep.room.find(FIND_STRUCTURES);
+
                 let spawnNeedingEnergy:StructureSpawn = null;
-                _.forEach(creep.room.find(FIND_STRUCTURES, {filter: (structure:Structure) => {return structure.structureType === STRUCTURE_SPAWN;}}),
-                    (spawn:StructureSpawn) => {
-                    console.log(spawn.store.getFreeCapacity(RESOURCE_ENERGY));
-                    if (0 !== spawn.store.getFreeCapacity(RESOURCE_ENERGY)) {
+                _.forEach(spawns, (spawn:StructureSpawn) => {
+                    if (spawn.structureType !== STRUCTURE_SPAWN) {
+                        return;
+                    }
+                    if (spawn.store.getCapacity(RESOURCE_ENERGY) !== spawn.store.energy) {
                         spawnNeedingEnergy = spawn;
                     }
                 });

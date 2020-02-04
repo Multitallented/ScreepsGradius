@@ -10,7 +10,17 @@ const moveToTarget = function() {
         let source:RoomObject = Game.getObjectById(this.memory['target']);
         this.memory['path'] = this.room.findPath(this.pos, source.pos);
     }
-    this.moveByPath(this.memory['path']);
+    let moveMessage:CreepMoveReturnCode = this.moveByPath(this.memory['path']);
+    if (moveMessage !== ERR_TIRED) {
+        if (this.memory['prevPos'] && this.memory['prevPos'].x == this.pos.x &&
+                this.memory['prevPos'].y == this.pos.y) {
+            delete this.memory['path'];
+            delete this.memory['prevPos'];
+            this.moveToTarget();
+        } else {
+            this.memory['prevPos'] = this.pos;
+        }
+    }
 };
 
 const setNextAction = function() {

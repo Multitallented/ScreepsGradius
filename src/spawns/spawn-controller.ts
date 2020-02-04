@@ -5,7 +5,8 @@ export class SpawnController {
     static run(spawn:StructureSpawn) {
         SpawnPrototype.init();
         let nextCreepToSpawn: CreepSpawnData = spawn.getNextCreepToSpawn();
-        if (nextCreepToSpawn && nextCreepToSpawn.options['memory']['role']) {
+        if (nextCreepToSpawn && nextCreepToSpawn.options &&
+                nextCreepToSpawn.options['memory'] && nextCreepToSpawn.options['memory']['role']) {
             spawn.room.displayMessage(spawn.pos, nextCreepToSpawn.options['memory']['role']);
             if (nextCreepToSpawn.getEnergyRequired() <= spawn.store.energy) {
                 spawn.spawnCreep(nextCreepToSpawn.bodyArray, nextCreepToSpawn.name, nextCreepToSpawn.options);
