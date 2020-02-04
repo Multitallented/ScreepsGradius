@@ -83,6 +83,23 @@ const buildMemory = function() {
         this.memory.towerStructure = true;
         return;
     }
+    if (!this.memory.storageStructure && this.memory.center) {
+        let storagePlaced = 0;
+        let center:RoomPosition = this.memory['center'];
+        let size = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
+        for (let i = 0; i < 9; i++) {
+            while (storagePlaced < CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][i]) {
+                storagePlaced++;
+                let constructionSiteData:ConstructionSiteData = RoomUtil.getPositionWithBuffer(this,
+                    center.x, center.y, size, 1, STRUCTURE_STORAGE);
+                if (constructionSiteData) {
+                    this.memory.sites[i][constructionSiteData.pos.x + ":" + constructionSiteData.pos.y] = STRUCTURE_STORAGE;
+                }
+            }
+        }
+        this.memory.storageStructure = true;
+        return;
+    }
 };
 
 const makeConstructionSites = function() {
