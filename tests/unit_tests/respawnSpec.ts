@@ -1,4 +1,4 @@
-import {SpawnController} from "../../src/spawns/spawn-controller";
+import {SpawnController} from "../../src/structures/spawns/spawn-controller";
 
 describe("Respawn Tests", function() {
 

@@ -7,9 +7,11 @@ import {WithdrawEnergyAction} from "../actions/withdraw-energy";
 export class Builder {
     static KEY =  'builder';
     static setAction(creep:Creep) {
+        let runNextAction = true;
 
         switch (creep.memory['action']) {
             case WithdrawEnergyAction.KEY:
+                runNextAction = false;
             case MineEnergyAction.KEY:
                 let constructionSites = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
                 if (constructionSites != null) {
@@ -30,7 +32,9 @@ export class Builder {
                 MineEnergyAction.setAction(creep);
                 break;
         }
-        creep.runAction();
+        if (runNextAction) {
+            creep.runAction();
+        }
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {

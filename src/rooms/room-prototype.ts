@@ -1,5 +1,7 @@
 import * as _ from "lodash";
 import {RoomUtil} from "./room-util";
+import {ConstructionSiteData} from "../structures/construction-site-data";
+import {StructureUtil} from "../structures/structure-util";
 
 const findNextEnergySource = function(pos:RoomPosition):Source {
     let creepCount = {};
@@ -68,16 +70,35 @@ const makeConstructionSites = function() {
     if (!this.memory.sites) {
         return;
     }
+    let numberConstructionSites = this.find(FIND_MY_CONSTRUCTION_SITES).length;
+    if (numberConstructionSites > 2) {
+        return;
+    }
+    let constructionSites:Array<ConstructionSiteData> = [];
     let controllerLevel = this.controller ? this.controller.level : 0;
     for (let i = 0; i < controllerLevel; i++) {
         if (this.memory.sites[i]) {
             _.forEach(this.memory.sites[i], (structureType:StructureConstant, key:string) => {
                 let roomPosition = new RoomPosition(+key.split(":")[0], +key.split(":")[1], this.name);
                 if (RoomUtil.isSpotOpen(roomPosition)) {
-                    this.createConstructionSite(roomPosition, structureType);
+                    constructionSites.push(new ConstructionSiteData(roomPosition, structureType));
                 }
             });
         }
+    }
+    if (constructionSites.length > 0) {
+        constructionSites.sort((x:ConstructionSiteData, y:ConstructionSiteData):number => {
+            let xPriority:number = StructureUtil.getStructureTypePriority(x.structureType);
+            let yPriority:number = StructureUtil.getStructureTypePriority(y.structureType);
+            if (xPriority > yPriority) {
+                return -1;
+            } else if (yPriority > xPriority) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        this.createConstructionSite(constructionSites[0].pos, constructionSites[0].structureType);
     }
 };
 

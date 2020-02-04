@@ -10,7 +10,7 @@ export class BuildAction {
             return;
         }
         let constructionSite = Game.getObjectById(creep.memory['target']);
-        if (!constructionSite['progress'] && !constructionSite['progressTotal']) {
+        if (!constructionSite || (!constructionSite['progress'] && !constructionSite['progressTotal'])) {
             creep.setNextAction();
             return;
         }

@@ -10,8 +10,15 @@ export class WithdrawEnergyAction {
             creep.setNextAction();
             return;
         }
-        let withdrawMessage = creep.withdraw(Game.getObjectById(creep.memory['target']), RESOURCE_ENERGY,
-            capacity - creep.store.energy);
+        let container:Structure = Game.getObjectById(creep.memory['target']);
+        if (!container) {
+            delete creep.memory['path'];
+            delete creep.memory['target'];
+            creep.setNextAction();
+            return;
+        }
+        let withdrawMessage = creep.withdraw(container, RESOURCE_ENERGY,
+            Math.min(capacity - creep.store.energy, container['store'].energy));
         if (withdrawMessage === ERR_NOT_IN_RANGE) {
             creep.moveToTarget();
         } else {

@@ -1,7 +1,7 @@
 import {MineEnergyAction} from "../actions/mine-energy";
 import * as _ from "lodash";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
-import {CreepSpawnData} from "../../spawns/creep-spawn-data";
+import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
 import {TransferEnergyAction} from "../actions/transfer-energy";
 import {WithdrawEnergyAction} from "../actions/withdraw-energy";
 
@@ -12,6 +12,7 @@ export class Jack {
         // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
             case WithdrawEnergyAction.KEY:
+                runNextAction = false;
             case MineEnergyAction.KEY:
                 let spawns:Array<Structure> = creep.room.find(FIND_STRUCTURES);
 

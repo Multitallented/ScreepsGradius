@@ -6,6 +6,8 @@ import {WithdrawEnergyAction} from "../actions/withdraw-energy";
 export class Upgrader {
     static KEY = 'upgrader';
     static setAction(creep:Creep) {
+        let runNextAction = true;
+
         switch (creep.memory['action']) {
             case UpgradeControllerAction.KEY:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
@@ -18,12 +20,16 @@ export class Upgrader {
                 }
                 MineEnergyAction.setAction(creep);
                 break;
+            case WithdrawEnergyAction.KEY:
+                runNextAction = false;
             case MineEnergyAction.KEY:
             default:
                 UpgradeControllerAction.setAction(creep);
                 break;
         }
-        creep.runAction();
+        if (runNextAction) {
+            creep.runAction();
+        }
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {

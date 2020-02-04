@@ -1,4 +1,4 @@
-import {CreepSpawnData} from "../../spawns/creep-spawn-data";
+import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
 import {WithdrawEnergyAction} from "../actions/withdraw-energy";
 import {MineEnergyAction} from "../actions/mine-energy";
 import {TransferEnergyAction} from "../actions/transfer-energy";
@@ -9,7 +9,6 @@ export class Miner {
         let runNextAction = true;
         // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
-            case WithdrawEnergyAction.KEY:
             case MineEnergyAction.KEY:
                 let closestContainer:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
                         return s.structureType === STRUCTURE_CONTAINER;

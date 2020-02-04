@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import {RoomPrototype} from "./room-prototype";
-import {SpawnController} from "../spawns/spawn-controller";
+import {SpawnController} from "../structures/spawns/spawn-controller";
 
 export class RoomController {
     constructor() {

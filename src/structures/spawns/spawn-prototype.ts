@@ -1,9 +1,9 @@
 import * as _ from "lodash";
 import {CreepSpawnData} from "./creep-spawn-data";
-import {Jack} from "../creeps/roles/jack";
-import {Upgrader} from "../creeps/roles/upgrader";
-import {Builder} from "../creeps/roles/builder";
-import {Miner} from "../creeps/roles/miner";
+import {Jack} from "../../creeps/roles/jack";
+import {Upgrader} from "../../creeps/roles/upgrader";
+import {Builder} from "../../creeps/roles/builder";
+import {Miner} from "../../creeps/roles/miner";
 
 const getCreepCount = function():Object {
     let creepCount = {};
@@ -23,7 +23,7 @@ const getCreepCount = function():Object {
 
 const getStructureCount = function():Object {
     let structureCount = {};
-    _.forEach(this.room.find(FIND_MY_STRUCTURES), (s:Structure) => {
+    _.forEach(this.room.find(FIND_STRUCTURES), (s:Structure) => {
         if (structureCount[s.structureType]) {
             structureCount[s.structureType] += 1;
         } else {
@@ -44,7 +44,7 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(this.store.energy));
-    } else if (structureCount[STRUCTURE_CONTAINER] && creepCount[Miner.KEY] < 2) {
+    } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < 2)) {
         nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(this.store.energy));
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 3) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
