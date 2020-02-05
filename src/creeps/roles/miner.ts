@@ -45,9 +45,9 @@ export class Miner {
                 if (!creep.memory['source']) {
                     let availableSources:Array<Source> = creep.room.find(FIND_SOURCES);
                     _.forEach(creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
-                            return c.memory['role'] && c.memory['target'] && c.memory['role'] === Miner.KEY;
+                            return c.memory['role'] && c.memory['source'] && c.memory['role'] === Miner.KEY;
                         }}), (c:Creep) => {
-                        let currentSource:Source = Game.getObjectById(c.memory['target']);
+                        let currentSource:Source = Game.getObjectById(c.memory['source']);
                         let index = availableSources.indexOf(currentSource);
                         if (index !== -1) {
                             availableSources.splice(index, 1);
