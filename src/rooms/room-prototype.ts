@@ -115,6 +115,7 @@ const buildMemory = function() {
         this.memory['sourceRoads'] = true;
         return;
     }
+    // TODO break this up into multiple ticks?
     if (!this.memory[STRUCTURE_EXTENSION + 'Structure'] && this.memory.center) {
         RoomUtil.planBuildings(this, STRUCTURE_EXTENSION);
         return;
@@ -142,17 +143,7 @@ const makeConstructionSites = function() {
         }
     }
     if (constructionSites.length > 0) {
-        constructionSites.sort((x:ConstructionSiteData, y:ConstructionSiteData):number => {
-            let xPriority:number = StructureUtil.getStructureTypePriority(x.structureType);
-            let yPriority:number = StructureUtil.getStructureTypePriority(y.structureType);
-            if (xPriority > yPriority) {
-                return -1;
-            } else if (yPriority > xPriority) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
+        StructureUtil.sortByPriority(constructionSites);
         this.createConstructionSite(constructionSites[0].pos, constructionSites[0].structureType);
     }
 };

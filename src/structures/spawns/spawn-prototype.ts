@@ -4,6 +4,7 @@ import {Jack} from "../../creeps/roles/jack";
 import {Upgrader} from "../../creeps/roles/upgrader";
 import {Builder} from "../../creeps/roles/builder";
 import {Miner} from "../../creeps/roles/miner";
+import {Courier} from "../../creeps/roles/courier";
 
 const getCreepCount = function():Object {
     let creepCount = {};
@@ -44,6 +45,8 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
     } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(this.store.energy));
+    } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
+        nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(this.store.energy));
     } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < 2)) {
         nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(this.store.energy));
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 3) {

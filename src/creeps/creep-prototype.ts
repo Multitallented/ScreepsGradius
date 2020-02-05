@@ -8,6 +8,7 @@ import {BuildAction} from "./actions/build";
 import {WithdrawEnergyAction} from "./actions/withdraw-energy";
 import {Miner} from "./roles/miner";
 import {RepairAction} from "./actions/repair";
+import {Courier} from "./roles/courier";
 
 
 const moveToTarget = function() {
@@ -30,6 +31,8 @@ const moveToTarget = function() {
 
 const setNextAction = function() {
     switch (this.memory['role']) {
+        case Courier.KEY:
+            Courier.setAction(this);
         case Miner.KEY:
             Miner.setAction(this);
             break;

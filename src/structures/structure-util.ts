@@ -10,6 +10,8 @@ export class StructureUtil {
             case STRUCTURE_EXTENSION:
             case STRUCTURE_CONTAINER:
                 return 100;
+            case STRUCTURE_STORAGE:
+                return 75;
             case STRUCTURE_ROAD:
                 return 10;
             case STRUCTURE_RAMPART:
@@ -19,5 +21,19 @@ export class StructureUtil {
             default:
                 return 0;
         }
+    }
+
+    static sortByPriority(array) {
+        array.sort((x, y):number => {
+            let xPriority:number = StructureUtil.getStructureTypePriority(x.structureType);
+            let yPriority:number = StructureUtil.getStructureTypePriority(y.structureType);
+            if (xPriority > yPriority) {
+                return -1;
+            } else if (yPriority > xPriority) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
     }
 }
