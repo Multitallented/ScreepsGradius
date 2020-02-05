@@ -1,10 +1,17 @@
+import * as _ from "lodash";
 
 export class MineEnergyAction {
     static KEY = 'mine-energy';
 
     static run(creep:Creep) {
-        let usedCapacity = creep.store.getUsedCapacity(RESOURCE_ENERGY);
-        if (usedCapacity !== 0 && usedCapacity === creep.store.getCapacity(RESOURCE_ENERGY)) {
+        let freeCapacity = creep.store.getFreeCapacity(RESOURCE_ENERGY);
+        let workPartCount = 0;
+        _.forEach(creep.body, (bodyPart:BodyPartDefinition) => {
+            if (bodyPart.type === WORK) {
+                workPartCount += 1;
+            }
+        });
+        if (freeCapacity < workPartCount * 2) {
             delete creep.memory['target'];
             delete creep.memory['path'];
             creep.setNextAction();
