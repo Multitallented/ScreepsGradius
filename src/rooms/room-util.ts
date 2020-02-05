@@ -121,13 +121,10 @@ export class RoomUtil {
             }
         });
         let numberPlaced = alreadyPlaced.length;
-        let center:RoomPosition = room.memory['center'];
-        let size = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
         for (let i = 0; i < 9; i++) {
             while (numberPlaced < CONTROLLER_STRUCTURES[structureType][i]) {
                 numberPlaced++;
-                let constructionSiteData:ConstructionSiteData = RoomUtil.getPositionWithBuffer(room,
-                    center.x, center.y, size, 1, structureType);
+                let constructionSiteData:ConstructionSiteData = RoomUtil.getPositionWithBuffer(room, 1, structureType);
                 if (constructionSiteData) {
                     room.memory['sites'][i][constructionSiteData.pos.x + ":" + constructionSiteData.pos.y] = structureType;
                 }
@@ -148,17 +145,22 @@ export class RoomUtil {
         }
     }
 
-    static getPositionWithBuffer(room:Room, x:number, y:number, size:number, buffer:number,
+    static getPositionWithBuffer(room:Room, buffer:number,
                                  type:StructureConstant):ConstructionSiteData {
+        let center:RoomPosition = room.memory['center'];
+        let size:number = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
         let siteFound:ConstructionSiteData = null;
-        this.loopFromCenter(x, y, size, (currentX:number, currentY:number) => {
-            let currentPlannedPosition:RoomPosition = new RoomPosition(currentX, currentY, room.name);
+        this.loopFromCenter(center.x, center.y, size, (currentX:number, currentY:number) => {
             let positionOk = true;
+            if (room.memory['checkedPositions'] && room.memory['checkedPositions'][currentX + ":" + currentY]) {
+                return false;
+            }
+            let currentPlannedPosition:RoomPosition = new RoomPosition(currentX, currentY, room.name);
             if (RoomUtil.hasPlannedStructureAt(currentPlannedPosition) || _.filter(room.lookAt(currentX, currentY), (c) => {
                 return c.type === 'structure' || (c.type === 'terrain' && c.terrain === 'wall'); }).length) {
                 positionOk = false;
             }
-            if (buffer > 0) {
+            if (buffer > 0 && positionOk) {
                 this.loopFromCenter(currentX, currentY, 1 + 2 * buffer, (bufferX:number, bufferY:number) => {
                     let currentBufferPosition:RoomPosition = new RoomPosition(bufferX, bufferY, room.name);
                     if (RoomUtil.hasPlannedStructureAt(currentBufferPosition) || _.filter(room.lookAt(bufferX, bufferY), (c) => {
@@ -171,7 +173,13 @@ export class RoomUtil {
             if (positionOk) {
                 siteFound = new ConstructionSiteData(new RoomPosition(currentX, currentY, room.name), type);
                 return true;
+            } else {
+                if (!room.memory['checkedPositions']) {
+                    room.memory['checkedPositions'] = {};
+                }
+                room.memory['checkedPositions'][currentX + ":" + currentY] = true;
             }
+            return false;
         });
         return siteFound;
     }

@@ -117,7 +117,6 @@ const buildMemory = function() {
         return;
     }
 
-    // TODO break this up into multiple ticks?
     if (!this.memory[STRUCTURE_EXTENSION + 'Structure'] && this.memory.center) {
         RoomUtil.planBuildings(this, STRUCTURE_EXTENSION);
         return;
