@@ -89,7 +89,7 @@ const buildMemory = function() {
                 let startPosition:RoomPosition = this.getPositionAt(25, 25);
                 let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
                 let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
-                    {ignoreCreeps: true, swampCost: 1, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                    {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
                 RoomUtil.planRoadAlongPath(this, path);
             }
         });
@@ -107,7 +107,7 @@ const buildMemory = function() {
                     return;
                 }
                 let path:Array<PathStep> = origin.pos.findPathTo(destination.pos.x, destination.pos.y,
-                    {ignoreCreeps: true, swampCost: 1, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                    {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
                 RoomUtil.planRoadAlongPath(this, path);
             });
         });
