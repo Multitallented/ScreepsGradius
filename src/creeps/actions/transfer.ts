@@ -13,7 +13,7 @@ export class TransferAction {
             resourceType = creep.memory['resourceType'];
         }
         let structure:Structure = Game.getObjectById(creep.memory['target']);
-        if (!structure || structure['store'].getFreeCapacity(resourceType) < 1) {
+        if (!structure || !structure['store'] || structure['store'].getFreeCapacity(resourceType) < 1) {
             delete creep.memory['target'];
             delete creep.memory['path'];
             creep.setNextAction();

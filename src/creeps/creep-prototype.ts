@@ -60,9 +60,6 @@ const setNextAction = function() {
 };
 
 const runAction = function() {
-    if (!this.memory['action']) {
-        this.memory['action'] = MineEnergyAction.KEY;
-    }
     switch (this.memory['action']) {
         case PickupAction.KEY:
             PickupAction.run(this);
@@ -86,35 +83,13 @@ const runAction = function() {
             MineEnergyAction.run(this);
             break;
         default:
-            this.getDefaultAction()(this);
+            this.setNextAction();
             break;
-    }
-};
-
-const getDefaultAction = function():Function {
-    if (!this.memory['role']) {
-        return MineEnergyAction.run;
-    }
-    switch (this.memory['role']) {
-        case Miner.KEY:
-            if (!this.memory['actionSwitched']) {
-                this.memory['actionSwitched'] = true;
-                this.memory['action'] = TransferAction.KEY;
-                Miner.setAction(this);
-            }
-            return MineEnergyAction.run;
-        case Courier.KEY:
-            return WithdrawAction.run;
-        case Jack.KEY:
-            return MineEnergyAction.run;
-        default:
-            return WithdrawAction.run;
     }
 };
 
 declare global {
     interface Creep {
-        getDefaultAction():Function;
         moveToTarget();
         setNextAction();
         runAction();
@@ -125,7 +100,6 @@ declare global {
 export class CreepPrototype {
     static init() {
         if (!Creep['init']) {
-            Creep.prototype.getDefaultAction = getDefaultAction;
             Creep.prototype.moveToTarget = moveToTarget;
             Creep.prototype.setNextAction = setNextAction;
             Creep.prototype.runAction = runAction;
