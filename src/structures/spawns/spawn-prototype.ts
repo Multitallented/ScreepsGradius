@@ -53,10 +53,10 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
         nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(energyAvailable), 0.9);
     } else if (!creepCount[Builder.KEY]) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.5);
-    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
-        nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.75);
     } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
         nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(energyAvailable), 0.75);
+    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
+        nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.75);
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(energyAvailable), 0.9);
     }

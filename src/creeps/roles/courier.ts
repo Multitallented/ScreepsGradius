@@ -4,6 +4,7 @@ import {TransferAction} from "../actions/transfer";
 import {StructureUtil} from "../../structures/structure-util";
 import {PickupAction} from "../actions/pickup";
 import * as _ from "lodash";
+import {RoomUtil} from "../../rooms/room-util";
 
 export class Courier {
     static KEY = 'courier';
@@ -25,7 +26,15 @@ export class Courier {
                 } else if (y.store.energy > x.store.energy) {
                     return -1;
                 } else {
-                    return 0;
+                    let xDistance = RoomUtil.crowDistance(creep.pos, x.pos);
+                    let yDistance = RoomUtil.crowDistance(creep.pos, y.pos);
+                    if (xDistance > yDistance) {
+                        return 1;
+                    } else if (yDistance > xDistance) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
                 }
             });
             return storageStructures[0];
@@ -44,7 +53,13 @@ export class Courier {
     }
 
     static setAction(creep:Creep) {
-        if (creep.store.energy !== 0) {
+        if (creep.memory['delivering'] && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50) {
+            delete creep.memory['delivering'];
+        }
+        if (creep.store.getFreeCapacity(RESOURCE_ENERGY) < 50) {
+            creep.memory['delivering'] = true;
+        }
+        if (creep.memory['delivering']) {
             let container = Courier.getNextContainerNeedingEnergy(creep);
             if (container) {
                 TransferAction.setAction(creep, container, RESOURCE_ENERGY);
@@ -80,9 +95,11 @@ export class Courier {
             let storedResources:Array<ResourceConstant> = _.filter(Object.keys(tombstone.store), (r:ResourceConstant) => {
                 return tombstone.store[r] > 0;
             }) as Array<ResourceConstant>;
-            WithdrawAction.setAction(creep, tombstone, storedResources[0]);
-            creep.runAction();
-            return;
+            if (storedResources.length) {
+                WithdrawAction.setAction(creep, tombstone, storedResources[0]);
+                creep.runAction();
+                return;
+            }
         }
 
         let containers:Array<Structure> = creep.room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
