@@ -58,7 +58,7 @@ export class Miner {
                 if (creep.memory['source']) {
                     source = Game.getObjectById(creep.memory['source']);
                 }
-                if (source != null) {
+                if (source) {
                     MineEnergyAction.setActionWithTarget(creep, source);
                 } else {
                     MineEnergyAction.setAction(creep);

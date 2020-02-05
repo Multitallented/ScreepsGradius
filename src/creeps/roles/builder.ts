@@ -23,7 +23,8 @@ export class Builder {
         let alreadyTaggedTargets = Builder.getAlreadyTaggedTargets(creep);
         if (creep.store.energy > 0) {
             let closestStructureNeedingRepair:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                    return s.hitsMax && (s.hits / s.hitsMax < 0.9) && !alreadyTaggedTargets[s.id];
+                    return s.structureType !== STRUCTURE_WALL && s.structureType !== STRUCTURE_RAMPART &&
+                        s.hitsMax && (s.hits / s.hitsMax < 0.9) && !alreadyTaggedTargets[s.id];
                 }});
             if (closestStructureNeedingRepair != null) {
                 RepairAction.setAction(creep, closestStructureNeedingRepair);
@@ -40,7 +41,7 @@ export class Builder {
                     return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
                         s['store'].energy > 0;
                 }});
-            if (closestContainer != null) {
+            if (closestContainer) {
                 WithdrawAction.setAction(creep, closestContainer, RESOURCE_ENERGY);
             } else {
                 MineEnergyAction.setAction(creep);

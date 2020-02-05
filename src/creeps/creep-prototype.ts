@@ -84,6 +84,7 @@ const runAction = function() {
             break;
         case MineEnergyAction.KEY:
             MineEnergyAction.run(this);
+            break;
         default:
             this.getDefaultAction()(this);
             break;

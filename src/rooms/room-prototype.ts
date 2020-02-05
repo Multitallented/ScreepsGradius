@@ -2,7 +2,6 @@ import * as _ from "lodash";
 import {RoomUtil} from "./room-util";
 import {ConstructionSiteData} from "../structures/construction-site-data";
 import {StructureUtil} from "../structures/structure-util";
-import has = Reflect.has;
 
 const findNextEnergySource = function(pos:RoomPosition):Source {
     let creepCount = {};
@@ -16,7 +15,7 @@ const findNextEnergySource = function(pos:RoomPosition):Source {
         }
     });
     let possibleSources = [];
-    _.forEach(this.find(FIND_SOURCES), (source:Source) => {
+    _.forEach(this.find(FIND_SOURCES_ACTIVE), (source:Source) => {
         if (!creepCount[source.id] || !this.memory['sources'] ||
                 !this.memory['sources'][source.id] ||
                 creepCount[source.id] < this.memory['sources'][source.id]) {
@@ -137,7 +136,7 @@ const makeConstructionSites = function() {
     }
     let constructionSites:Array<ConstructionSiteData> = [];
     let controllerLevel = this.controller ? this.controller.level : 0;
-    for (let i = 0; i < controllerLevel; i++) {
+    for (let i = 0; i <= controllerLevel; i++) {
         if (this.memory.sites[i]) {
             _.forEach(this.memory.sites[i], (structureType:StructureConstant, key:string) => {
                 let roomPosition = new RoomPosition(+key.split(":")[0], +key.split(":")[1], this.name);

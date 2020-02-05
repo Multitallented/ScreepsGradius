@@ -9,8 +9,17 @@ module.exports = function(partArray, name, memory, room) {
     });
 
     let baseCreep = {
-        carry: {
-            energy: 0
+        store: {
+            energy: 0,
+            getCapacity: function(type) {
+                return 150;
+            },
+            getFreeCapacity: function(type) {
+                return 100;
+            },
+            getUsedCapacity: function(type) {
+                return 50;
+            }
         },
         carryCapacity: 50*getPartCount(CARRY, partArray),
         room: room,

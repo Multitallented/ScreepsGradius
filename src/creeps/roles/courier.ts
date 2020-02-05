@@ -53,7 +53,8 @@ export class Courier {
     }
 
     static setAction(creep:Creep) {
-        if (creep.memory['delivering'] && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50) {
+        if (creep.memory['delivering'] &&
+                creep.store.getCapacity(RESOURCE_ENERGY) - creep.store.getFreeCapacity(RESOURCE_ENERGY) < 50) {
             delete creep.memory['delivering'];
         }
         if (creep.store.getFreeCapacity(RESOURCE_ENERGY) < 50) {
@@ -71,8 +72,9 @@ export class Courier {
             return creep.store[r] > 0;
         }) as Array<ResourceConstant>;
         if (storedResources.length) {
-            let closestStorage = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
-                    return s.structureType === STRUCTURE_STORAGE && s['store'].getFreeCapacity(storedResources[0]) > 0;
+            let closestStorage = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                    return (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER) &&
+                        s['store'].getFreeCapacity(storedResources[0]) > 0;
                 }});
             if (closestStorage) {
                 TransferAction.setAction(creep, closestStorage, storedResources[0]);
@@ -89,7 +91,7 @@ export class Courier {
             return;
         }
         let tombstone:Tombstone = creep.pos.findClosestByRange(FIND_TOMBSTONES, {filter: (t:Tombstone) => {
-                return t.store.getFreeCapacity(RESOURCE_ENERGY) !== t.store.getCapacity(RESOURCE_ENERGY);
+                return t.store.getFreeCapacity(RESOURCE_ENERGY) !== t.store.getCapacity(RESOURCE_ENERGY) && !alreadyTaggedTargets[t.id];
             }});
         if (tombstone) {
             let storedResources:Array<ResourceConstant> = _.filter(Object.keys(tombstone.store), (r:ResourceConstant) => {
@@ -104,19 +106,28 @@ export class Courier {
 
         let containers:Array<Structure> = creep.room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
                 return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
-                    s['store'].energy > 0;
+                    s['store'].getCapacity(RESOURCE_ENERGY) !== s['store'].getFreeCapacity(RESOURCE_ENERGY);
             }});
         containers.sort((x:Structure, y:Structure):number => {
-            if (x['store'].energy > y['store'].energy) {
-                return -1;
-            } else if (x['store'].energy < y['store'].energy) {
+            if (x['store'].getFreeCapacity(RESOURCE_ENERGY) > y['store'].getFreeCapacity(RESOURCE_ENERGY)) {
                 return 1;
+            } else if (x['store'].getFreeCapacity(RESOURCE_ENERGY) < y['store'].getFreeCapacity(RESOURCE_ENERGY)) {
+                return -1;
             } else {
                 return 0;
             }
         });
         if (containers.length > 0) {
-            WithdrawAction.setAction(creep, containers[0], RESOURCE_ENERGY);
+            let storedResources:Array<ResourceConstant> = _.filter(Object.keys(containers[0]['store']), (r:ResourceConstant) => {
+                return containers[0]['store'][r] > 0;
+            }) as Array<ResourceConstant>;
+            if (storedResources.length) {
+                WithdrawAction.setAction(creep, containers[0], storedResources[0]);
+                creep.runAction();
+                return;
+            } else {
+                return;
+            }
         }
 
         creep.runAction();
