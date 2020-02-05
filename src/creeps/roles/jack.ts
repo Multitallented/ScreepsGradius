@@ -18,7 +18,7 @@ export class Jack {
 
                 let spawnNeedingEnergy:StructureSpawn = null;
                 _.forEach(spawns, (spawn:StructureSpawn) => {
-                    if (spawn.structureType !== STRUCTURE_SPAWN) {
+                    if (spawn.structureType !== STRUCTURE_SPAWN && spawn.structureType != STRUCTURE_TOWER) {
                         return;
                     }
                     if (spawn.store.getCapacity(RESOURCE_ENERGY) !== spawn.store.energy) {

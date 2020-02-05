@@ -8,8 +8,9 @@ export class StructureUtil {
             case STRUCTURE_POWER_SPAWN:
                 return 125;
             case STRUCTURE_EXTENSION:
-            case STRUCTURE_CONTAINER:
                 return 100;
+            case STRUCTURE_CONTAINER:
+                return 90;
             case STRUCTURE_STORAGE:
                 return 75;
             case STRUCTURE_ROAD:
@@ -23,7 +24,7 @@ export class StructureUtil {
         }
     }
 
-    static sortByPriority(array) {
+    static sortByPriority(array, tieBreaker:Function) {
         array.sort((x, y):number => {
             let xPriority:number = StructureUtil.getStructureTypePriority(x.structureType);
             let yPriority:number = StructureUtil.getStructureTypePriority(y.structureType);
@@ -32,6 +33,9 @@ export class StructureUtil {
             } else if (yPriority > xPriority) {
                 return 1;
             } else {
+                if (tieBreaker) {
+                    return tieBreaker(x, y);
+                }
                 return 0;
             }
         });

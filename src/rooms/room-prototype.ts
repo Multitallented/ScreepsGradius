@@ -143,7 +143,7 @@ const makeConstructionSites = function() {
         }
     }
     if (constructionSites.length > 0) {
-        StructureUtil.sortByPriority(constructionSites);
+        StructureUtil.sortByPriority(constructionSites, null);
         this.createConstructionSite(constructionSites[0].pos, constructionSites[0].structureType);
     }
 };

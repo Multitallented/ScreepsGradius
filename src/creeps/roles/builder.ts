@@ -18,12 +18,14 @@ export class Builder {
                         return s.hitsMax && (s.hits / s.hitsMax < 0.9);
                     }});
                 if (closestStructureNeedingRepair != null) {
+                    runNextAction = false;
                     RepairAction.setAction(creep, closestStructureNeedingRepair);
                     break;
                 }
 
                 let closestConstructionSite = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
                 if (closestConstructionSite != null) {
+                    runNextAction = false;
                     BuildAction.setAction(creep, closestConstructionSite);
                     break;
                 }

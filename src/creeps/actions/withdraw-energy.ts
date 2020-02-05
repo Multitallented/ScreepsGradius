@@ -11,7 +11,7 @@ export class WithdrawEnergyAction {
             return;
         }
         let container:Structure = Game.getObjectById(creep.memory['target']);
-        if (!container) {
+        if (!container || !container['store']) {
             delete creep.memory['path'];
             delete creep.memory['target'];
             creep.setNextAction();
