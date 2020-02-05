@@ -6,6 +6,9 @@ export class CreepController {
         CreepPrototype.init();
         _.forEach(Game.creeps, (creep) => {
             if (!creep.spawning) {
+                if (creep.memory['actionSwitched']) {
+                    delete creep.memory['actionSwitched'];
+                }
                 creep.runAction();
             }
         });

@@ -30,8 +30,6 @@ export class Miner {
     }
 
     static setAction(creep:Creep) {
-        let runNextAction = true;
-        // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
             case MineEnergyAction.KEY:
                 let container = Miner.findNearestContainer(creep);
@@ -40,7 +38,6 @@ export class Miner {
                 }
                 break;
             case TransferEnergyAction.KEY:
-                runNextAction = false;
             default:
                 if (!creep.memory['source']) {
                     let availableSources:Array<Source> = creep.room.find(FIND_SOURCES);
@@ -68,9 +65,7 @@ export class Miner {
                 }
                 break;
         }
-        if (runNextAction) {
-            creep.runAction();
-        }
+        creep.runAction();
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
@@ -78,16 +73,10 @@ export class Miner {
         energyAvailable = Math.min(energyAvailable, 1000);
         energyAvailable -= 200;
         let partCount = { 'WORK': 1, 'MOVE': 1, 'CARRY': 1 };
-        while (energyAvailable >= 50) {
-            if (energyAvailable >= CreepSpawnData.getBodyPartCost(WORK)) {
-                bodyArray.unshift(WORK);
-                partCount['WORK'] += 1;
-                energyAvailable -= CreepSpawnData.getBodyPartCost(WORK);
-            } else {
-                bodyArray.unshift(CARRY);
-                partCount['CARRY'] += 1;
-                energyAvailable -= CreepSpawnData.getBodyPartCost(CARRY);
-            }
+        while (energyAvailable >= CreepSpawnData.getBodyPartCost(WORK)) {
+            bodyArray.unshift(WORK);
+            partCount['WORK'] += 1;
+            energyAvailable -= CreepSpawnData.getBodyPartCost(WORK);
         }
         return bodyArray;
     }

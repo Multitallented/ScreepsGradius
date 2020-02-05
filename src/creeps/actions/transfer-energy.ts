@@ -21,6 +21,6 @@ export class TransferEnergyAction {
     static setAction(creep:Creep, target:Structure) {
         creep.memory['action'] = this.KEY;
         creep.memory['target'] = target.id;
-        creep.say('⚡ give');
+        // creep.say('⚡ give');
     }
 }

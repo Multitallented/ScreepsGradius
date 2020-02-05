@@ -31,6 +31,6 @@ export class WithdrawEnergyAction {
     static setAction(creep:Creep, target:Structure) {
         creep.memory['action'] = this.KEY;
         creep.memory['target'] = target.id;
-        creep.say('⚡ take');
+        // creep.say('⚡ take');
     }
 }

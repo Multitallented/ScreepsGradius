@@ -30,6 +30,11 @@ const moveToTarget = function() {
 };
 
 const setNextAction = function() {
+    if (!this.memory['actionSwitched']) {
+        this.memory['actionSwitched'] = true;
+    } else {
+        return;
+    }
     switch (this.memory['role']) {
         case Courier.KEY:
             Courier.setAction(this);
@@ -82,10 +87,19 @@ const getDefaultAction = function():Function {
         return MineEnergyAction.run;
     }
     switch (this.memory['role']) {
+        case Miner.KEY:
+            if (!this.memory['actionSwitched']) {
+                this.memory['actionSwitched'] = true;
+                this.memory['action'] = TransferEnergyAction.KEY;
+                Miner.setAction(this);
+            }
+            return MineEnergyAction.run;
         case Courier.KEY:
             return WithdrawEnergyAction.run;
-        default:
+        case Jack.KEY:
             return MineEnergyAction.run;
+        default:
+            return WithdrawEnergyAction.run;
     }
 };
 

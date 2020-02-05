@@ -26,11 +26,11 @@ export class MineEnergyAction {
     static setActionWithTarget(creep:Creep, target:Source) {
         creep.memory['action'] = this.KEY;
         creep.memory['target'] = target.id;
-        creep.say('🔄 harvest');
+        // creep.say('🔄 harvest');
     }
 
     static setAction(creep:Creep) {
         creep.memory['action'] = this.KEY;
-        creep.say('🔄 harvest');
+        // creep.say('🔄 harvest');
     }
 }

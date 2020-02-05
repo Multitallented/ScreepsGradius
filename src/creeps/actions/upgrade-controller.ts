@@ -20,6 +20,6 @@ export class UpgradeControllerAction {
 
     static setAction(creep:Creep) {
         creep.memory['action'] = this.KEY;
-        creep.say('⚡ upgrade');
+        // creep.say('⚡ upgrade');
     }
 }

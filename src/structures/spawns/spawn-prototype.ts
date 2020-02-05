@@ -37,20 +37,26 @@ const getStructureCount = function():Object {
 const getNextCreepToSpawn = function(): CreepSpawnData {
     let creepCount = this.getCreepCount();
     let structureCount = this.getStructureCount();
+    let energyAvailable = this.room.energyAvailable;
+    let numberOfSources = this.room.find(FIND_SOURCES).length;
 
     let nextCreepData = null;
     if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
-        nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(this.store.energy));
-    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 2) {
-        nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
+        nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(energyAvailable), 0);
+    } else if (!creepCount[Upgrader.KEY]) {
+        nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(energyAvailable), 0);
+    } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY])) {
+        nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(energyAvailable), 0);
+    } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY])) {
+        nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(energyAvailable), 0.5);
+    } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < numberOfSources)) {
+        nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(energyAvailable), 0.9);
     } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
-        nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(this.store.energy));
+        nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.5);
     } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
-        nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(this.store.energy));
-    } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < 2)) {
-        nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(this.store.energy));
-    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 3) {
-        nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(this.store.energy));
+        nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(energyAvailable), 0.75);
+    } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
+        nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(energyAvailable), 0.9);
     }
     return nextCreepData;
 };

@@ -4,6 +4,7 @@ export class CreepSpawnData {
     public bodyArray: Array<BodyPartConstant>;
     public name: string;
     public options: Object;
+    public minPercentCapacity:number;
 
     static getBodyPartCost(bodyPartConstant:BodyPartConstant):number {
         switch (bodyPartConstant) {
@@ -49,10 +50,11 @@ export class CreepSpawnData {
         }
     }
 
-    constructor(bodyArray:Array<BodyPartConstant>, name:string, options:Object) {
+    constructor(bodyArray:Array<BodyPartConstant>, name:string, options:Object, minPercentCapacity:number) {
         this.bodyArray = this.sortBodyParts(bodyArray);
         this.name = name;
         this.options = options;
+        this.minPercentCapacity = minPercentCapacity;
     }
 
     sortBodyParts(bodyArray:Array<BodyPartConstant>):Array<BodyPartConstant> {
@@ -78,13 +80,13 @@ export class CreepSpawnData {
         return total;
     }
 
-    static build(key:string, bodyArray:Array<BodyPartConstant>):CreepSpawnData {
+    static build(key:string, bodyArray:Array<BodyPartConstant>, minPercentCapacity: number):CreepSpawnData {
         return new CreepSpawnData(bodyArray,
             key + Game.time,
             {
                 "memory": {
                     "role": key
                 }
-            });
+            }, minPercentCapacity);
     }
 }

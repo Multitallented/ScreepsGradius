@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import {RoomPrototype} from "./room-prototype";
 import {SpawnController} from "../structures/spawns/spawn-controller";
+import {TowerController} from "../structures/towers/tower-controller";
 
 export class RoomController {
     constructor() {
@@ -11,6 +12,7 @@ export class RoomController {
     }
 
     handle(room:Room) {
+        TowerController.run(room);
         room.buildMemory();
         room.makeConstructionSites();
         this.spawnCreeps(room);

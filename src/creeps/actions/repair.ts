@@ -25,6 +25,6 @@ export class RepairAction {
     static setAction(creep:Creep, target:Structure) {
         creep.memory['target'] = target.id;
         creep.memory['action'] = this.KEY;
-        creep.say('✍ repair');
+        // creep.say('✍ repair');
     }
 }

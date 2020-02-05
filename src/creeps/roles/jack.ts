@@ -8,11 +8,8 @@ import {WithdrawEnergyAction} from "../actions/withdraw-energy";
 export class Jack {
     static KEY = 'jack';
     static setAction(creep:Creep) {
-        let runNextAction = true;
-        // noinspection FallThroughInSwitchStatementJS
         switch (creep.memory['action']) {
             case WithdrawEnergyAction.KEY:
-                runNextAction = false;
             case MineEnergyAction.KEY:
                 let spawns:Array<Structure> = creep.room.find(FIND_STRUCTURES);
 
@@ -32,7 +29,6 @@ export class Jack {
                 UpgradeControllerAction.setAction(creep);
                 break;
             case TransferEnergyAction.KEY:
-                runNextAction = false;
             case UpgradeControllerAction.KEY:
             default:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
@@ -46,9 +42,7 @@ export class Jack {
                 MineEnergyAction.setAction(creep);
                 break;
         }
-        if (runNextAction) {
-            creep.runAction();
-        }
+        creep.runAction();
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
