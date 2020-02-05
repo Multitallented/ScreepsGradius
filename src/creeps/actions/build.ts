@@ -23,6 +23,6 @@ export class BuildAction {
     static setAction(creep:Creep, target:ConstructionSite) {
         creep.memory['target'] = target.id;
         creep.memory['action'] = this.KEY;
-        // creep.say('✍ build');
+        creep.say('✍ build');
     }
 }

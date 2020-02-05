@@ -2,14 +2,14 @@ import {MineEnergyAction} from "../actions/mine-energy";
 import * as _ from "lodash";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
-import {TransferEnergyAction} from "../actions/transfer-energy";
-import {WithdrawEnergyAction} from "../actions/withdraw-energy";
+import {TransferAction} from "../actions/transfer";
+import {WithdrawAction} from "../actions/withdraw";
 
 export class Jack {
     static KEY = 'jack';
     static setAction(creep:Creep) {
         switch (creep.memory['action']) {
-            case WithdrawEnergyAction.KEY:
+            case WithdrawAction.KEY:
             case MineEnergyAction.KEY:
                 let spawns:Array<Structure> = creep.room.find(FIND_STRUCTURES);
 
@@ -23,12 +23,12 @@ export class Jack {
                     }
                 });
                 if (spawnNeedingEnergy != null) {
-                    TransferEnergyAction.setAction(creep, spawnNeedingEnergy);
+                    TransferAction.setAction(creep, spawnNeedingEnergy, RESOURCE_ENERGY);
                     break;
                 }
                 UpgradeControllerAction.setAction(creep);
                 break;
-            case TransferEnergyAction.KEY:
+            case TransferAction.KEY:
             case UpgradeControllerAction.KEY:
             default:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
@@ -36,7 +36,7 @@ export class Jack {
                             s['store'].energy > 0;
                     }});
                 if (closestContainer != null) {
-                    WithdrawEnergyAction.setAction(creep, closestContainer);
+                    WithdrawAction.setAction(creep, closestContainer, RESOURCE_ENERGY);
                     break;
                 }
                 MineEnergyAction.setAction(creep);

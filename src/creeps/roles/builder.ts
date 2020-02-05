@@ -2,7 +2,7 @@ import {BuildAction} from "../actions/build";
 import {MineEnergyAction} from "../actions/mine-energy";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 import {Jack} from "./jack";
-import {WithdrawEnergyAction} from "../actions/withdraw-energy";
+import {WithdrawAction} from "../actions/withdraw";
 import {RepairAction} from "../actions/repair";
 import * as _ from "lodash";
 
@@ -41,7 +41,7 @@ export class Builder {
                         s['store'].energy > 0;
                 }});
             if (closestContainer != null) {
-                WithdrawEnergyAction.setAction(creep, closestContainer);
+                WithdrawAction.setAction(creep, closestContainer, RESOURCE_ENERGY);
             } else {
                 MineEnergyAction.setAction(creep);
             }

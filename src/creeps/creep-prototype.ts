@@ -1,11 +1,11 @@
 import {Jack} from "./roles/jack";
 import {MineEnergyAction} from "./actions/mine-energy";
 import {UpgradeControllerAction} from "./actions/upgrade-controller";
-import {TransferEnergyAction} from "./actions/transfer-energy";
+import {TransferAction} from "./actions/transfer";
 import {Upgrader} from "./roles/upgrader";
 import {Builder} from "./roles/builder";
 import {BuildAction} from "./actions/build";
-import {WithdrawEnergyAction} from "./actions/withdraw-energy";
+import {WithdrawAction} from "./actions/withdraw";
 import {Miner} from "./roles/miner";
 import {RepairAction} from "./actions/repair";
 import {Courier} from "./roles/courier";
@@ -15,7 +15,11 @@ import {PickupAction} from "./actions/pickup";
 const moveToTarget = function() {
     if (!this.memory['path']) {
         let source:RoomObject = Game.getObjectById(this.memory['target']);
-        this.memory['path'] = this.room.findPath(this.pos, source.pos);
+        if (source && source.pos) {
+            this.memory['path'] = this.room.findPath(this.pos, source.pos);
+        } else {
+            delete this.memory['target'];
+        }
     }
     let moveMessage:CreepMoveReturnCode = this.moveByPath(this.memory['path']);
     if (moveMessage !== ERR_TIRED) {
@@ -72,11 +76,11 @@ const runAction = function() {
         case BuildAction.KEY:
             BuildAction.run(this);
             break;
-        case TransferEnergyAction.KEY:
-            TransferEnergyAction.run(this);
+        case TransferAction.KEY:
+            TransferAction.run(this);
             break;
-        case WithdrawEnergyAction.KEY:
-            WithdrawEnergyAction.run(this);
+        case WithdrawAction.KEY:
+            WithdrawAction.run(this);
             break;
         case MineEnergyAction.KEY:
             MineEnergyAction.run(this);
@@ -94,16 +98,16 @@ const getDefaultAction = function():Function {
         case Miner.KEY:
             if (!this.memory['actionSwitched']) {
                 this.memory['actionSwitched'] = true;
-                this.memory['action'] = TransferEnergyAction.KEY;
+                this.memory['action'] = TransferAction.KEY;
                 Miner.setAction(this);
             }
             return MineEnergyAction.run;
         case Courier.KEY:
-            return WithdrawEnergyAction.run;
+            return WithdrawAction.run;
         case Jack.KEY:
             return MineEnergyAction.run;
         default:
-            return WithdrawEnergyAction.run;
+            return WithdrawAction.run;
     }
 };
 

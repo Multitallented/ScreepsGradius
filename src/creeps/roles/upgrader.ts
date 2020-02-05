@@ -1,7 +1,7 @@
 import {MineEnergyAction} from "../actions/mine-energy";
 import {UpgradeControllerAction} from "../actions/upgrade-controller";
 import {Jack} from "./jack";
-import {WithdrawEnergyAction} from "../actions/withdraw-energy";
+import {WithdrawAction} from "../actions/withdraw";
 
 export class Upgrader {
     static KEY = 'upgrader';
@@ -13,12 +13,12 @@ export class Upgrader {
                             s['store'].energy > 0;
                     }});
                 if (closestContainer != null) {
-                    WithdrawEnergyAction.setAction(creep, closestContainer);
+                    WithdrawAction.setAction(creep, closestContainer, RESOURCE_ENERGY);
                     break;
                 }
                 MineEnergyAction.setAction(creep);
                 break;
-            case WithdrawEnergyAction.KEY:
+            case WithdrawAction.KEY:
             case MineEnergyAction.KEY:
             default:
                 UpgradeControllerAction.setAction(creep);

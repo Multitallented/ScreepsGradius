@@ -1,7 +1,7 @@
 import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
 import * as _ from "lodash";
 import {MineEnergyAction} from "../actions/mine-energy";
-import {TransferEnergyAction} from "../actions/transfer-energy";
+import {TransferAction} from "../actions/transfer";
 
 export class Miner {
     static KEY = 'miner';
@@ -34,10 +34,10 @@ export class Miner {
             case MineEnergyAction.KEY:
                 let container = Miner.findNearestContainer(creep);
                 if (container != null) {
-                    TransferEnergyAction.setAction(creep, container);
+                    TransferAction.setAction(creep, container, RESOURCE_ENERGY);
                 }
                 break;
-            case TransferEnergyAction.KEY:
+            case TransferAction.KEY:
             default:
                 if (!creep.memory['source']) {
                     let availableSources:Array<Source> = creep.room.find(FIND_SOURCES);
