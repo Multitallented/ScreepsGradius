@@ -21,9 +21,9 @@ export class Courier {
         if (storageStructures.length > 0) {
             StructureUtil.sortByPriority(storageStructures, (x, y) => {
                 if (x.store.energy > y.store.energy) {
-                    return 1;
-                } else if (y.store.energy > x.store.energy) {
                     return -1;
+                } else if (y.store.energy > x.store.energy) {
+                    return 1;
                 } else {
                     return 0;
                 }

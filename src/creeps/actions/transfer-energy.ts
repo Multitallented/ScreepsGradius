@@ -8,7 +8,14 @@ export class TransferEnergyAction {
             creep.setNextAction();
             return;
         }
-        let transferMessage = creep.transfer(Game.getObjectById(creep.memory['target']), RESOURCE_ENERGY);
+        let structure:Structure = Game.getObjectById(creep.memory['target']);
+        if (!structure || structure['store'].getFreeCapacity(RESOURCE_ENERGY) < 1) {
+            delete creep.memory['target'];
+            delete creep.memory['path'];
+            creep.setNextAction();
+            return;
+        }
+        let transferMessage = creep.transfer(structure, RESOURCE_ENERGY);
         if (transferMessage === ERR_NOT_IN_RANGE) {
             creep.moveToTarget();
         } else {

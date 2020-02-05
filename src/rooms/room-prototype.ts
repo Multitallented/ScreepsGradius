@@ -82,20 +82,6 @@ const buildMemory = function() {
         RoomUtil.planBuildings(this, STRUCTURE_POWER_SPAWN);
         return;
     }
-    if (!this.memory.exitRoads && this.memory.center) {
-        let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_LEFT, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT ];
-        _.forEach(directions, (direction:ExitConstant) => {
-            if (this.hasExit(direction)) {
-                let startPosition:RoomPosition = this.getPositionAt(25, 25);
-                let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
-                let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
-                    {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
-                RoomUtil.planRoadAlongPath(this, path);
-            }
-        });
-        this.memory['exitRoads'] = true;
-        return;
-    }
 
     if (!this.memory.sourceRoads) {
         let pointsOfImportance = this.find(FIND_SOURCES);
@@ -115,11 +101,30 @@ const buildMemory = function() {
         this.memory['sourceRoads'] = true;
         return;
     }
+
+    if (!this.memory.exitRoads && this.memory.center) {
+        let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_LEFT, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT ];
+        _.forEach(directions, (direction:ExitConstant) => {
+            if (this.hasExit(direction)) {
+                let startPosition:RoomPosition = this.getPositionAt(25, 25);
+                let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
+                let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
+                    {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                RoomUtil.planRoadAlongPath(this, path);
+            }
+        });
+        this.memory['exitRoads'] = true;
+        return;
+    }
+
     // TODO break this up into multiple ticks?
     if (!this.memory[STRUCTURE_EXTENSION + 'Structure'] && this.memory.center) {
         RoomUtil.planBuildings(this, STRUCTURE_EXTENSION);
         return;
     }
+
+    // TODO walls & ramparts
+    // this.memory['complete'] = true;
 };
 
 const makeConstructionSites = function() {
