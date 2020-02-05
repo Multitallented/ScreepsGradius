@@ -9,6 +9,7 @@ import {WithdrawEnergyAction} from "./actions/withdraw-energy";
 import {Miner} from "./roles/miner";
 import {RepairAction} from "./actions/repair";
 import {Courier} from "./roles/courier";
+import {PickupAction} from "./actions/pickup";
 
 
 const moveToTarget = function() {
@@ -59,6 +60,9 @@ const runAction = function() {
         this.memory['action'] = MineEnergyAction.KEY;
     }
     switch (this.memory['action']) {
+        case PickupAction.KEY:
+            PickupAction.run(this);
+            break;
         case RepairAction.KEY:
             RepairAction.run(this);
             break;
