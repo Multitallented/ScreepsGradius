@@ -92,6 +92,21 @@ export class RoomUtil {
         return false;
     }
 
+    static getPlannedCostMatrix(room:Room) {
+        return (roomName:string, costMatrix:CostMatrix):CostMatrix => {
+            if (roomName == room.name) {
+                for (let i = 0; i < 9; i++) {
+                    _.forEach(room.memory['sites'][i], (value, key) => {
+                        if (value !== STRUCTURE_ROAD) {
+                            costMatrix.set(+key.split(":")[0], +key.split(":")[1], 256);
+                        }
+                    });
+                }
+            }
+            return costMatrix;
+        }
+    }
+
     static planBuildings(room:Room, structureType:StructureConstant) {
         let alreadyPlaced:Array<Structure> = room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
                 return s.structureType === structureType;
@@ -119,6 +134,18 @@ export class RoomUtil {
             }
         }
         room.memory[structureType + 'Structure'] = true;
+    }
+
+    static planRoadAlongPath(room:Room, path:Array<PathStep>) {
+        if (path != null && path.length > 0) {
+            _.forEach(path, (pathStep:PathStep) => {
+                if (pathStep.x !== 0 && pathStep.y !== 0 &&
+                        pathStep.x !== 49 && pathStep.y !== 49 &&
+                        !RoomUtil.hasPlannedStructureAt(new RoomPosition(pathStep.x, pathStep.y, room.name))) {
+                    room.memory['sites'][0][pathStep.x + ":" + pathStep.y] = STRUCTURE_ROAD;
+                }
+            });
+        }
     }
 
     static getPositionWithBuffer(room:Room, x:number, y:number, size:number, buffer:number,

@@ -86,16 +86,33 @@ const buildMemory = function() {
         let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_LEFT, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT ];
         _.forEach(directions, (direction:ExitConstant) => {
             if (this.hasExit(direction)) {
-                let targetRoomName = this.getAdjacentRoomName(direction);
-                let path:Array<PathStep> = this.getPositionAt(25,25).findPathTo(this.findExitTo(targetRoomName));
-                if (path != null && path.length > 0) {
-                    _.forEach(path, (pathStep:PathStep) => {
-                        this.memory['sites'][0][pathStep.x + ":" + pathStep.y] = STRUCTURE_ROAD;
-                    });
-                }
+                let startPosition:RoomPosition = this.getPositionAt(25, 25);
+                let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
+                let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
+                    {ignoreCreeps: true, swampCost: 1, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                RoomUtil.planRoadAlongPath(this, path);
             }
         });
         this.memory['exitRoads'] = true;
+        return;
+    }
+
+    if (!this.memory.sourceRoads) {
+        let pointsOfImportance = this.find(FIND_SOURCES);
+        pointsOfImportance.push(this.controller);
+
+        _.forEach(pointsOfImportance, (origin:RoomObject) => {
+            _.forEach(pointsOfImportance, (destination:RoomObject) => {
+                if (origin === destination) {
+                    return;
+                }
+                let path:Array<PathStep> = origin.pos.findPathTo(destination.pos.x, destination.pos.y,
+                    {ignoreCreeps: true, swampCost: 1, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                RoomUtil.planRoadAlongPath(this, path);
+            });
+        });
+
+        this.memory['sourceRoads'] = true;
         return;
     }
 };
