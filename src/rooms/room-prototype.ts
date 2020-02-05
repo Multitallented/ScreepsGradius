@@ -115,6 +115,10 @@ const buildMemory = function() {
         this.memory['sourceRoads'] = true;
         return;
     }
+    if (!this.memory[STRUCTURE_EXTENSION + 'Structure'] && this.memory.center) {
+        RoomUtil.planBuildings(this, STRUCTURE_EXTENSION);
+        return;
+    }
 };
 
 const makeConstructionSites = function() {
