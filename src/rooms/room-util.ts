@@ -152,9 +152,6 @@ export class RoomUtil {
         let siteFound:ConstructionSiteData = null;
         this.loopFromCenter(center.x, center.y, size, (currentX:number, currentY:number) => {
             let positionOk = true;
-            if (room.memory['checkedPositions'] && room.memory['checkedPositions'][currentX + ":" + currentY]) {
-                return false;
-            }
             let currentPlannedPosition:RoomPosition = new RoomPosition(currentX, currentY, room.name);
             if (RoomUtil.hasPlannedStructureAt(currentPlannedPosition) || _.filter(room.lookAt(currentX, currentY), (c) => {
                 return c.type === 'structure' || (c.type === 'terrain' && c.terrain === 'wall'); }).length) {
@@ -173,11 +170,6 @@ export class RoomUtil {
             if (positionOk) {
                 siteFound = new ConstructionSiteData(new RoomPosition(currentX, currentY, room.name), type);
                 return true;
-            } else {
-                if (!room.memory['checkedPositions']) {
-                    room.memory['checkedPositions'] = {};
-                }
-                room.memory['checkedPositions'][currentX + ":" + currentY] = true;
             }
             return false;
         });

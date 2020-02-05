@@ -3,7 +3,7 @@ export class MineEnergyAction {
     static KEY = 'mine-energy';
 
     static run(creep:Creep) {
-        if (creep.store.getCapacity() === creep.store.energy) {
+        if (creep.store.getCapacity(RESOURCE_ENERGY) === creep.store.energy) {
             delete creep.memory['target'];
             delete creep.memory['path'];
             creep.setNextAction();

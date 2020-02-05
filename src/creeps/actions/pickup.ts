@@ -9,9 +9,7 @@ export class PickupAction {
             return;
         }
         let targetResource:Resource = Game.getObjectById(creep.memory['target']);
-        if (!targetResource ||
-            targetResource.amount > creep.store.getFreeCapacity(targetResource.resourceType)) {
-
+        if (!targetResource) {
             delete creep.memory['target'];
             delete creep.memory['path'];
             creep.setNextAction();

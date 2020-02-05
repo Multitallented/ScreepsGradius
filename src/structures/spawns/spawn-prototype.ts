@@ -42,7 +42,7 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
 
     let nextCreepData = null;
     if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
-        nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(energyAvailable), 0);
+        nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(Math.min(energyAvailable, 600)), 0);
     } else if (!creepCount[Upgrader.KEY]) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(energyAvailable), 0);
     } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY])) {
@@ -51,8 +51,10 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
         nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(energyAvailable), 0.5);
     } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < numberOfSources)) {
         nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(energyAvailable), 0.9);
-    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
+    } else if (!creepCount[Builder.KEY]) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.5);
+    } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
+        nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.75);
     } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
         nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(energyAvailable), 0.75);
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
