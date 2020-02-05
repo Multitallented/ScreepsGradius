@@ -52,44 +52,77 @@ export class Courier {
         return alreadyTaggedTargets;
     }
 
-    static setAction(creep:Creep) {
-        if (creep.memory['delivering'] &&
-                creep.store.getCapacity(RESOURCE_ENERGY) - creep.store.getFreeCapacity(RESOURCE_ENERGY) < 50) {
-            delete creep.memory['delivering'];
+    static deliverEnergy(creep:Creep):boolean {
+        let container = Courier.getNextContainerNeedingEnergy(creep);
+        if (container) {
+            TransferAction.setAction(creep, container, RESOURCE_ENERGY);
+            creep.runAction();
+            return true;
         }
-        if (creep.store.getFreeCapacity(RESOURCE_ENERGY) < 50) {
-            creep.memory['delivering'] = true;
-        }
-        if (creep.memory['delivering']) {
-            let container = Courier.getNextContainerNeedingEnergy(creep);
-            if (container) {
-                TransferAction.setAction(creep, container, RESOURCE_ENERGY);
-                creep.runAction();
-                return;
-            }
-        }
+        return false;
+    }
+
+    static unloadResources(creep:Creep):boolean {
         let storedResources:Array<ResourceConstant> = _.filter(Object.keys(creep.store), (r:ResourceConstant) => {
-            return creep.store[r] > 0;
+            return r !== RESOURCE_ENERGY && creep.store[r] > 0;
         }) as Array<ResourceConstant>;
         if (storedResources.length) {
             let closestStorage = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                    return (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER) &&
-                        s['store'].getFreeCapacity(storedResources[0]) > 0;
-                }});
+                return (s.structureType === STRUCTURE_STORAGE) &&
+                    s['store'].getFreeCapacity(storedResources[0]) > 0;
+            }});
+            if (!closestStorage) {
+                closestStorage = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                        return (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER) &&
+                            s['store'].getFreeCapacity(storedResources[0]) > 0;
+                    }});
+            }
             if (closestStorage) {
                 TransferAction.setAction(creep, closestStorage, storedResources[0]);
                 creep.runAction();
-                return;
+                return true;
             }
         }
-        let alreadyTaggedTargets = Courier.getAlreadyTaggedTargets(creep);
+        return false;
+    }
+
+    private static withdrawResourcesFromContainer(creep: Creep) {
+        let closestStorage = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+                return s.structureType === STRUCTURE_STORAGE && s['store'].getFreeCapacity() > 0;
+            }});
+        if (!closestStorage) {
+            return false;
+        }
+        let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
+                return s.structureType === STRUCTURE_CONTAINER &&
+                    s['store'].getUsedCapacity(RESOURCE_ENERGY) !== s['store'].getUsedCapacity();
+            }});
+        if (!closestContainer) {
+            return false;
+        }
+        let storedResources:Array<ResourceConstant> = _.filter(Object.keys(closestContainer['store']), (r:ResourceConstant) => {
+            return r !== RESOURCE_ENERGY && closestContainer['store'][r] > 0;
+        }) as Array<ResourceConstant>;
+        if (storedResources.length) {
+            WithdrawAction.setAction(creep, closestContainer, storedResources[0]);
+            creep.runAction();
+            return true;
+        }
+        return false;
+    }
+
+    static pickUpEnergy(creep:Creep, alreadyTaggedTargets):boolean {
         let energy:Resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {filter: (r) => {
-            return r.resourceType && r.amount > 20 && !alreadyTaggedTargets[r.id]; }});
+                return r.resourceType && r.amount > 20 && !alreadyTaggedTargets[r.id]; }});
         if (energy) {
             PickupAction.setAction(creep, energy);
             creep.runAction();
-            return;
+            return true;
         }
+        return false;
+    }
+
+    static withdrawFromTombstone(creep:Creep, alreadyTaggedTargets):boolean {
         let tombstone:Tombstone = creep.pos.findClosestByRange(FIND_TOMBSTONES, {filter: (t:Tombstone) => {
                 return t.store.getFreeCapacity(RESOURCE_ENERGY) !== t.store.getCapacity(RESOURCE_ENERGY) && !alreadyTaggedTargets[t.id];
             }});
@@ -100,10 +133,13 @@ export class Courier {
             if (storedResources.length) {
                 WithdrawAction.setAction(creep, tombstone, storedResources[0]);
                 creep.runAction();
-                return;
+                return true;
             }
         }
+        return false;
+    }
 
+    static withdrawFromContainer(creep:Creep) {
         let containers:Array<Structure> = creep.room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
                 return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
                     s['store'].getCapacity(RESOURCE_ENERGY) !== s['store'].getFreeCapacity(RESOURCE_ENERGY);
@@ -124,13 +160,43 @@ export class Courier {
             if (storedResources.length) {
                 WithdrawAction.setAction(creep, containers[0], storedResources[0]);
                 creep.runAction();
-                return;
+                return true;
             } else {
-                return;
+                return false;
             }
         }
+        return false;
+    }
 
-        creep.runAction();
+    static setAction(creep:Creep) {
+        if (creep.memory['delivering'] &&
+                creep.store.getCapacity() - creep.store.getFreeCapacity() < 50) {
+            delete creep.memory['delivering'];
+        }
+        if (creep.store.getFreeCapacity() < 50) {
+            creep.memory['delivering'] = true;
+        }
+        if (creep.memory['delivering'] && Courier.deliverEnergy(creep)) {
+            return;
+        }
+        if (Courier.unloadResources(creep)) {
+            return;
+        }
+        let alreadyTaggedTargets = Courier.getAlreadyTaggedTargets(creep);
+        if (Courier.pickUpEnergy(creep, alreadyTaggedTargets)) {
+            return;
+        }
+        if (Courier.withdrawFromTombstone(creep, alreadyTaggedTargets)) {
+            return;
+        }
+
+        if (Courier.withdrawResourcesFromContainer(creep)) {
+            return;
+        }
+
+        if (Courier.withdrawFromContainer(creep)) {
+            return;
+        }
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {

@@ -148,9 +148,16 @@ export class RoomUtil {
 
     static getPositionWithBuffer(room:Room, buffer:number, type:StructureConstant):ConstructionSiteData {
         let center:RoomPosition = room.memory['center'];
+        if (!room.memory['loopCenter']) {
+            room.memory['loopCenter'] = {};
+        }
         let size:number = 38 - 2 * Math.max(Math.abs(center.x - 25), Math.abs(center.y - 25));
         let siteFound:ConstructionSiteData = null;
-        this.loopFromCenter(room, true, center.x, center.y, size, (currentX:number, currentY:number) => {
+        this.loopFromCenter(room, center.x, center.y, size, (currentX:number, currentY:number) => {
+            if (room.memory['loopCenter'][currentX + ":" + currentY]) {
+                return false;
+            }
+            room.memory['loopCenter'][currentX + ":" + currentY] = true;
             let positionOk = true;
             let currentPlannedPosition:RoomPosition = new RoomPosition(currentX, currentY, room.name);
             if (RoomUtil.hasPlannedStructureAt(currentPlannedPosition) || _.filter(room.lookAt(currentX, currentY), (c) => {
@@ -158,7 +165,7 @@ export class RoomUtil {
                 positionOk = false;
             }
             if (buffer > 0 && positionOk) {
-                this.loopFromCenter(room, false, currentX, currentY, 1 + 2 * buffer, (bufferX:number, bufferY:number) => {
+                this.loopFromCenter(room, currentX, currentY, 1 + 2 * buffer, (bufferX:number, bufferY:number) => {
                     let currentBufferPosition:RoomPosition = new RoomPosition(bufferX, bufferY, room.name);
                     if (RoomUtil.hasPlannedStructureAt(currentBufferPosition) || _.filter(room.lookAt(bufferX, bufferY),(c:LookAtResultWithPos) => {
                             return c.type === 'structure' && c.structure.structureType !== STRUCTURE_ROAD; }).length) {
@@ -177,7 +184,7 @@ export class RoomUtil {
         return siteFound;
     }
 
-    static loopFromCenter(room:Room, checkMemory:boolean, x:number, y:number, size:number, callback:Function) {
+    static loopFromCenter(room:Room, x:number, y:number, size:number, callback:Function) {
         let d = 3;
         let c = 0;
         let s = 1;
@@ -185,14 +192,7 @@ export class RoomUtil {
         for (let k=1;k<=(size - 1); k++) {
             for (let j=0; j < (k<(size-1) ? 2 : 3); j++) {
                 for (let i=0; i<s; i++) {
-                    if ((checkMemory && room.memory['loopCenter'] && room.memory['loopCenter'][x + ":" + y]) ||
-                            callback(x, y)) {
-                        if (checkMemory) {
-                            if (!room.memory['loopCenter']) {
-                                room.memory['loopCenter'] = {};
-                            }
-                            room.memory['loopCenter'][x + ":" + y] = true;
-                        }
+                    if (callback(x, y)) {
                         return;
                     }
 
