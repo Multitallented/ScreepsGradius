@@ -9,6 +9,16 @@ import * as _ from "lodash";
 export class Builder {
     static KEY =  'builder';
 
+    static needsRepair(structureType:StructureConstant, hits:number, hitsMax:number):boolean {
+        switch(structureType) {
+            case STRUCTURE_RAMPART:
+            case STRUCTURE_WALL:
+                return hits < 10000;
+            default:
+                return hits / hitsMax < 0.75
+        }
+    }
+
     static getAlreadyTaggedTargets(creep:Creep):Object {
         let alreadyTaggedTargets = {};
         _.forEach(creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
@@ -24,7 +34,7 @@ export class Builder {
         if (creep.store.energy > 0) {
             let closestStructureNeedingRepair:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
                     return s.structureType !== STRUCTURE_WALL && s.structureType !== STRUCTURE_RAMPART &&
-                        s.hitsMax && (s.hits / s.hitsMax < 0.9) && !alreadyTaggedTargets[s.id];
+                        s.hitsMax && Builder.needsRepair(s.structureType, s.hits, s.hitsMax) && !alreadyTaggedTargets[s.id];
                 }});
             if (closestStructureNeedingRepair != null) {
                 RepairAction.setAction(creep, closestStructureNeedingRepair);
