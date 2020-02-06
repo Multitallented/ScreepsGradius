@@ -44,7 +44,7 @@ export class Traveler {
                     newRoleData.options['memory']['role'] !== Traveler.KEY) {
                 newRole = newRoleData.options['memory']['role'];
             }
-            if (newRole) {
+            if (newRole && newRole != 'claimer') {
                 delete creep.memory['destinationRoom'];
                 creep.memory['role'] = newRole;
                 creep.setNextAction();
