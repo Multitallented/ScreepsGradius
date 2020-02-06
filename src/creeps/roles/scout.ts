@@ -8,8 +8,10 @@ export class Scout {
         if (!creep.memory['originRoom']) {
             creep.memory['originRoom'] = creep.room.name;
         }
-        if (creep.room.controller && creep.room.controller.my) {
+        if (creep.room.controller && (creep.room.controller.my || creep.room.controller.reservation)) {
             creep.memory['originRoom'] = creep.room.name;
+            delete creep.memory['path'];
+            delete creep.memory['destination'];
             LeaveRoomAction.setAction(creep, null);
             creep.runAction();
             return;
