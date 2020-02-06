@@ -38,11 +38,49 @@ export class SpawnUtil {
         return structureCount;
     }
 
+    static getNextTravelerRole(room:Room): string {
+        let creepCount = SpawnUtil.getCreepCount(room);
+        let structureCount = SpawnUtil.getStructureCount(room);
+        let roomClaimed = room.controller && room.controller.my;
+        let numberOfSources;
+        if (room.memory['sources']) {
+            numberOfSources = Object.keys(room.memory['sources']).length;
+        } else if (Memory[room.name] && Memory[room.name]['roomData']) {
+            numberOfSources = Memory[room.name]['roomData'][room.name]['sources']['qty'];
+        } else {
+            numberOfSources = room.find(FIND_SOURCES).length;
+        }
+        if (roomClaimed && (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1)) {
+            return Jack.KEY;
+        } else if (roomClaimed && !creepCount[Upgrader.KEY]) {
+            return Upgrader.KEY;
+        } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY])) {
+            return Courier.KEY;
+        } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < numberOfSources)) {
+            return Miner.KEY;
+        } else if (!creepCount[Builder.KEY]) {
+            return Builder.KEY;
+        } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
+            return Courier.KEY;
+        } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
+            return Builder.KEY;
+        } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
+            return Upgrader.KEY;
+        }
+    }
+
     static getNextCreepToSpawn(room:Room): CreepSpawnData {
         let creepCount = SpawnUtil.getCreepCount(room);
         let structureCount = SpawnUtil.getStructureCount(room);
         let energyAvailable = room.energyAvailable;
-        let numberOfSources = room.find(FIND_SOURCES).length;
+        let numberOfSources;
+        if (room.memory['sources']) {
+            numberOfSources = Object.keys(room.memory['sources']).length;
+        } else if (Memory[room.name] && Memory[room.name]['roomData']) {
+            numberOfSources = Memory[room.name]['roomData'][room.name]['sources']['qty'];
+        } else {
+            numberOfSources = room.find(FIND_SOURCES).length;
+        }
         let ticksTilNextScoutSpawn = 0;
         if (room.memory['ticksTilNextScoutSpawn']) {
             ticksTilNextScoutSpawn = room.memory['ticksTilNextScoutSpawn'];
@@ -89,9 +127,9 @@ export class SpawnUtil {
         } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY])) {
             nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(Math.min(energyAvailable, 400)), 0);
         } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY])) {
-            nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(Math.min(energyAvailable, 1000)), 0.5);
+            nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(Math.min(energyAvailable, 1000)), 0);
         } else if (structureCount[STRUCTURE_CONTAINER] && (!creepCount[Miner.KEY] || creepCount[Miner.KEY] < numberOfSources)) {
-            nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(Math.min(energyAvailable, 1000)), 0.9);
+            nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(Math.min(energyAvailable, 1000)), 0.75);
         } else if (!creepCount[Builder.KEY]) {
             nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.5);
         } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {

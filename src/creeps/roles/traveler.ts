@@ -38,13 +38,8 @@ export class Traveler {
 
         if (creep.room.name === creep.memory['destinationRoom'] ||
                 creep.memory['originRoom'] === creep.memory['destinationRoom']) {
-            let newRoleData:CreepSpawnData = SpawnUtil.getNextCreepToSpawn(creep.room);
-            let newRole = null;
-            if (newRoleData && newRoleData.options['memory']['role'] &&
-                    newRoleData.options['memory']['role'] !== Traveler.KEY) {
-                newRole = newRoleData.options['memory']['role'];
-            }
-            if (newRole && newRole != 'claimer') {
+            let newRole:string = SpawnUtil.getNextTravelerRole(creep.room);
+            if (newRole) {
                 delete creep.memory['destinationRoom'];
                 creep.memory['role'] = newRole;
                 creep.setNextAction();
