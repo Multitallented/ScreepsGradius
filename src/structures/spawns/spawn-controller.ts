@@ -9,7 +9,8 @@ export class SpawnController {
                 nextCreepToSpawn.options['memory'] && nextCreepToSpawn.options['memory']['role']) {
             spawn.room.displayMessage(spawn.pos, nextCreepToSpawn.options['memory']['role']);
             if (nextCreepToSpawn.getEnergyRequired() <= spawn.room.energyAvailable &&
-                    spawn.room.energyAvailable / spawn.room.energyCapacityAvailable > nextCreepToSpawn.minPercentCapacity) {
+                (nextCreepToSpawn.getEnergyRequired() + 100 < spawn.room.energyAvailable ||
+                    spawn.room.energyAvailable / spawn.room.energyCapacityAvailable > nextCreepToSpawn.minPercentCapacity)) {
                 spawn.spawnCreep(nextCreepToSpawn.bodyArray, nextCreepToSpawn.name, nextCreepToSpawn.options);
             }
         } else if (spawn.spawning && spawn.spawning['memory'] && spawn.spawning['memory']['role']) {

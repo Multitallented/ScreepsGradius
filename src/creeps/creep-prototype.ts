@@ -10,6 +10,7 @@ import {Miner} from "./roles/miner";
 import {RepairAction} from "./actions/repair";
 import {Courier} from "./roles/courier";
 import {PickupAction} from "./actions/pickup";
+import {ReserveControllerAction} from "./actions/reserve-controller";
 
 
 const moveToTarget = function() {
@@ -61,6 +62,9 @@ const setNextAction = function() {
 
 const runAction = function() {
     switch (this.memory['action']) {
+        case ReserveControllerAction.KEY:
+            ReserveControllerAction.run(this);
+            break;
         case PickupAction.KEY:
             PickupAction.run(this);
             break;

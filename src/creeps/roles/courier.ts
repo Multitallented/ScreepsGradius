@@ -53,6 +53,9 @@ export class Courier {
     }
 
     static deliverEnergy(creep:Creep):boolean {
+        if (creep.store.energy < 50) {
+            return false;
+        }
         let container = Courier.getNextContainerNeedingEnergy(creep);
         if (container) {
             TransferAction.setAction(creep, container, RESOURCE_ENERGY);
@@ -170,7 +173,8 @@ export class Courier {
 
     static setAction(creep:Creep) {
         if (creep.memory['delivering'] &&
-                creep.store.getCapacity() - creep.store.getFreeCapacity() < 50) {
+                creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50 &&
+                creep.store.getUsedCapacity(RESOURCE_ENERGY) === creep.store.getUsedCapacity()) {
             delete creep.memory['delivering'];
         }
         if (creep.store.getFreeCapacity() < 50) {
@@ -179,7 +183,7 @@ export class Courier {
         if (creep.memory['delivering'] && Courier.deliverEnergy(creep)) {
             return;
         }
-        if (Courier.unloadResources(creep)) {
+        if (creep.memory['delivering'] && Courier.unloadResources(creep)) {
             return;
         }
         let alreadyTaggedTargets = Courier.getAlreadyTaggedTargets(creep);
