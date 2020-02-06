@@ -7,6 +7,7 @@ import {Miner} from "../../creeps/roles/miner";
 import {Builder} from "../../creeps/roles/builder";
 import {Scout} from "../../creeps/roles/scout";
 import {Claimer} from "../../creeps/roles/claimer";
+import {RoomUtil} from "../../rooms/room-util";
 
 export class SpawnUtil {
     static getCreepCount(room:Room):Object {
@@ -48,7 +49,13 @@ export class SpawnUtil {
         }
         let roomNeedingHelp = null;
         _.forEach(Game.rooms, (room:Room) => {
-            if (room.memory['sendBuilders']) {
+            if ((room.controller && room.controller.reservation) || room.memory['sendBuilders']) {
+                if (room.memory['sendBuilders'] && room.find(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+                            return s.structureType === STRUCTURE_SPAWN;
+                        }}).length) {
+                    delete room.memory['sendBuilders'];
+                }
+
                 let numberOfSpots = 0;
                 let numberOfCreeps = room.find(FIND_MY_CREEPS).length;
                 _.forEach(room.memory['sources'], (sourceNumber) => {
@@ -60,6 +67,19 @@ export class SpawnUtil {
                 roomNeedingHelp = room.name;
             }
         });
+
+        let needClaimers = Claimer.canClaimAnyRoom();
+        if (!needClaimers) {
+            let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT ];
+            _.forEach(directions, (direction:ExitConstant) => {
+                if (room.hasExit(direction)) {
+                    let adjacentRoom:Room = Game.rooms[room.getAdjacentRoomName(direction)];
+                    if (adjacentRoom && adjacentRoom.controller && !adjacentRoom.controller.my && !adjacentRoom.controller.reservation) {
+                        needClaimers = true;
+                    }
+                }
+            });
+        }
 
         let nextCreepData = null;
         if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
@@ -84,7 +104,7 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(Math.min(energyAvailable, 600)), 0.9);
         } else if (ticksTilNextScoutSpawn < 1) {
             nextCreepData = CreepSpawnData.build(Scout.KEY, Scout.buildBodyArray(Math.min(energyAvailable, 50)), 0.75);
-        } else {
+        } else if (needClaimers) {
             nextCreepData = CreepSpawnData.build(Claimer.KEY, Claimer.buildBodyArray(Math.min(energyAvailable, 700)), 0.9);
         }
         return nextCreepData;

@@ -17,6 +17,9 @@ export class RoomController {
             room.makeConstructionSites();
             this.spawnCreeps(room);
             TowerController.run(room);
+        } else if (room.controller && room.controller.reservation) {
+            room.buildMemory();
+            room.makeConstructionSites();
         } else {
             room.buildMemory();
             // TODO set flag?

@@ -7,36 +7,46 @@ import {LeaveRoomAction} from "../actions/leave-room";
 export class Claimer {
     static KEY = 'claimer';
 
-    static setBestRoom(creep:Creep) {
-        if (!creep.memory['destinationRoom'] && Memory['roomData']) {
-            let mostSources = 0;
-            let mostSpots = 0;
-            let bestRoom = null;
-            _.forEach(Memory['roomData'], (roomData, key) => {
-                let numberOfSources = roomData['sources']['qty'];
-                let numberOfSpots = roomData['sources']['spots'];
-                if (numberOfSources > mostSources ||
-                    (numberOfSources === mostSources && mostSpots > numberOfSpots)) {
-                    bestRoom = key;
-                    mostSpots = numberOfSpots;
-                    mostSources = numberOfSources;
-                }
-            });
+    static canClaimAnyRoom():boolean {
+        let numberOfOwnedRooms = _.filter(Game.rooms, (r) => {
+            return r.controller && r.controller.my;
+        }).length;
+        return Game.gcl.level > numberOfOwnedRooms;
+    }
+
+    static getBestRoom():string {
+        let mostSources = 0;
+        let mostSpots = 0;
+        let bestRoom = null;
+        _.forEach(Memory['roomData'], (roomData, key) => {
+            let numberOfSources = roomData['sources']['qty'];
+            let numberOfSpots = roomData['sources']['spots'];
+            if (numberOfSources > mostSources ||
+                (numberOfSources === mostSources && mostSpots > numberOfSpots)) {
+                bestRoom = key;
+                mostSpots = numberOfSpots;
+                mostSources = numberOfSources;
+            }
+        });
+        return bestRoom;
+    }
+
+    static setAction(creep:Creep) {
+        let canClaimAnyRoom = Claimer.canClaimAnyRoom();
+        if (canClaimAnyRoom && !creep.memory['destinationRoom'] && Memory['roomData']) {
+            let bestRoom = Claimer.getBestRoom();
             if (bestRoom) {
                 creep.memory['destinationRoom'] = bestRoom;
             }
         }
-    }
-
-    static setAction(creep:Creep) {
-        Claimer.setBestRoom(creep);
         LeaveRoomAction.moveIntoRoom(creep);
 
-        if (creep.room.name === creep.memory['destinationRoom']) {
-            let numberOfOwnedRooms = _.filter(Game.rooms, (r) => {
-                    return r.controller && r.controller.my;
-                }).length;
-            if (Game.gcl.level > numberOfOwnedRooms) {
+        if (!creep.memory['destinationRoom'] && (!creep.room.controller || creep.room.controller.my)) {
+            LeaveRoomAction.setAction(creep, null);
+            creep.runAction();
+            return;
+        } else if (!canClaimAnyRoom || creep.room.name === creep.memory['destinationRoom']) {
+            if (canClaimAnyRoom && creep.room.name === Claimer.getBestRoom()) {
                 ClaimControllerAction.setAction(creep);
                 creep.runAction();
                 return;
@@ -45,7 +55,6 @@ export class Claimer {
                 creep.runAction();
                 return;
             }
-            return;
         }
 
         if (creep.memory['destinationRoom'] && !creep.memory['path']) {

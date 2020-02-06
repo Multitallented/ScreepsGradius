@@ -11,7 +11,15 @@ export class Traveler {
         if (!creep.memory['destinationRoom']) {
             let helpRoom = null;
             _.forEach(Game.rooms, (room:Room) => {
-                if (room.memory['sendBuilders']) {
+                if ((room.controller && room.controller.reservation) || room.memory['sendBuilders']) {
+                    let numberOfSpots = 0;
+                    let numberOfCreeps = room.find(FIND_MY_CREEPS).length;
+                    _.forEach(room.memory['sources'], (sourceNumber) => {
+                        numberOfSpots += sourceNumber;
+                    });
+                    if (numberOfCreeps > numberOfSpots) {
+                        return;
+                    }
                     helpRoom = room.name;
                 }
             });
@@ -22,10 +30,14 @@ export class Traveler {
     }
 
     static setAction(creep:Creep) {
+        if (!creep.memory['originRoom']) {
+            creep.memory['originRoom'] = creep.room.name;
+        }
         Traveler.setDestinationRoom(creep);
         LeaveRoomAction.moveIntoRoom(creep);
 
-        if (creep.room.name === creep.memory['destinationRoom']) {
+        if (creep.room.name === creep.memory['destinationRoom'] ||
+                creep.memory['originRoom'] === creep.memory['destinationRoom']) {
             let newRoleData:CreepSpawnData = SpawnUtil.getNextCreepToSpawn(creep.room);
             let newRole = null;
             if (newRoleData && newRoleData.options['memory']['role'] &&
@@ -33,8 +45,8 @@ export class Traveler {
                 newRole = newRoleData.options['memory']['role'];
             }
             if (newRole) {
+                delete creep.memory['destinationRoom'];
                 creep.memory['role'] = newRole;
-                creep.name = newRole + Game.time;
                 creep.setNextAction();
                 return;
             }
