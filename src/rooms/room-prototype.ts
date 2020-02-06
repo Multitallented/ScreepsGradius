@@ -6,7 +6,7 @@ import {StructureUtil} from "../structures/structure-util";
 const findNextEnergySource = function(pos:RoomPosition):Source {
     let creepCount = {};
     _.forEach(this.find(FIND_CREEPS), (creep:Creep) => {
-        if (creep.memory['target']) {
+        if (creep && creep.memory && creep.memory['target']) {
             if (creepCount[creep.memory['target']]) {
                 creepCount[creep.memory['target']] += 1;
             } else {

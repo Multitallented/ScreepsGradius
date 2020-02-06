@@ -201,7 +201,6 @@ export class Courier {
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, CARRY ];
-        energyAvailable = Math.min(energyAvailable, 600);
         energyAvailable -= 100;
         let partCount = { 'MOVE': 1, 'CARRY': 1 };
         while (energyAvailable >= 50) {

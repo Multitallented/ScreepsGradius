@@ -70,7 +70,6 @@ export class Miner {
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, CARRY, WORK ];
-        energyAvailable = Math.min(energyAvailable, 1000);
         energyAvailable -= 200;
         let partCount = { 'WORK': 1, 'MOVE': 1, 'CARRY': 1 };
         while (energyAvailable >= 50) {
