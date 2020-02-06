@@ -6,7 +6,7 @@ export class ReserveControllerAction {
         let claimedRoom = creep.room.controller && creep.room.controller.my;
         let claimUnnecessary = creep.room && creep.room.controller && creep.room.controller.reservation &&
             creep.room.controller.reservation.ticksToEnd > 3000;
-        if (claimedRoom || claimUnnecessary) {
+        if (claimedRoom || claimUnnecessary || !creep.room.controller) {
             creep.setNextAction();
             return;
         }
