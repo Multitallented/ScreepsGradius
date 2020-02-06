@@ -11,6 +11,8 @@ import {RepairAction} from "./actions/repair";
 import {Courier} from "./roles/courier";
 import {PickupAction} from "./actions/pickup";
 import {ReserveControllerAction} from "./actions/reserve-controller";
+import {ClaimControllerAction} from "./actions/claim-controller";
+import {Claimer} from "./roles/claimer";
 
 
 const moveToTarget = function() {
@@ -42,6 +44,9 @@ const setNextAction = function() {
         return;
     }
     switch (this.memory['role']) {
+        case Claimer.KEY:
+            Claimer.setAction(this);
+            break;
         case Courier.KEY:
             Courier.setAction(this);
             break;
@@ -62,6 +67,9 @@ const setNextAction = function() {
 
 const runAction = function() {
     switch (this.memory['action']) {
+        case ClaimControllerAction.KEY:
+            ClaimControllerAction.run(this);
+            break;
         case ReserveControllerAction.KEY:
             ReserveControllerAction.run(this);
             break;
