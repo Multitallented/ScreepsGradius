@@ -16,6 +16,7 @@ import {Claimer} from "./roles/claimer";
 import {Scout} from "./roles/scout";
 import {LeaveRoomAction} from "./actions/leave-room";
 import {Traveler} from "./roles/traveler";
+import {Homing} from "./roles/homing";
 
 
 const moveToTarget = function() {
@@ -51,6 +52,9 @@ const setNextAction = function() {
         return;
     }
     switch (this.memory['role']) {
+        case Homing.KEY:
+            Homing.setAction(this);
+            break;
         case Traveler.KEY:
             Traveler.setAction(this);
             break;

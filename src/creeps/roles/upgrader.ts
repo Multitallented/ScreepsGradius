@@ -6,16 +6,6 @@ import {WithdrawAction} from "../actions/withdraw";
 export class Upgrader {
     static KEY = 'upgrader';
     static setAction(creep:Creep) {
-        if (creep.store.getFreeCapacity() < 50 && creep.memory['originRoom'] && creep.room.controller && creep.room.controller.reservation) {
-            creep.memory['role'] = 'traveler';
-            creep.memory['destinationRoom'] = creep.memory['originRoom'];
-            creep.memory['originRoom'] = creep.room.name;
-            delete creep.memory['action'];
-            delete creep.memory['path'];
-            creep.runAction();
-            return;
-        }
-
         switch (creep.memory['action']) {
             case UpgradeControllerAction.KEY:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {

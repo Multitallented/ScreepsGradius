@@ -3,6 +3,15 @@ export class UpgradeControllerAction {
     static KEY = 'upgrade-controller';
 
     static run(creep:Creep) {
+        if (creep.room.controller && creep.room.controller.reservation) {
+            delete creep.memory['path'];
+            delete creep.memory['action'];
+            delete creep.memory['target'];
+            delete creep.memory['destination'];
+            creep.memory['role'] = 'homing';
+            creep.setNextAction();
+            return;
+        }
         if (!creep.memory['target'] || creep.memory['target'] !== creep.room.controller.id) {
             creep.memory['target'] = creep.room.controller.id;
         }

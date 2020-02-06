@@ -1,7 +1,6 @@
 import {Builder} from "./builder";
 import * as _ from "lodash";
 import {LeaveRoomAction} from "../actions/leave-room";
-import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
 import {SpawnUtil} from "../../structures/spawns/spawn-util";
 
 export class Traveler {
