@@ -5,6 +5,9 @@ export class TravelingAction {
 
     static run(creep:Creep) {
         LeaveRoomAction.moveIntoRoom(creep);
+        if (creep.fatigue > 0) {
+            return;
+        }
         if (!creep.memory['destination']) {
             delete creep.memory['path'];
             creep.setNextAction();

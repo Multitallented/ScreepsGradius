@@ -21,10 +21,11 @@ export class UpgradeControllerAction {
             creep.setNextAction();
             return;
         }
-        let upgradeMessage = creep.upgradeController(creep.room.controller);
-        if (upgradeMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(creep.room.controller, 3)) {
             creep.moveToTarget();
+            return;
         }
+        creep.upgradeController(creep.room.controller);
     }
 
     static setAction(creep:Creep) {

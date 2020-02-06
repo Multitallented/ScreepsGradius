@@ -16,10 +16,11 @@ export class RepairAction {
             creep.setNextAction();
             return;
         }
-        let buildMessage = creep.repair(buildingNeedingRepair);
-        if (buildMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(buildingNeedingRepair, 3)) {
             creep.moveToTarget();
+            return;
         }
+        creep.repair(buildingNeedingRepair);
     }
 
     static setAction(creep:Creep, target:Structure) {

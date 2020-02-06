@@ -15,10 +15,11 @@ export class PickupAction {
             creep.setNextAction();
             return;
         }
-        let pickup = creep.pickup(targetResource);
-        if (pickup === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(targetResource, 1)) {
             creep.moveToTarget();
+            return;
         }
+        creep.pickup(targetResource);
     }
 
     static setAction(creep:Creep, resource:Resource) {

@@ -14,10 +14,11 @@ export class BuildAction {
             creep.setNextAction();
             return;
         }
-        let buildMessage = creep.build(<ConstructionSite> constructionSite);
-        if (buildMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(<ConstructionSite> constructionSite, 3)) {
             creep.moveToTarget();
+            return;
         }
+        creep.build(<ConstructionSite> constructionSite);
     }
 
     static setAction(creep:Creep, target:ConstructionSite) {

@@ -11,10 +11,12 @@ export class ClaimControllerAction {
         }
 
         creep.memory['target'] = creep.room.controller.id;
-        let claimMessage = creep.claimController(creep.room.controller);
-        if (claimMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(creep.room.controller, 1)) {
             creep.moveToTarget();
-        } else if (claimMessage === OK) {
+            return;
+        }
+        let claimMessage = creep.claimController(creep.room.controller);
+        if (claimMessage === OK) {
             if (Memory['roomData'] && Memory['roomData'][creep.room.name]) {
                 delete Memory['roomData'][creep.room.name];
                 creep.room.memory['sendBuilders'] = true;

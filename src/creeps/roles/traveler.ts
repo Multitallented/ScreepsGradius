@@ -10,6 +10,9 @@ export class Traveler {
     static setDestinationRoom(creep:Creep) {
         let helpRoom = null;
         _.forEach(Game.rooms, (room:Room) => {
+            if (room.name === creep.memory['destinationRoom']) {
+                return;
+            }
             if ((room.controller && room.controller.reservation &&
                     room.controller.reservation.username === Memory['username']) || room.memory['sendBuilders']) {
                 let numberOfSpots = 0;

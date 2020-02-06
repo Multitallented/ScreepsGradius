@@ -22,6 +22,9 @@ import {TravelingAction} from "./actions/traveling";
 
 const moveToTarget = function() {
     LeaveRoomAction.moveIntoRoom(this);
+    if (this.fatigue > 0) {
+        return;
+    }
     if (!this.memory['path']) {
         if (this.memory['destination']) {
             this.memory['path'] = this.room.findPath(this.pos, this.memory['destination']);

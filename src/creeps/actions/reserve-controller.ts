@@ -11,10 +11,11 @@ export class ReserveControllerAction {
             return;
         }
         creep.memory['target'] = creep.room.controller.id;
-        let claimMessage = creep.reserveController(creep.room.controller);
-        if (claimMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(creep.room.controller, 1)) {
             creep.moveToTarget();
+            return;
         }
+        creep.reserveController(creep.room.controller);
     }
 
     static setAction(creep:Creep) {

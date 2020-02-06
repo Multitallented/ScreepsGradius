@@ -27,15 +27,15 @@ export class TransferAction {
             creep.setNextAction();
             return;
         }
-        let transferMessage = creep.transfer(structure, resourceType);
-        if (transferMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(structure, 1)) {
             creep.moveToTarget();
-        } else {
-            delete creep.memory['target'];
-            delete creep.memory['path'];
-            delete creep.memory['resourceType'];
-            creep.setNextAction();
+            return;
         }
+        creep.transfer(structure, resourceType);
+        delete creep.memory['target'];
+        delete creep.memory['path'];
+        delete creep.memory['resourceType'];
+        creep.setNextAction();
     }
 
     static setAction(creep:Creep, target:Structure, resourceType:ResourceConstant) {

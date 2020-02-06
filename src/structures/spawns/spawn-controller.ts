@@ -5,6 +5,12 @@ import {Scout} from "../../creeps/roles/scout";
 export class SpawnController {
     static run(spawn:StructureSpawn) {
         SpawnPrototype.init();
+        if (spawn.spawning) {
+            if (spawn.spawning['memory'] && spawn.spawning['memory']['role']) {
+                spawn.room.displayMessage(spawn.pos, spawn.spawning['memory']['role']);
+            }
+            return;
+        }
         if (spawn.room.memory['ticksTilNextScoutSpawn']) {
             if (spawn.room.memory['ticksTilNextScoutSpawn'] < 1) {
                 delete spawn.room.memory['ticksTilNextScoutSpawn'];
@@ -27,8 +33,6 @@ export class SpawnController {
                     }
                 }
             }
-        } else if (spawn.spawning && spawn.spawning['memory'] && spawn.spawning['memory']['role']) {
-            spawn.room.displayMessage(spawn.pos, spawn.spawning['memory']['role']);
         }
     }
 }

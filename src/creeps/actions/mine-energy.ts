@@ -18,9 +18,9 @@ export class MineEnergyAction {
             return;
         }
         if (!creep.memory['target']) {
-            let source:Source = creep.room.findNextEnergySource(creep.pos);
-            if (source) {
-                creep.memory['target'] = source.id;
+            let newSource:Source = creep.room.findNextEnergySource(creep.pos);
+            if (newSource) {
+                creep.memory['target'] = newSource.id;
             } else {
                 return;
             }
@@ -32,10 +32,11 @@ export class MineEnergyAction {
             creep.setNextAction();
             return;
         }
-        let harvestMessage = creep.harvest(source);
-        if (harvestMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(source, 1)) {
             creep.moveToTarget();
+            return;
         }
+        creep.harvest(source);
     }
 
     static setActionWithTarget(creep:Creep, target:Source) {

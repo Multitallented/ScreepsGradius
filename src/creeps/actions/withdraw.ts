@@ -22,16 +22,16 @@ export class WithdrawAction {
             creep.setNextAction();
             return;
         }
-        let withdrawMessage = creep.withdraw(<Structure | Tombstone> container, resourceType,
-            Math.min(creep.store.getFreeCapacity(resourceType), container['store'].getUsedCapacity(resourceType)));
-        if (withdrawMessage === ERR_NOT_IN_RANGE) {
+        if (!creep.pos.inRangeTo(<Structure | Tombstone> container, 1)) {
             creep.moveToTarget();
-        } else {
-            delete creep.memory['target'];
-            delete creep.memory['path'];
-            delete creep.memory['resourceType'];
-            creep.setNextAction();
+            return;
         }
+        creep.withdraw(<Structure | Tombstone> container, resourceType,
+            Math.min(creep.store.getFreeCapacity(resourceType), container['store'].getUsedCapacity(resourceType)));
+        delete creep.memory['target'];
+        delete creep.memory['path'];
+        delete creep.memory['resourceType'];
+        creep.setNextAction();
     }
 
     static setAction(creep:Creep, target, resourceType:ResourceConstant) {
