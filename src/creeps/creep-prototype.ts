@@ -15,6 +15,7 @@ import {ClaimControllerAction} from "./actions/claim-controller";
 import {Claimer} from "./roles/claimer";
 import {Scout} from "./roles/scout";
 import {LeaveRoomAction} from "./actions/leave-room";
+import {Traveler} from "./roles/traveler";
 
 
 const moveToTarget = function() {
@@ -50,6 +51,9 @@ const setNextAction = function() {
         return;
     }
     switch (this.memory['role']) {
+        case Traveler.KEY:
+            Traveler.setAction(this);
+            break;
         case Scout.KEY:
             Scout.setAction(this);
             break;

@@ -32,7 +32,7 @@ const findNextEnergySource = function(pos:RoomPosition):Source {
         }
     });
     // return pos.findClosestByPath(this.find(FIND_SOURCES)) as Source;
-    return possibleSources.length > 0 ? possibleSources[0] : null;
+    return possibleSources.length > 0 ? possibleSources[0] : pos.findClosestByRange(FIND_SOURCES);
 };
 
 const displayMessage = function(pos:RoomPosition, message: string) {
