@@ -22,9 +22,9 @@ export class Courier {
         if (storageStructures.length > 0) {
             StructureUtil.sortByPriority(storageStructures, (x, y) => {
                 if (x.store.energy > y.store.energy) {
-                    return 1;
-                } else if (y.store.energy > x.store.energy) {
                     return -1;
+                } else if (y.store.energy > x.store.energy) {
+                    return 1;
                 } else {
                     let xDistance = RoomUtil.crowDistance(creep.pos, x.pos);
                     let yDistance = RoomUtil.crowDistance(creep.pos, y.pos);
@@ -127,7 +127,7 @@ export class Courier {
 
     static withdrawFromTombstone(creep:Creep, alreadyTaggedTargets):boolean {
         let tombstone:Tombstone = creep.pos.findClosestByRange(FIND_TOMBSTONES, {filter: (t:Tombstone) => {
-                return t.store.getFreeCapacity(RESOURCE_ENERGY) !== t.store.getCapacity(RESOURCE_ENERGY) && !alreadyTaggedTargets[t.id];
+                return t.store.getUsedCapacity() !== 0 && !alreadyTaggedTargets[t.id];
             }});
         if (tombstone) {
             let storedResources:Array<ResourceConstant> = _.filter(Object.keys(tombstone.store), (r:ResourceConstant) => {

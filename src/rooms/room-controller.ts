@@ -12,10 +12,15 @@ export class RoomController {
     }
 
     handle(room:Room) {
-        TowerController.run(room);
-        room.buildMemory();
-        room.makeConstructionSites();
-        this.spawnCreeps(room);
+        if (room.controller.my) {
+            room.buildMemory();
+            room.makeConstructionSites();
+            this.spawnCreeps(room);
+            TowerController.run(room);
+        } else {
+            // TODO set flag?
+            // TODO build scouting memory
+        }
     }
 
     spawnCreeps(room:Room) {

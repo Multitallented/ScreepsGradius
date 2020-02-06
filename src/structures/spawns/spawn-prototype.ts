@@ -5,6 +5,7 @@ import {Upgrader} from "../../creeps/roles/upgrader";
 import {Builder} from "../../creeps/roles/builder";
 import {Miner} from "../../creeps/roles/miner";
 import {Courier} from "../../creeps/roles/courier";
+import {Scout} from "../../creeps/roles/scout";
 
 const getCreepCount = function():Object {
     let creepCount = {};
@@ -39,6 +40,10 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
     let structureCount = this.getStructureCount();
     let energyAvailable = this.room.energyAvailable;
     let numberOfSources = this.room.find(FIND_SOURCES).length;
+    let ticksTilNextScoutSpawn = 0;
+    if (this.room.memory['ticksTilNextScoutSpawn']) {
+        ticksTilNextScoutSpawn = this.room.memory['ticksTilNextScoutSpawn'];
+    }
 
     let nextCreepData = null;
     if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
@@ -54,11 +59,13 @@ const getNextCreepToSpawn = function(): CreepSpawnData {
     } else if (!creepCount[Builder.KEY]) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.5);
     } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
-        nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(Math.min(energyAvailable, 400)), 0.75);
+        nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
     } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
         nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
     } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
         nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(Math.min(energyAvailable, 600)), 0.9);
+    } else if (ticksTilNextScoutSpawn < 1) {
+        nextCreepData = CreepSpawnData.build(Scout.KEY, Scout.buildBodyArray(Math.min(energyAvailable, 50)), 0.75);
     }
     return nextCreepData;
 };

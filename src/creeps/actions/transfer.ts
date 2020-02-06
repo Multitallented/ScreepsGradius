@@ -5,6 +5,7 @@ export class TransferAction {
     static run(creep:Creep) {
         if (!creep.memory['target']) {
             delete creep.memory['path'];
+            delete creep.memory['resourceType'];
             creep.setNextAction();
             return;
         }
@@ -16,6 +17,7 @@ export class TransferAction {
         if (!structure || !structure['store'] || structure['store'].getFreeCapacity(resourceType) < 1) {
             delete creep.memory['target'];
             delete creep.memory['path'];
+            delete creep.memory['resourceType'];
             creep.setNextAction();
             return;
         }
@@ -25,6 +27,7 @@ export class TransferAction {
         } else {
             delete creep.memory['target'];
             delete creep.memory['path'];
+            delete creep.memory['resourceType'];
             creep.setNextAction();
         }
     }

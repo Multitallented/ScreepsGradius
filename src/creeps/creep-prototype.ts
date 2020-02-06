@@ -13,15 +13,21 @@ import {PickupAction} from "./actions/pickup";
 import {ReserveControllerAction} from "./actions/reserve-controller";
 import {ClaimControllerAction} from "./actions/claim-controller";
 import {Claimer} from "./roles/claimer";
+import {Scout} from "./roles/scout";
+import {LeaveRoomAction} from "./actions/leave-room";
 
 
 const moveToTarget = function() {
     if (!this.memory['path']) {
-        let source:RoomObject = Game.getObjectById(this.memory['target']);
-        if (source && source.pos) {
-            this.memory['path'] = this.room.findPath(this.pos, source.pos);
+        if (this.memory['destination']) {
+            this.memory['path'] = this.room.findPath(this.pos, this.memory['destination']);
         } else {
-            delete this.memory['target'];
+            let source:RoomObject = Game.getObjectById(this.memory['target']);
+            if (source && source.pos) {
+                this.memory['path'] = this.room.findPath(this.pos, source.pos);
+            } else {
+                delete this.memory['target'];
+            }
         }
     }
     let moveMessage:CreepMoveReturnCode = this.moveByPath(this.memory['path']);
@@ -44,6 +50,9 @@ const setNextAction = function() {
         return;
     }
     switch (this.memory['role']) {
+        case Scout.KEY:
+            Scout.setAction(this);
+            break;
         case Claimer.KEY:
             Claimer.setAction(this);
             break;
@@ -67,6 +76,9 @@ const setNextAction = function() {
 
 const runAction = function() {
     switch (this.memory['action']) {
+        case LeaveRoomAction.KEY:
+            LeaveRoomAction.run(this);
+            break;
         case ClaimControllerAction.KEY:
             ClaimControllerAction.run(this);
             break;
