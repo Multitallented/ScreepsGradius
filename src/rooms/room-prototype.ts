@@ -108,7 +108,7 @@ const buildMemory = function() {
 
         _.forEach(pointsOfImportance, (origin:RoomObject) => {
             _.forEach(pointsOfImportance, (destination:RoomObject) => {
-                if (origin === destination) {
+                if (!origin || !destination || origin === destination) {
                     return;
                 }
                 let path:Array<PathStep> = origin.pos.findPathTo(destination.pos.x, destination.pos.y,
@@ -250,8 +250,14 @@ const hasExit = function(exit:ExitConstant):boolean {
     return exitExists;
 };
 
+const canReserve = function(username:string):boolean {
+    return this.controller && (!this.controller.reservation || this.controller.reservation.username === username)
+        && !this.controller.my && !this.controller.owner;
+};
+
 declare global {
     interface Room {
+        canReserve(username:string):boolean;
         getAdjacentRoomName(direction:ExitConstant):string;
         hasExit(exit:ExitConstant):boolean;
         makeConstructionSites();
@@ -265,6 +271,7 @@ declare global {
 export class RoomPrototype {
     static init() {
         if (!Room['init']) {
+            Room.prototype.canReserve = canReserve;
             Room.prototype.getAdjacentRoomName = getAdjacentRoomName;
             Room.prototype.hasExit = hasExit;
             Room.prototype.makeConstructionSites = makeConstructionSites;

@@ -67,11 +67,15 @@ export class RoomUtil {
         return Game.gcl.level > numberOfOwnedRooms;
     }
 
-    static getBestRoom(room:Room):string {
+    static getBestRoom(room:Room, reserve:boolean):string {
         let mostSources = 0;
         let mostSpots = 0;
         let bestRoom = null;
         _.forEach(Memory['roomData'], (roomData, key) => {
+            let currentRoom = Game.rooms[key];
+            if (currentRoom && reserve && currentRoom.canReserve(Memory['username'])) {
+                return;
+            }
             if (room && RoomUtil.roomDistance(room.name, key) > 4) {
                 return;
             }

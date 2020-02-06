@@ -13,7 +13,6 @@ export class ClaimControllerAction {
         creep.memory['target'] = creep.room.controller.id;
         let claimMessage = creep.claimController(creep.room.controller);
         if (claimMessage === ERR_NOT_IN_RANGE) {
-            LeaveRoomAction.moveIntoRoom(creep);
             creep.moveToTarget();
         } else if (claimMessage === OK) {
             if (Memory['roomData'] && Memory['roomData'][creep.room.name]) {

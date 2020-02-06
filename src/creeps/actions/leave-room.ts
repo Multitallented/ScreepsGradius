@@ -51,7 +51,7 @@ export class LeaveRoomAction {
             creep.memory['originRoom'] = creep.room.name;
         }
         if (creep.memory['originRoom'] !== creep.room.name || (creep.room.controller &&
-                (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'] === creep.room.name) &&
+                (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'].roomName === creep.room.name) &&
                 (creep.room.controller.reservation || !creep.room.controller.my))) {
             LeaveRoomAction.moveIntoRoom(creep);
             delete creep.memory['path'];

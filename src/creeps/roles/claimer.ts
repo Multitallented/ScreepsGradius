@@ -3,6 +3,7 @@ import {ClaimControllerAction} from "../actions/claim-controller";
 import {ReserveControllerAction} from "../actions/reserve-controller";
 import {LeaveRoomAction} from "../actions/leave-room";
 import {RoomUtil} from "../../rooms/room-util";
+import {TravelingAction} from "../actions/traveling";
 
 export class Claimer {
     static KEY = 'claimer';
@@ -10,7 +11,7 @@ export class Claimer {
     static setAction(creep:Creep) {
         let canClaimAnyRoom = RoomUtil.canClaimAnyRoom();
         if (canClaimAnyRoom && !creep.memory['destinationRoom'] && Memory['roomData']) {
-            let bestRoom = RoomUtil.getBestRoom(creep.room);
+            let bestRoom = RoomUtil.getBestRoom(creep.room, false);
             if (bestRoom) {
                 creep.memory['destinationRoom'] = bestRoom;
                 // TODO set Memory
@@ -23,22 +24,30 @@ export class Claimer {
             creep.runAction();
             return;
         } else if (!canClaimAnyRoom || creep.room.name === creep.memory['destinationRoom']) {
-            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom(creep.room)) {
+            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom(creep.room, false)) {
                 ClaimControllerAction.setAction(creep);
                 creep.runAction();
                 return;
-            } else {
+            } else if (creep.room.controller && (!creep.room.controller.reservation && !creep.room.controller.my)) {
                 ReserveControllerAction.setAction(creep);
                 creep.runAction();
                 return;
+            } else {
+                let bestRoomName = RoomUtil.getBestRoom(creep.room, true);
+                if (bestRoomName && bestRoomName !== creep.room.name && Game.rooms[bestRoomName]) {
+                    creep.memory['destinationRoom'] = bestRoomName;
+                } else {
+                    LeaveRoomAction.setAction(creep, null);
+                    creep.runAction();
+                    return;
+                }
             }
         }
 
-        if (creep.memory['destinationRoom'] && !creep.memory['path']) {
-            creep.memory['path'] = creep.pos.findPathTo(new RoomPosition(25, 25, creep.memory['destinationRoom']));
-        }
-        if (creep.memory['path']) {
-            creep.moveToTarget();
+        if (creep.memory['destinationRoom']) {
+            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['destinationRoom']));
+            creep.runAction();
+            return;
         }
     }
 

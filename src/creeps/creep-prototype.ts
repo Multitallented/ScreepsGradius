@@ -17,9 +17,11 @@ import {Scout} from "./roles/scout";
 import {LeaveRoomAction} from "./actions/leave-room";
 import {Traveler} from "./roles/traveler";
 import {Homing} from "./roles/homing";
+import {TravelingAction} from "./actions/traveling";
 
 
 const moveToTarget = function() {
+    LeaveRoomAction.moveIntoRoom(this);
     if (!this.memory['path']) {
         if (this.memory['destination']) {
             this.memory['path'] = this.room.findPath(this.pos, this.memory['destination']);
@@ -84,6 +86,9 @@ const setNextAction = function() {
 
 const runAction = function() {
     switch (this.memory['action']) {
+        case TravelingAction.KEY:
+            TravelingAction.run(this);
+            break;
         case LeaveRoomAction.KEY:
             LeaveRoomAction.run(this);
             break;
