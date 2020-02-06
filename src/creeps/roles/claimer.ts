@@ -3,38 +3,15 @@ import * as _ from "lodash";
 import {ClaimControllerAction} from "../actions/claim-controller";
 import {ReserveControllerAction} from "../actions/reserve-controller";
 import {LeaveRoomAction} from "../actions/leave-room";
+import {RoomUtil} from "../../rooms/room-util";
 
 export class Claimer {
     static KEY = 'claimer';
 
-    static canClaimAnyRoom():boolean {
-        let numberOfOwnedRooms = _.filter(Game.rooms, (r) => {
-            return r.controller && r.controller.my;
-        }).length;
-        return Game.gcl.level > numberOfOwnedRooms;
-    }
-
-    static getBestRoom():string {
-        let mostSources = 0;
-        let mostSpots = 0;
-        let bestRoom = null;
-        _.forEach(Memory['roomData'], (roomData, key) => {
-            let numberOfSources = roomData['sources']['qty'];
-            let numberOfSpots = roomData['sources']['spots'];
-            if (numberOfSources > mostSources ||
-                (numberOfSources === mostSources && mostSpots > numberOfSpots)) {
-                bestRoom = key;
-                mostSpots = numberOfSpots;
-                mostSources = numberOfSources;
-            }
-        });
-        return bestRoom;
-    }
-
     static setAction(creep:Creep) {
-        let canClaimAnyRoom = Claimer.canClaimAnyRoom();
+        let canClaimAnyRoom = RoomUtil.canClaimAnyRoom();
         if (canClaimAnyRoom && !creep.memory['destinationRoom'] && Memory['roomData']) {
-            let bestRoom = Claimer.getBestRoom();
+            let bestRoom = RoomUtil.getBestRoom();
             if (bestRoom) {
                 creep.memory['destinationRoom'] = bestRoom;
             }
@@ -46,7 +23,7 @@ export class Claimer {
             creep.runAction();
             return;
         } else if (!canClaimAnyRoom || creep.room.name === creep.memory['destinationRoom']) {
-            if (canClaimAnyRoom && creep.room.name === Claimer.getBestRoom()) {
+            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom()) {
                 ClaimControllerAction.setAction(creep);
                 creep.runAction();
                 return;

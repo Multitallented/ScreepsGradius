@@ -86,27 +86,30 @@ export class SpawnUtil {
             ticksTilNextScoutSpawn = room.memory['ticksTilNextScoutSpawn'];
         }
         let roomNeedingHelp = null;
-        _.forEach(Game.rooms, (room:Room) => {
-            if ((room.controller && room.controller.reservation) || room.memory['sendBuilders']) {
-                if (room.memory['sendBuilders'] && room.find(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+        _.forEach(Game.rooms, (currentRoom:Room) => {
+            if (RoomUtil.roomDistance(room.name, currentRoom.name) > 4) {
+                return;
+            }
+            if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
+                if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
                             return s.structureType === STRUCTURE_SPAWN;
                         }}).length) {
-                    delete room.memory['sendBuilders'];
+                    delete currentRoom.memory['sendBuilders'];
                 }
 
                 let numberOfSpots = 0;
-                let numberOfCreeps = room.find(FIND_MY_CREEPS).length;
-                _.forEach(room.memory['sources'], (sourceNumber) => {
+                let numberOfCreeps = currentRoom.find(FIND_MY_CREEPS).length;
+                _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
                     numberOfSpots += sourceNumber;
                 });
                 if (numberOfCreeps >= numberOfSpots) {
                     return;
                 }
-                roomNeedingHelp = room.name;
+                roomNeedingHelp = currentRoom.name;
             }
         });
 
-        let needClaimers = Claimer.canClaimAnyRoom();
+        let needClaimers = RoomUtil.canClaimAnyRoom();
         if (!needClaimers) {
             let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT ];
             _.forEach(directions, (direction:ExitConstant) => {
