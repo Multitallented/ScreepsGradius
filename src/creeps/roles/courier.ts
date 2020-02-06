@@ -9,22 +9,21 @@ import {RoomUtil} from "../../rooms/room-util";
 export class Courier {
     static KEY = 'courier';
 
-    static getNextContainerNeedingEnergy(creep:Creep):Structure {
-        let alreadyTaggedTargets = Courier.getAlreadyTaggedTargets(creep);
+    static getNextContainerNeedingEnergy(creep:Creep, alreadyTaggedTargets):Structure {
         let storageStructures:Array<Structure> = creep.room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
                 return (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_STORAGE ||
                     s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_TOWER ||
                     s.structureType === STRUCTURE_CONTAINER) &&
-                    !alreadyTaggedTargets[s.id] &&
+                    (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER || !alreadyTaggedTargets[s.id]) &&
                     s['store'].getCapacity(RESOURCE_ENERGY) > s['store'].getUsedCapacity(RESOURCE_ENERGY);
             }});
 
         if (storageStructures.length > 0) {
             StructureUtil.sortByPriority(storageStructures, (x, y) => {
                 if (x.store.energy > y.store.energy) {
-                    return -1;
-                } else if (y.store.energy > x.store.energy) {
                     return 1;
+                } else if (y.store.energy > x.store.energy) {
+                    return -1;
                 } else {
                     let xDistance = RoomUtil.crowDistance(creep.pos, x.pos);
                     let yDistance = RoomUtil.crowDistance(creep.pos, y.pos);
@@ -52,11 +51,11 @@ export class Courier {
         return alreadyTaggedTargets;
     }
 
-    static deliverEnergy(creep:Creep):boolean {
+    static deliverEnergy(creep:Creep, alreadyTaggedTargets):boolean {
         if (creep.store.energy < 50) {
             return false;
         }
-        let container = Courier.getNextContainerNeedingEnergy(creep);
+        let container = Courier.getNextContainerNeedingEnergy(creep, alreadyTaggedTargets);
         if (container) {
             TransferAction.setAction(creep, container, RESOURCE_ENERGY);
             creep.runAction();
@@ -180,13 +179,13 @@ export class Courier {
         if (creep.store.getFreeCapacity() < 50) {
             creep.memory['delivering'] = true;
         }
-        if (creep.memory['delivering'] && Courier.deliverEnergy(creep)) {
+        let alreadyTaggedTargets = Courier.getAlreadyTaggedTargets(creep);
+        if (creep.memory['delivering'] && Courier.deliverEnergy(creep, alreadyTaggedTargets)) {
             return;
         }
         if (creep.memory['delivering'] && Courier.unloadResources(creep)) {
             return;
         }
-        let alreadyTaggedTargets = Courier.getAlreadyTaggedTargets(creep);
         if (Courier.pickUpEnergy(creep, alreadyTaggedTargets)) {
             return;
         }

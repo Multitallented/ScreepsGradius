@@ -45,9 +45,23 @@ const buildMemory = function() {
     }
     if (!this.memory.sources) {
         this.memory.sources = {};
-        _.forEach(this.find(FIND_SOURCES), (source:Source) => {
-            this.memory.sources[source.id] = RoomUtil.getNumberOpenAdjacentSpots(source.pos);
+        let sources = this.find(FIND_SOURCES);
+        if (!Memory['roomData']) {
+            Memory['roomData'] = {};
+        }
+        if (!Memory['roomData'][this.name]) {
+            Memory['roomData'][this.name] = {};
+        }
+        Memory['roomData'][this.name]['sources'] = {
+            qty: sources.length
+        };
+        let totalSourceSpots = 0;
+        _.forEach(sources, (source:Source) => {
+            let currentNumberOfSpots = RoomUtil.getNumberOpenAdjacentSpots(source.pos);
+            totalSourceSpots += currentNumberOfSpots;
+            this.memory.sources[source.id] = currentNumberOfSpots;
         });
+        Memory['roomData'][this.name]['sources']['spots'] = totalSourceSpots;
         return;
     }
     if (!this.memory.containerStructure) {
