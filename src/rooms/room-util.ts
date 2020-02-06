@@ -60,23 +60,24 @@ export class RoomUtil {
         return Math.max(Math.abs(pos1.x - pos2.x), Math.abs(pos1.y - pos2.y));
     }
 
-    static getCenterOfArray(roomObjects:Array<RoomObject>):RoomPosition {
-        let maxX = 0;
-        let minX = 50;
-        let maxY = 0;
-        let minY = 50;
-        let roomName = null;
+    static getCenterOfArray(roomObjects:Array<RoomObject>, room:Room):RoomPosition {
+        let maxX = 50;
+        let minX = 0;
+        let maxY = 50;
+        let minY = 0;
+        let roomName = room.name;
         _.forEach(roomObjects, (entity:RoomObject) => {
-            if (!roomName) {
-                roomName = entity.pos.roomName;
+            if (!entity || !entity.pos) {
+                return;
             }
             maxX = entity.pos.x > maxX ? entity.pos.x : maxX;
             minX = entity.pos.x < minX ? entity.pos.x : minX;
             maxY = entity.pos.y > maxY ? entity.pos.y : maxY;
             minY = entity.pos.y < minY ? entity.pos.y : minY;
         });
-        return new RoomPosition(minX + Math.floor(Math.abs(maxX - minX) / 2),
-            minY + Math.floor(Math.abs(maxY - minY) / 2), roomName);
+        let x = Math.round(minX + Math.floor(Math.abs(maxX - minX) / 2));
+        let y = Math.round(minY + Math.floor(Math.abs(maxY - minY) / 2));
+        return new RoomPosition(x, y, roomName);
     }
 
     static hasPlannedStructureAt(roomPosition:RoomPosition):boolean {

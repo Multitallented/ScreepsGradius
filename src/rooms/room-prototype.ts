@@ -54,8 +54,14 @@ const buildMemory = function() {
         this.memory.sites = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}};
         let containerLocationsNeeded = this.find(FIND_SOURCES);
         containerLocationsNeeded.push(this.controller);
-        this.memory['center'] = RoomUtil.getCenterOfArray(containerLocationsNeeded);
+        this.memory['center'] = this.getPositionAt(25, 25);
+        if (containerLocationsNeeded.length) {
+            this.memory['center'] = RoomUtil.getCenterOfArray(containerLocationsNeeded, this);
+        }
         _.forEach(containerLocationsNeeded, (roomObject:RoomObject) => {
+            if (!roomObject || !roomObject.pos) {
+                return;
+            }
             let containerPos:RoomPosition = RoomUtil.getFirstOpenAdjacentSpot(roomObject.pos);
             if (containerPos != null) {
                 this.memory.sites[0][containerPos.x + ":" + containerPos.y] = STRUCTURE_CONTAINER;
@@ -65,19 +71,19 @@ const buildMemory = function() {
         return;
     }
 
-    if (!this.memory[STRUCTURE_TOWER + 'Structure'] && this.memory.center) {
+    if (!this.memory[STRUCTURE_TOWER + 'Structure'] && this.memory.center && this.controller && this.controller.my) {
         RoomUtil.planBuildings(this, STRUCTURE_TOWER);
         return;
     }
-    if (!this.memory[STRUCTURE_STORAGE + 'Structure'] && this.memory.center) {
+    if (!this.memory[STRUCTURE_STORAGE + 'Structure'] && this.memory.center && this.controller && this.controller.my) {
         RoomUtil.planBuildings(this, STRUCTURE_STORAGE);
         return;
     }
-    if (!this.memory[STRUCTURE_SPAWN + 'Structure'] && this.memory.center) {
+    if (!this.memory[STRUCTURE_SPAWN + 'Structure'] && this.memory.center && this.controller && this.controller.my) {
         RoomUtil.planBuildings(this, STRUCTURE_SPAWN);
         return;
     }
-    if (!this.memory[STRUCTURE_POWER_SPAWN + 'Structure'] && this.memory.center) {
+    if (!this.memory[STRUCTURE_POWER_SPAWN + 'Structure'] && this.memory.center && this.controller && this.controller.my) {
         RoomUtil.planBuildings(this, STRUCTURE_POWER_SPAWN);
         return;
     }
@@ -107,9 +113,11 @@ const buildMemory = function() {
             if (this.hasExit(direction)) {
                 let startPosition:RoomPosition = this.getPositionAt(25, 25);
                 let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
-                let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
-                    {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
-                RoomUtil.planRoadAlongPath(this, path);
+                if (exitPoint) {
+                    let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
+                        {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                    RoomUtil.planRoadAlongPath(this, path);
+                }
             }
         });
         this.memory['exitRoads'] = true;
@@ -117,7 +125,7 @@ const buildMemory = function() {
     }
 
     // TODO break this up into multiple ticks?
-    if (!this.memory[STRUCTURE_EXTENSION + 'Structure'] && this.memory.center) {
+    if (!this.memory[STRUCTURE_EXTENSION + 'Structure'] && this.memory.center && this.controller && this.controller.my) {
         RoomUtil.planBuildings(this, STRUCTURE_EXTENSION);
         return;
     }

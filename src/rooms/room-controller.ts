@@ -12,14 +12,14 @@ export class RoomController {
     }
 
     handle(room:Room) {
-        if (room.controller.my) {
+        if (room.controller && room.controller.my) {
             room.buildMemory();
             room.makeConstructionSites();
             this.spawnCreeps(room);
             TowerController.run(room);
         } else {
+            room.buildMemory();
             // TODO set flag?
-            // TODO build scouting memory
         }
     }
 
