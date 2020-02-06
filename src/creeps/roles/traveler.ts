@@ -34,6 +34,11 @@ export class Traveler {
         }
         Traveler.setDestinationRoom(creep);
         LeaveRoomAction.moveIntoRoom(creep);
+        if (!creep.memory['destinationRoom']) {
+            LeaveRoomAction.setAction(creep, null);
+            creep.runAction();
+            return;
+        }
 
         if (creep.room.name === creep.memory['destinationRoom'] ||
                 creep.memory['originRoom'] === creep.memory['destinationRoom']) {
