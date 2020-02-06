@@ -50,7 +50,9 @@ export class LeaveRoomAction {
         if (!creep.memory['originRoom']) {
             creep.memory['originRoom'] = creep.room.name;
         }
-        if (creep.memory['originRoom'] !== creep.room.name) {
+        if (creep.memory['originRoom'] !== creep.room.name || (creep.room.controller &&
+                (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'] === creep.room.name) &&
+                (creep.room.controller.reservation || !creep.room.controller.my))) {
             LeaveRoomAction.moveIntoRoom(creep);
             delete creep.memory['path'];
             delete creep.memory['destination'];
@@ -66,8 +68,9 @@ export class LeaveRoomAction {
             direction = LeaveRoomAction.getRandomExit(creep.room);
         }
 
-        let exitPoint = creep.pos.findClosestByPath(direction);
+        let exitPoint:RoomPosition = creep.pos.findClosestByPath(direction);
         creep.memory['destination'] = exitPoint;
+        creep.memory['destinationRoom'] = creep.room.getAdjacentRoomName(direction);
         creep.memory['path'] = creep.pos.findPathTo(exitPoint.x, exitPoint.y);
         creep.memory['originRoom'] = creep.room.name;
         creep.memory['action'] = this.KEY;

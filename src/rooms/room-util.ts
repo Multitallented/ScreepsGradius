@@ -67,11 +67,14 @@ export class RoomUtil {
         return Game.gcl.level > numberOfOwnedRooms;
     }
 
-    static getBestRoom():string {
+    static getBestRoom(room:Room):string {
         let mostSources = 0;
         let mostSpots = 0;
         let bestRoom = null;
         _.forEach(Memory['roomData'], (roomData, key) => {
+            if (room && RoomUtil.roomDistance(room.name, key) > 4) {
+                return;
+            }
             let numberOfSources = roomData['sources']['qty'];
             let numberOfSpots = roomData['sources']['spots'];
             if (numberOfSources > mostSources ||
@@ -97,8 +100,8 @@ export class RoomUtil {
         let x2 = Number(split2Name[0]);
         let y2 = Number(split2Name[1]);
 
-        let verticalDistance = Math.abs(is1North === is2North ? x1 - x2 : x1 + x2);
-        let horizontalDistance = Math.abs(is1West === is2West ? y1 - y2 : y1 + y2);
+        let verticalDistance = Math.abs(is1West === is2West ? x1 - x2 : x1 + x2);
+        let horizontalDistance = Math.abs(is1North === is2North ? y1 - y2 : y1 + y2);
         return Math.max(verticalDistance, horizontalDistance);
     }
 

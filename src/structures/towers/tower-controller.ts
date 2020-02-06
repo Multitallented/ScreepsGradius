@@ -17,6 +17,13 @@ export class TowerController {
                 if (attackMessage === OK) {
                     engagedTowers += 1;
                 }
+                return;
+            }
+            let damagedCreep = tower.pos.findClosestByRange(FIND_MY_CREEPS, {filter: (c:Creep) => {
+                    return c.hits < c.hitsMax;
+                }});
+            if (damagedCreep) {
+                tower.heal(damagedCreep);
             }
         });
     }

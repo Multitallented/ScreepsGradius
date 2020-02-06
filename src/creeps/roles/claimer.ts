@@ -1,5 +1,4 @@
 import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
-import * as _ from "lodash";
 import {ClaimControllerAction} from "../actions/claim-controller";
 import {ReserveControllerAction} from "../actions/reserve-controller";
 import {LeaveRoomAction} from "../actions/leave-room";
@@ -11,9 +10,10 @@ export class Claimer {
     static setAction(creep:Creep) {
         let canClaimAnyRoom = RoomUtil.canClaimAnyRoom();
         if (canClaimAnyRoom && !creep.memory['destinationRoom'] && Memory['roomData']) {
-            let bestRoom = RoomUtil.getBestRoom();
+            let bestRoom = RoomUtil.getBestRoom(creep.room);
             if (bestRoom) {
                 creep.memory['destinationRoom'] = bestRoom;
+                // TODO set Memory
             }
         }
         LeaveRoomAction.moveIntoRoom(creep);
@@ -23,7 +23,7 @@ export class Claimer {
             creep.runAction();
             return;
         } else if (!canClaimAnyRoom || creep.room.name === creep.memory['destinationRoom']) {
-            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom()) {
+            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom(creep.room)) {
                 ClaimControllerAction.setAction(creep);
                 creep.runAction();
                 return;

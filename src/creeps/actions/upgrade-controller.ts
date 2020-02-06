@@ -3,7 +3,8 @@ export class UpgradeControllerAction {
     static KEY = 'upgrade-controller';
 
     static run(creep:Creep) {
-        if (creep.room.controller && creep.room.controller.reservation) {
+        if (creep.room.controller && creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0 &&
+                (creep.room.controller.reservation || !creep.room.controller.my)) {
             delete creep.memory['path'];
             delete creep.memory['action'];
             delete creep.memory['target'];
