@@ -48,13 +48,15 @@ export class SpawnUtil {
         }
         let roomNeedingHelp = null;
         _.forEach(Game.rooms, (room:Room) => {
-            let numberOfSpots = 0;
-            let numberOfCreeps = room.find(FIND_MY_CREEPS).length;
-            _.forEach(room.memory['sources'], (sourceNumber) => {
-                numberOfSpots += sourceNumber;
-            });
-
-            if (room.memory['sendBuilders'] && numberOfCreeps <= numberOfSpots) {
+            if (room.memory['sendBuilders']) {
+                let numberOfSpots = 0;
+                let numberOfCreeps = room.find(FIND_MY_CREEPS).length;
+                _.forEach(room.memory['sources'], (sourceNumber) => {
+                    numberOfSpots += sourceNumber;
+                });
+                if (numberOfCreeps > numberOfSpots) {
+                    return;
+                }
                 roomNeedingHelp = room.name;
             }
         });

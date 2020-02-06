@@ -34,7 +34,7 @@ export class Claimer {
 
         if (creep.room.name === creep.memory['destinationRoom']) {
             let numberOfOwnedRooms = _.filter(Game.rooms, (r) => {
-                    return r.controller && r.controller.owner && r.controller.owner.username === 'Multitallented';
+                    return r.controller && r.controller.my;
                 }).length;
             if (Game.gcl.level > numberOfOwnedRooms) {
                 ClaimControllerAction.setAction(creep);
