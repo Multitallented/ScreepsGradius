@@ -20,6 +20,7 @@ import {Homing} from "./roles/homing";
 import {TravelingAction} from "./actions/traveling";
 import {Chaser} from "./roles/chaser";
 import {AttackAction} from "./actions/attack";
+import {WaitAction} from "./actions/wait";
 
 
 const moveToTarget = function() {
@@ -38,6 +39,9 @@ const moveToTarget = function() {
                 delete this.memory['target'];
             }
         }
+    }
+    if (!this.memory['path'] || !this.memory['path'].length) {
+        return;
     }
     let moveMessage:CreepMoveReturnCode = this.moveByPath(this.memory['path']);
     if (moveMessage !== ERR_TIRED) {
@@ -129,6 +133,9 @@ const runAction = function() {
             break;
         case MineEnergyAction.KEY:
             MineEnergyAction.run(this);
+            break;
+        case WaitAction.KEY:
+            WaitAction.run(this);
             break;
         default:
             this.setNextAction();

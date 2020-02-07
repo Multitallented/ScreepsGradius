@@ -1,5 +1,6 @@
 import {LeaveRoomAction} from "../actions/leave-room";
 import {RoomUtil} from "../../rooms/room-util";
+import {WaitAction} from "../actions/wait";
 
 export class Scout {
     static KEY = 'scout';
@@ -35,9 +36,11 @@ export class Scout {
             }
         } else if (RoomUtil.crowDistance(creep.pos, creep.room.getPositionAt(25, 25)) > 15) {
             creep.memory['destination'] = creep.room.getPositionAt(25, 25);
+            delete creep.memory['target'];
             creep.moveToTarget();
             return;
         }
+        WaitAction.setAction(creep);
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {

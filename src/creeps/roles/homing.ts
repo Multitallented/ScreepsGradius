@@ -1,5 +1,6 @@
 import {LeaveRoomAction} from "../actions/leave-room";
 import {Courier} from "./courier";
+import {TravelingAction} from "../actions/traveling";
 
 export class Homing {
     static KEY = 'homing';
@@ -13,7 +14,7 @@ export class Homing {
             creep.setNextAction();
             return;
         }
-        if (!creep.memory['originRoom']) {
+        if (!creep.memory['originRoom'] || !creep.room.controller || !creep.room.controller.my) {
             // TODO find nearest claimed room and set to originRoom
         }
 
@@ -25,11 +26,11 @@ export class Homing {
             }
         }
 
-        if (creep.memory['originRoom'] && !creep.memory['path']) {
-            creep.memory['path'] = creep.pos.findPathTo(new RoomPosition(25, 25, creep.memory['originRoom']));
-        }
-        if (creep.memory['path']) {
-            creep.moveToTarget();
+        if (creep.memory['originRoom'] && creep.memory['originRoom'] !== creep.room.name &&
+                (!creep.memory['path'] || !creep.memory['action'])) {
+            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['originRoom']));
+            creep.runAction();
+            return;
         }
     }
 }

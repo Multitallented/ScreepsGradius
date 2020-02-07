@@ -149,9 +149,13 @@ const buildMemory = function() {
 };
 
 const makeConstructionSites = function() {
-    if (!this.memory.sites) {
+    if (this.memory['ticksTillNextConstruction']) {
+        this.memory['ticksTillNextConstruction'] -= 1;
+    }
+    if (!this.memory.sites || this.memory['ticksTillNextConstruction']) {
         return;
     }
+    this.memory['ticksTillNextConstruction'] = 120;
     let numberConstructionSites = this.find(FIND_MY_CONSTRUCTION_SITES).length;
     if (numberConstructionSites > 2) {
         return;

@@ -4,6 +4,7 @@ import {ReserveControllerAction} from "../actions/reserve-controller";
 import {LeaveRoomAction} from "../actions/leave-room";
 import {RoomUtil} from "../../rooms/room-util";
 import {TravelingAction} from "../actions/traveling";
+import * as _ from "lodash";
 
 export class Claimer {
     static KEY = 'claimer';
@@ -19,9 +20,35 @@ export class Claimer {
         LeaveRoomAction.moveIntoRoom(creep);
 
         if (!creep.memory['destinationRoom'] && (!creep.room.controller || creep.room.controller.my)) {
-            LeaveRoomAction.setAction(creep, null);
-            creep.runAction();
-            return;
+            let directions:Array<ExitConstant> = [ FIND_EXIT_LEFT, FIND_EXIT_RIGHT, FIND_EXIT_BOTTOM, FIND_EXIT_TOP];
+            let directionToTravel = null;
+            _.forEach(directions, (direction:ExitConstant) => {
+                if (!creep.room.hasExit(direction)) {
+                    return;
+                }
+                let currentRoom = Game.rooms[creep.room.getAdjacentRoomName(direction)];
+                if (!currentRoom) {
+                    return;
+                }
+                if (currentRoom.controller && !currentRoom.controller.my &&
+                        (!currentRoom.controller.reservation || (currentRoom.controller.reservation.username === Memory['username'] &&
+                        currentRoom.controller.reservation.ticksToEnd < 2))) {
+                    directionToTravel = direction;
+                }
+            });
+            if (directionToTravel) {
+                LeaveRoomAction.setAction(creep, directionToTravel);
+                creep.runAction();
+                return;
+            } else {
+                let nearestSpawn:StructureSpawn = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+                        return s.structureType === STRUCTURE_SPAWN;
+                    }}) as StructureSpawn;
+                if (nearestSpawn && creep.pos.inRangeTo(nearestSpawn, 1)) {
+                    nearestSpawn.recycleCreep(creep);
+                    return;
+                }
+            }
         } else if (!canClaimAnyRoom || creep.room.name === creep.memory['destinationRoom']) {
             if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom(creep.room, false)) {
                 ClaimControllerAction.setAction(creep);

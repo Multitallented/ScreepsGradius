@@ -95,13 +95,13 @@ export class SpawnUtil {
         }
         let ticksTilNextTravelerSpawn = 0;
         if (room.memory['ticksTilNextTravelerSpawn']) {
-            ticksTilNextScoutSpawn = room.memory['ticksTilNextTravelerSpawn'];
+            ticksTilNextTravelerSpawn = room.memory['ticksTilNextTravelerSpawn'];
         }
         let roomNeedingTravelers = null;
         let roomNeedingDefenders = false;
         if (!ticksTilNextScoutSpawn || !ticksTilNextTravelerSpawn) {
             _.forEach(Game.rooms, (currentRoom: Room) => {
-                if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 4) {
+                if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 3) {
                     return;
                 }
                 if (currentRoom.find(FIND_HOSTILE_CREEPS).length) {

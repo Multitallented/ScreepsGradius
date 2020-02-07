@@ -43,6 +43,18 @@ export class Traveler {
             creep.runAction();
             return;
         }
+        if (creep.memory['originRoom'] && creep.memory['originRoom'] === creep.room.name) {
+            Traveler.setDestinationRoom(creep);
+            if (!creep.memory['destinationRoom']) {
+                LeaveRoomAction.setAction(creep, null);
+                creep.runAction();
+                return;
+            } else if (creep.memory['originRoom'] !== creep.memory['destinationRoom']) {
+                TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['destinationRoom']));
+                creep.runAction();
+                return;
+            }
+        }
 
         if (creep.room.name === creep.memory['destinationRoom'] ||
                 creep.memory['originRoom'] === creep.memory['destinationRoom']) {
@@ -57,11 +69,12 @@ export class Traveler {
                     creep.setNextAction();
                     return;
                 } else {
+                    Traveler.setDestinationRoom(creep);
                     return;
                 }
             }
         }
-        if (creep.memory['destinationRoom']) {
+        if (creep.memory['destinationRoom'] && creep.room.name !== creep.memory['destinationRoom']) {
             TravelingAction.setAction(creep, (new RoomPosition(25, 25, creep.memory['destinationRoom'])));
             creep.runAction();
             return;

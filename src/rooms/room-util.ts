@@ -76,7 +76,7 @@ export class RoomUtil {
             if (currentRoom && reserve && currentRoom.canReserve(Memory['username'])) {
                 return;
             }
-            if (room && RoomUtil.roomDistance(room.name, key) > 4) {
+            if (room && RoomUtil.roomDistance(room.name, key) > 3) {
                 return;
             }
             let numberOfSources = roomData['sources']['qty'];

@@ -5,12 +5,6 @@ import {Scout} from "../../creeps/roles/scout";
 export class SpawnController {
     static run(spawn:StructureSpawn) {
         SpawnPrototype.init();
-        if (spawn.spawning) {
-            if (spawn.spawning['memory'] && spawn.spawning['memory']['role']) {
-                spawn.room.displayMessage(spawn.pos, spawn.spawning.name);
-            }
-            return;
-        }
         if (spawn.room.memory['ticksTilNextScoutSpawn']) {
             if (spawn.room.memory['ticksTilNextScoutSpawn'] < 1) {
                 delete spawn.room.memory['ticksTilNextScoutSpawn'];
@@ -25,6 +19,12 @@ export class SpawnController {
                 spawn.room.memory['ticksTilNextTravelerSpawn'] -= 1;
             }
         }
+        if (spawn.spawning) {
+            if (spawn.spawning['memory'] && spawn.spawning['memory']['role']) {
+                spawn.room.displayMessage(spawn.pos, spawn.spawning.name);
+            }
+            return;
+        }
 
         let nextCreepToSpawn: CreepSpawnData = spawn.getNextCreepToSpawn();
         if (nextCreepToSpawn && nextCreepToSpawn.options &&
@@ -36,7 +36,7 @@ export class SpawnController {
                 let spawnMessage = spawn.spawnCreep(nextCreepToSpawn.bodyArray, nextCreepToSpawn.name, nextCreepToSpawn.options);
                 if (spawnMessage === OK) {
                     if (Scout.KEY === nextCreepToSpawn.options['memory']['role']) {
-                        spawn.room.memory['ticksTilNextScoutSpawn'] = 300;
+                        spawn.room.memory['ticksTilNextScoutSpawn'] = 120;
                     } else if ('traveler' === nextCreepToSpawn.options['memory']['role']) {
                         spawn.room.memory['ticksTilNextTravelerSpawn'] = 60;
                     }
