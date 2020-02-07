@@ -29,13 +29,8 @@ const moveToTarget = function() {
         return;
     }
     let moveMessage;
-    if (this.memory['path']) {
-        moveMessage = this.moveByPath(this.memory['path']);
-    } else if (this.memory['destination']) {
-        moveMessage = this.moveTo(this.memory['destination'], {reusePath: 999});
-        if (moveMessage === ERR_INVALID_TARGET) {
-            console.log(JSON.stringify(this.memory['destination']) + " " + this.room.name);
-        }
+    if (this.memory['destination']) {
+        moveMessage = this.moveTo(this.memory['destination'].x, this.memory['destination'].y, {reusePath: 999});
     } else if (this.memory['target']) {
         let roomObject:RoomObject = Game.getObjectById(this.memory['target']);
         if (roomObject && roomObject.pos) {

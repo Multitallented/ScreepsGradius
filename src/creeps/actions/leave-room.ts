@@ -50,7 +50,7 @@ export class LeaveRoomAction {
         if (!creep.memory['originRoom']) {
             creep.memory['originRoom'] = creep.room.name;
         }
-        if (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'].roomName === creep.room.name) {
+        if (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'] === creep.room.name) {
             LeaveRoomAction.moveIntoRoom(creep);
             delete creep.memory['path'];
             delete creep.memory['destination'];
@@ -70,7 +70,6 @@ export class LeaveRoomAction {
         let exitPoint:RoomPosition = creep.pos.findClosestByPath(direction);
         creep.memory['destination'] = exitPoint;
         creep.memory['destinationRoom'] = creep.room.getAdjacentRoomName(direction);
-        creep.memory['path'] = creep.pos.findPathTo(exitPoint.x, exitPoint.y);
         creep.memory['originRoom'] = creep.room.name;
         creep.memory['action'] = this.KEY;
         switch (direction) {
