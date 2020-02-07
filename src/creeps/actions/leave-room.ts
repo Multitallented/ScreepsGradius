@@ -47,22 +47,39 @@ export class LeaveRoomAction {
     }
 
     static run(creep:Creep) {
-        if (!creep.memory['originRoom']) {
-            creep.memory['originRoom'] = creep.room.name;
+        if (!creep.memory['fromRoom']) {
+            creep.memory['fromRoom'] = creep.room.name;
         }
-        if (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'] === creep.room.name) {
+        if (!creep.memory['toRoom'] || creep.memory['toRoom'] === creep.room.name) {
             LeaveRoomAction.moveIntoRoom(creep);
-            delete creep.memory['path'];
             delete creep.memory['destination'];
-            delete creep.memory['destinationRoom'];
+            delete creep.memory['toRoom'];
             creep.setNextAction();
+            return;
+        } else if (creep.memory['fromRoom'] !== creep.room.name) {
+            LeaveRoomAction.moveIntoRoom(creep);
+            delete creep.memory['destination'];
+            creep.memory['fromRoom'] = creep.room.name;
+            creep.memory['endRoom'] = creep.memory['toRoom'];
+            let route = Game.map.findRoute(creep.room, creep.memory['endRoom']);
+            if (route && route['length']) {
+                creep.memory['toRoom'] = route[0].room;
+                creep.memory['destination'] = creep.pos.findClosestByRange(route[0].exit);
+                creep.moveToTarget();
+            }
+            creep.memory['action'] = 'traveling';
+            creep.say('✈ traveling');
+            creep.runAction();
+            return;
         } else {
             LeaveRoomAction.moveOutOfRoom(creep);
             creep.moveToTarget();
+            return;
         }
     }
 
     static setAction(creep:Creep, direction:ExitConstant) {
+        creep.memory['fromRoom'] = creep.room.name;
         if (!direction) {
             direction = LeaveRoomAction.getRandomExit(creep.room);
         }
@@ -75,7 +92,7 @@ export class LeaveRoomAction {
         }
 
         creep.memory['destination'] = exitPoint;
-        creep.memory['destinationRoom'] = creep.room.getAdjacentRoomName(direction);
+        creep.memory['toRoom'] = creep.room.getAdjacentRoomName(direction);
         creep.memory['originRoom'] = creep.room.name;
         creep.memory['action'] = this.KEY;
         switch (direction) {

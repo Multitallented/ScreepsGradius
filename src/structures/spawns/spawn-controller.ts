@@ -29,6 +29,7 @@ export class SpawnController {
         let nextCreepToSpawn: CreepSpawnData = spawn.getNextCreepToSpawn();
         if (nextCreepToSpawn && nextCreepToSpawn.options &&
                 nextCreepToSpawn.options['memory'] && nextCreepToSpawn.options['memory']['role']) {
+            nextCreepToSpawn.options['memory']['homeRoom'] = spawn.room.name;
             spawn.room.displayMessage(spawn.pos, nextCreepToSpawn.options['memory']['role']);
             if (nextCreepToSpawn.getEnergyRequired() <= spawn.room.energyAvailable &&
                 (nextCreepToSpawn.getEnergyRequired() + 100 < spawn.room.energyAvailable ||

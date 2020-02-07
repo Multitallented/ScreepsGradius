@@ -8,49 +8,53 @@ export class TravelingAction {
         if (creep.fatigue > 0) {
             return;
         }
-        if (!creep.memory['endDestination']) {
+        if (!creep.memory['endRoom']) {
             delete creep.memory['destination'];
-            delete creep.memory['destinationRoom'];
+            delete creep.memory['toRoom'];
             creep.setNextAction();
             return;
         }
-        if (creep.memory['endDestination'] === creep.room.name) {
+        if (creep.memory['endRoom'] === creep.room.name) {
             delete creep.memory['destination'];
-            delete creep.memory['destinationRoom'];
+            delete creep.memory['toRoom'];
             creep.setNextAction();
             return;
         }
-        if (!creep.memory['destinationRoom'] || creep.memory['destinationRoom'] === creep.room.name) {
-            let route = Game.map.findRoute(creep.room, creep.memory['endDestination']);
+        if (!creep.memory['toRoom'] || !creep.memory['fromRoom'] || creep.memory['fromRoom'] !== creep.room.name) {
+            creep.memory['fromRoom'] = creep.room.name;
+            let route = Game.map.findRoute(creep.room, creep.memory['endRoom']);
             if (route && route['length']) {
-                creep.memory['destinationRoom'] = route[0].room;
+                creep.memory['toRoom'] = route[0].room;
                 creep.memory['destination'] = creep.pos.findClosestByRange(route[0].exit);
                 creep.moveToTarget();
             } else {
                 delete creep.memory['destination'];
-                delete creep.memory['destinationRoom'];
+                delete creep.memory['toRoom'];
                 creep.setNextAction();
             }
             return;
         }
-        if (!creep.memory['destination']) {
-            let exitDirection = creep.room.findExitTo(creep.memory['destinationRoom']);
+        if (!creep.memory['destination'] && creep.memory['toRoom']) {
+            creep.memory['fromRoom'] = creep.room.name;
+            let exitDirection = creep.room.findExitTo(creep.memory['toRoom']);
             if (exitDirection) {
                 creep.memory['destination'] = creep.pos.findClosestByRange(<ExitConstant> exitDirection);
             } else {
                 delete creep.memory['destination'];
-                delete creep.memory['destinationRoom'];
+                delete creep.memory['toRoom'];
                 creep.setNextAction();
+                return;
             }
         }
         creep.moveToTarget();
     }
 
     static setAction(creep:Creep, pos:RoomPosition) {
-        creep.memory['endDestination'] = pos.roomName;
+        creep.memory['fromRoom'] = creep.room.name;
+        creep.memory['endRoom'] = pos.roomName;
         let route = Game.map.findRoute(creep.room, pos.roomName);
         if (route && route['length']) {
-            creep.memory['destinationRoom'] = route[0].room;
+            creep.memory['toRoom'] = route[0].room;
             creep.memory['destination'] = creep.pos.findClosestByRange(route[0].exit);
             creep.moveToTarget();
         }

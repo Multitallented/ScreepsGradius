@@ -13,21 +13,19 @@ export class Homing {
             creep.setNextAction();
             return;
         }
-        if (!creep.memory['originRoom'] || !creep.room.controller || !creep.room.controller.my) {
+        if (!creep.memory['homeRoom'] || !creep.room.controller || !creep.room.controller.my) {
             // TODO find nearest claimed room and set to originRoom
         }
 
         LeaveRoomAction.moveIntoRoom(creep);
-        if (creep.room.name === creep.memory['originRoom'] ||
-            creep.memory['originRoom'] === creep.memory['destinationRoom']) {
+        if (creep.room.name === creep.memory['homeRoom']) {
             if (Courier.deliverEnergy(creep, {})) {
                 return;
             }
         }
 
-        if (creep.memory['originRoom'] && creep.memory['originRoom'] !== creep.room.name &&
-                (!creep.memory['destination'] || !creep.memory['action'])) {
-            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['originRoom']));
+        if (creep.memory['homeRoom'] && creep.memory['homeRoom'] !== creep.room.name) {
+            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['homeRoom']));
             creep.runAction();
             return;
         }

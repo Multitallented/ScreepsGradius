@@ -144,7 +144,7 @@ export class SpawnUtil {
         }
 
         let nextCreepData = null;
-        if (!creepCount[Jack.KEY] || creepCount[Jack.KEY] === 1) {
+        if (!creepCount[Jack.KEY]) {
             nextCreepData = CreepSpawnData.build(Jack.KEY, Jack.buildBodyArray(Math.min(energyAvailable, 600)), 0);
         } else if (!creepCount[Upgrader.KEY]) {
             nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(Math.min(energyAvailable, 600)), 0);
@@ -156,16 +156,16 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Miner.KEY, Miner.buildBodyArray(Math.min(energyAvailable, 1000)), 0.75);
         } else if (!creepCount[Builder.KEY]) {
             nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.5);
-        } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
-            nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
+        } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 2)) {
+            nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(energyAvailable), 0.75);
         } else if (roomNeedingDefenders) {
             nextCreepData = CreepSpawnData.build(Chaser.KEY, Chaser.buildBodyArray(Math.min(energyAvailable, 500)), 0.25);
         } else if (roomNeedingTravelers && ticksTilNextTravelerSpawn < 1) {
             nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.1);
         } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
-            nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
-        } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {
-            nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(Math.min(energyAvailable, 600)), 0.9);
+            nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(energyAvailable), 0.75);
+        } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 3) {
+            nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(energyAvailable), 0.9);
         } else if (ticksTilNextScoutSpawn < 1) {
             nextCreepData = CreepSpawnData.build(Scout.KEY, Scout.buildBodyArray(Math.min(energyAvailable, 50)), 0.75);
         } else if (needClaimers) {
