@@ -5,7 +5,6 @@ export class BuildAction {
     static run(creep:Creep) {
         if (creep.store.getUsedCapacity() === 0 || !creep.memory['target']) {
             delete creep.memory['target'];
-            delete creep.memory['path'];
             creep.setNextAction();
             return;
         }

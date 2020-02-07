@@ -28,27 +28,29 @@ const moveToTarget = function() {
     if (this.fatigue > 0) {
         return;
     }
-    if (!this.memory['path']) {
-        if (this.memory['destination']) {
-            this.memory['path'] = this.room.findPath(this.pos, this.memory['destination']);
-        } else {
-            let source:RoomObject = Game.getObjectById(this.memory['target']);
-            if (source && source.pos) {
-                this.memory['path'] = this.room.findPath(this.pos, source.pos);
-            } else {
-                delete this.memory['target'];
-            }
+    let moveMessage;
+    if (this.memory['path']) {
+        moveMessage = this.moveByPath(this.memory['path']);
+    } else if (this.memory['destination']) {
+        moveMessage = this.moveTo(this.memory['destination'], {reusePath: 999});
+        if (moveMessage === ERR_INVALID_TARGET) {
+            console.log(JSON.stringify(this.memory['destination']) + " " + this.room.name);
         }
-    }
-    if (!this.memory['path'] || !this.memory['path'].length) {
+    } else if (this.memory['target']) {
+        let roomObject:RoomObject = Game.getObjectById(this.memory['target']);
+        if (roomObject && roomObject.pos) {
+            moveMessage = this.moveTo(roomObject.pos, {reusePath: 999});
+        } else {
+            delete this.memory['target'];
+        }
+    } else {
         return;
     }
-    let moveMessage:CreepMoveReturnCode = this.moveByPath(this.memory['path']);
     if (moveMessage !== ERR_TIRED) {
         if (this.memory['prevPos'] && this.memory['prevPos'].x == this.pos.x &&
                 this.memory['prevPos'].y == this.pos.y) {
-            delete this.memory['path'];
             delete this.memory['prevPos'];
+            delete this.memory['_move'];
             this.moveToTarget();
         } else {
             this.memory['prevPos'] = this.pos;

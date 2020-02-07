@@ -4,14 +4,12 @@ export class PickupAction {
 
     static run(creep:Creep) {
         if (!creep.memory['target']) {
-            delete creep.memory['path'];
             creep.setNextAction();
             return;
         }
         let targetResource:Resource = Game.getObjectById(creep.memory['target']);
         if (!targetResource || creep.store.getFreeCapacity(targetResource.resourceType) < 1) {
             delete creep.memory['target'];
-            delete creep.memory['path'];
             creep.setNextAction();
             return;
         }

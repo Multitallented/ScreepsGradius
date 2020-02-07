@@ -13,7 +13,6 @@ export class MineEnergyAction {
         });
         if (freeCapacity < workPartCount * 2) {
             delete creep.memory['target'];
-            delete creep.memory['path'];
             creep.setNextAction();
             return;
         }
@@ -28,7 +27,6 @@ export class MineEnergyAction {
         let source:Source = Game.getObjectById(creep.memory['target']);
         if (!source) {
             delete creep.memory['target'];
-            delete creep.memory['path'];
             creep.setNextAction();
             return;
         }

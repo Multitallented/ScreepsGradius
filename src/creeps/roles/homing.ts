@@ -7,7 +7,6 @@ export class Homing {
 
     static setAction(creep:Creep) {
         if (creep.store.getUsedCapacity() < 50) {
-            delete creep.memory['path'];
             delete creep.memory['target'];
             delete creep.memory['destination'];
             creep.memory['role'] = 'traveler';
@@ -27,7 +26,7 @@ export class Homing {
         }
 
         if (creep.memory['originRoom'] && creep.memory['originRoom'] !== creep.room.name &&
-                (!creep.memory['path'] || !creep.memory['action'])) {
+                (!creep.memory['destination'] || !creep.memory['action'])) {
             TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['originRoom']));
             creep.runAction();
             return;

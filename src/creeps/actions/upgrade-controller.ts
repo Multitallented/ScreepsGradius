@@ -5,7 +5,6 @@ export class UpgradeControllerAction {
     static run(creep:Creep) {
         if (!creep.room.controller || (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0 &&
                 (creep.room.controller.reservation || !creep.room.controller.my))) {
-            delete creep.memory['path'];
             delete creep.memory['action'];
             delete creep.memory['target'];
             delete creep.memory['destination'];
@@ -17,7 +16,6 @@ export class UpgradeControllerAction {
             creep.memory['target'] = creep.room.controller.id;
         }
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
-            delete creep.memory['path'];
             creep.setNextAction();
             return;
         }

@@ -4,7 +4,6 @@ export class TransferAction {
 
     static run(creep:Creep) {
         if (!creep.memory['target']) {
-            delete creep.memory['path'];
             delete creep.memory['resourceType'];
             creep.setNextAction();
             return;
@@ -22,7 +21,6 @@ export class TransferAction {
             }
 
             delete creep.memory['target'];
-            delete creep.memory['path'];
             delete creep.memory['resourceType'];
             creep.setNextAction();
             return;
@@ -33,7 +31,6 @@ export class TransferAction {
         }
         creep.transfer(structure, resourceType);
         delete creep.memory['target'];
-        delete creep.memory['path'];
         delete creep.memory['resourceType'];
         creep.setNextAction();
     }
