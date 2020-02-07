@@ -29,9 +29,7 @@ const moveToTarget = function() {
         return;
     }
     let moveMessage;
-    if (this.memory['path']) {
-        moveMessage = this.moveByPath(this.memory['path']);
-    } else if (this.memory['destination']) {
+    if (this.memory['destination']) {
         moveMessage = this.moveTo(this.memory['destination'].x, this.memory['destination'].y, {reusePath: 999});
     } else if (this.memory['target']) {
         let roomObject:RoomObject = Game.getObjectById(this.memory['target']);
@@ -47,7 +45,6 @@ const moveToTarget = function() {
         if (this.memory['prevPos'] && this.memory['prevPos'].x == this.pos.x &&
                 this.memory['prevPos'].y == this.pos.y) {
             delete this.memory['prevPos'];
-            delete this.memory['path'];
             delete this.memory['_move'];
             this.moveToTarget();
         } else {
