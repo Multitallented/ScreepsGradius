@@ -7,7 +7,7 @@ export class SpawnController {
         SpawnPrototype.init();
         if (spawn.spawning) {
             if (spawn.spawning['memory'] && spawn.spawning['memory']['role']) {
-                spawn.room.displayMessage(spawn.pos, spawn.spawning['memory']['role']);
+                spawn.room.displayMessage(spawn.pos, spawn.spawning.name);
             }
             return;
         }

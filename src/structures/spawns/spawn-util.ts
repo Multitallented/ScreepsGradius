@@ -11,10 +11,10 @@ import {RoomUtil} from "../../rooms/room-util";
 import {Chaser} from "../../creeps/roles/chaser";
 
 export class SpawnUtil {
-    static getCreepCount(room:Room):Object {
+    static getCreepCount(spawn:StructureSpawn, room:Room):Object {
         let creepCount = {};
 
-        _.forEach(room.find(FIND_CREEPS,{filter: (creep) => {return creep.memory && creep.memory['role'];}}),
+        _.forEach(room.find(FIND_MY_CREEPS,{filter: (creep) => {return creep.memory && creep.memory['role'];}}),
             (creep:Creep) => {
                 if (creep.memory['role']) {
                     if (creepCount[creep.memory['role']]) {
@@ -22,6 +22,9 @@ export class SpawnUtil {
                     } else {
                         creepCount[creep.memory['role']] = 1;
                     }
+                }
+                if (spawn && !spawn.spawning && spawn.pos.inRangeTo(creep, 1)) {
+                    spawn.renewCreep(creep);
                 }
             });
         return creepCount;
@@ -40,7 +43,7 @@ export class SpawnUtil {
     }
 
     static getNextTravelerRole(room:Room): string {
-        let creepCount = SpawnUtil.getCreepCount(room);
+        let creepCount = SpawnUtil.getCreepCount(null, room);
         let structureCount = SpawnUtil.getStructureCount(room);
         let roomClaimed = room.controller && room.controller.my;
         let numberOfSources;
@@ -70,8 +73,9 @@ export class SpawnUtil {
         }
     }
 
-    static getNextCreepToSpawn(room:Room): CreepSpawnData {
-        let creepCount = SpawnUtil.getCreepCount(room);
+    static getNextCreepToSpawn(spawn:StructureSpawn): CreepSpawnData {
+        let room = spawn.room;
+        let creepCount = SpawnUtil.getCreepCount(spawn, room);
         let structureCount = SpawnUtil.getStructureCount(room);
         let energyAvailable = room.energyAvailable;
         let numberOfSources;

@@ -31,7 +31,9 @@ export class RoomController {
 
     checkHostiles(room:Room) {
         // TODO gather more info
-        let hostiles:Array<Creep> = room.find(FIND_HOSTILE_CREEPS);
+        let hostiles:Array<Creep> = room.find(FIND_HOSTILE_CREEPS, {filter: (c:Creep) => {
+                return c.owner && (c.owner.username === 'Invader' || c.owner.username === 'kpopcowboy');
+            }});
         if (hostiles.length) {
             room.memory['hostiles'] = hostiles.length;
         } else {

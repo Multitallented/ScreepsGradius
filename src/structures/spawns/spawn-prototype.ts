@@ -2,7 +2,7 @@ import {CreepSpawnData} from "./creep-spawn-data";
 import {SpawnUtil} from "./spawn-util";
 
 const getNextCreepToSpawn = function(): CreepSpawnData {
-    return SpawnUtil.getNextCreepToSpawn(this.room);
+    return SpawnUtil.getNextCreepToSpawn(this);
 };
 
 

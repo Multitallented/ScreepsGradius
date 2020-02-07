@@ -2,6 +2,7 @@ import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
 import {AttackAction} from "../actions/attack";
 import * as _ from "lodash";
 import {TravelingAction} from "../actions/traveling";
+import {LeaveRoomAction} from "../actions/leave-room";
 
 export class Chaser {
     static KEY = 'chaser';
@@ -14,10 +15,13 @@ export class Chaser {
             return;
         }
 
+        let hostilesExist = false;
         _.forEach(Game.rooms, (room:Room) => {
-            if (!room || !room.memory['hostiles'] || room.name === creep.pos.roomName) {
+            if (!room || !room.memory['hostiles'] || room.name === creep.pos.roomName ||
+                    (room.controller && room.controller.owner != Memory['username'])) {
                 return;
             }
+            hostilesExist = true;
             let numberOfHostiles = room.memory['hostiles'];
             if (creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
                     return c.memory['attacker'];
@@ -27,6 +31,17 @@ export class Chaser {
                 return;
             }
         });
+        if (!hostilesExist) {
+            let nearestSpawn:StructureSpawn = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+                    return s.structureType === STRUCTURE_SPAWN;
+                }}) as StructureSpawn;
+            if (nearestSpawn && creep.pos.inRangeTo(nearestSpawn, 1)) {
+                nearestSpawn.recycleCreep(creep);
+                return;
+            }
+            LeaveRoomAction.setAction(creep, null);
+            creep.runAction();
+        }
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
