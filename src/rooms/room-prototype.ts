@@ -124,7 +124,7 @@ const buildMemory = function() {
     if (!this.memory.exitRoads && this.memory.center) {
         let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_LEFT, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT ];
         _.forEach(directions, (direction:ExitConstant) => {
-            if (this.hasExit(direction)) {
+            if (this.getPositionAt(25, 25).findClosestByRange(direction)) {
                 let startPosition:RoomPosition = this.getPositionAt(25, 25);
                 let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
                 if (exitPoint) {
@@ -212,48 +212,6 @@ const getAdjacentRoomName = function(direction:ExitConstant):string {
     }
 };
 
-const hasExit = function(exit:ExitConstant):boolean {
-    let exitExists = false;
-    if (exit === FIND_EXIT_TOP) {
-        for (let x=2; x<49; x++) {
-            exitExists = exitExists || _.filter(this.lookAt(x, 0), (c) => {
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (exitExists) {
-                return exitExists;
-            }
-        }
-    } else if (exit === FIND_EXIT_LEFT) {
-        for (let x=2; x<49; x++) {
-            exitExists = exitExists || _.filter(this.lookAt(0, x), (c) => {
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (exitExists) {
-                return exitExists;
-            }
-        }
-    } else if (exit === FIND_EXIT_BOTTOM) {
-        for (let x=2; x<49; x++) {
-            exitExists = exitExists || _.filter(this.lookAt(x, 49), (c) => {
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (exitExists) {
-                return exitExists;
-            }
-        }
-    } else if (exit === FIND_EXIT_RIGHT) {
-        for (let x=2; x<49; x++) {
-            exitExists = exitExists || _.filter(this.lookAt(49, x), (c) => {
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (exitExists) {
-                return exitExists;
-            }
-        }
-    }
-    return exitExists;
-};
-
 const canReserve = function(username:string):boolean {
     return this.controller && (!this.controller.reservation || this.controller.reservation.username === username)
         && !this.controller.my && !this.controller.owner;
@@ -263,7 +221,6 @@ declare global {
     interface Room {
         canReserve(username:string):boolean;
         getAdjacentRoomName(direction:ExitConstant):string;
-        hasExit(exit:ExitConstant):boolean;
         makeConstructionSites();
         buildMemory();
         findNextEnergySource(pos:RoomPosition):Source;
@@ -277,7 +234,6 @@ export class RoomPrototype {
         if (!Room['init']) {
             Room.prototype.canReserve = canReserve;
             Room.prototype.getAdjacentRoomName = getAdjacentRoomName;
-            Room.prototype.hasExit = hasExit;
             Room.prototype.makeConstructionSites = makeConstructionSites;
             Room.prototype.buildMemory = buildMemory;
             Room.prototype.findNextEnergySource = findNextEnergySource;

@@ -134,7 +134,7 @@ export class SpawnUtil {
         if (!needClaimers) {
             let directions: Array<ExitConstant> = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT];
             _.forEach(directions, (direction: ExitConstant) => {
-                if (room.hasExit(direction)) {
+                if (room.getPositionAt(25, 25).findClosestByRange(direction)) {
                     let adjacentRoom: Room = Game.rooms[room.getAdjacentRoomName(direction)];
                     if (adjacentRoom && adjacentRoom.controller && !adjacentRoom.controller.my && !adjacentRoom.controller.reservation) {
                         needClaimers = true;

@@ -23,7 +23,7 @@ export class Claimer {
             let directions:Array<ExitConstant> = [ FIND_EXIT_LEFT, FIND_EXIT_RIGHT, FIND_EXIT_BOTTOM, FIND_EXIT_TOP];
             let directionToTravel = null;
             _.forEach(directions, (direction:ExitConstant) => {
-                if (!creep.room.hasExit(direction)) {
+                if (!creep.pos.findClosestByRange(direction)) {
                     return;
                 }
                 let currentRoom = Game.rooms[creep.room.getAdjacentRoomName(direction)];
