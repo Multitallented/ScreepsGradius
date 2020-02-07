@@ -18,6 +18,13 @@ export class SpawnController {
                 spawn.room.memory['ticksTilNextScoutSpawn'] -= 1;
             }
         }
+        if (spawn.room.memory['ticksTilNextTravelerSpawn']) {
+            if (spawn.room.memory['ticksTilNextTravelerSpawn'] < 1) {
+                delete spawn.room.memory['ticksTilNextTravelerSpawn'];
+            } else {
+                spawn.room.memory['ticksTilNextTravelerSpawn'] -= 1;
+            }
+        }
 
         let nextCreepToSpawn: CreepSpawnData = spawn.getNextCreepToSpawn();
         if (nextCreepToSpawn && nextCreepToSpawn.options &&
@@ -30,6 +37,8 @@ export class SpawnController {
                 if (spawnMessage === OK) {
                     if (Scout.KEY === nextCreepToSpawn.options['memory']['role']) {
                         spawn.room.memory['ticksTilNextScoutSpawn'] = 300;
+                    } else if ('traveler' === nextCreepToSpawn.options['memory']['role']) {
+                        spawn.room.memory['ticksTilNextTravelerSpawn'] = 60;
                     }
                 }
             }

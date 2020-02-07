@@ -86,6 +86,10 @@ export class SpawnUtil {
         if (room.memory['ticksTilNextScoutSpawn']) {
             ticksTilNextScoutSpawn = room.memory['ticksTilNextScoutSpawn'];
         }
+        let ticksTilNextTravelerSpawn = 0;
+        if (room.memory['ticksTilNextTravelerSpawn']) {
+            ticksTilNextScoutSpawn = room.memory['ticksTilNextTravelerSpawn'];
+        }
         let roomNeedingTravelers = null;
         let roomNeedingDefenders = false;
         _.forEach(Game.rooms, (currentRoom: Room) => {
@@ -146,7 +150,7 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
         } else if (roomNeedingDefenders) {
             nextCreepData = CreepSpawnData.build(Chaser.KEY, Chaser.buildBodyArray(Math.min(energyAvailable, 500)), 0.25);
-        } else if (roomNeedingTravelers) {
+        } else if (roomNeedingTravelers && ticksTilNextTravelerSpawn < 1) {
             nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.1);
         } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
             nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
