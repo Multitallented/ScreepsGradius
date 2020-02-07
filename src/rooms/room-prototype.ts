@@ -65,7 +65,7 @@ const buildMemory = function() {
         return;
     }
     if (!this.memory.containerStructure) {
-        this.memory.sites = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}};
+        this.memory['sites'] = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}};
         let containerLocationsNeeded = this.find(FIND_SOURCES);
         containerLocationsNeeded.push(this.controller);
         this.memory['center'] = this.getPositionAt(25, 25);
@@ -82,6 +82,9 @@ const buildMemory = function() {
             }
         });
         this.memory.containerStructure = true;
+        return;
+    }
+    if (!this.memory['sites']) {
         return;
     }
 

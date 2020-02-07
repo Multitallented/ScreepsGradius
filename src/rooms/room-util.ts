@@ -135,7 +135,7 @@ export class RoomUtil {
             return false;
         }
         for (let i = 0; i < 9; i++) {
-            if (room.memory['sites'][i][roomPosition.x + ":" + roomPosition.y]) {
+            if (room.memory['sites'][i] && room.memory['sites'][i][roomPosition.x + ":" + roomPosition.y]) {
                 return true;
             }
         }
