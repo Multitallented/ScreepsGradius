@@ -14,6 +14,7 @@ export class SpawnUtil {
     static getCreepCount(spawn:StructureSpawn, room:Room):Object {
         let creepCount = {};
 
+        let renewCreep = false;
         _.forEach(room.find(FIND_MY_CREEPS,{filter: (creep) => {return creep.memory && creep.memory['role'];}}),
             (creep:Creep) => {
                 if (creep.memory['role']) {
@@ -23,7 +24,9 @@ export class SpawnUtil {
                         creepCount[creep.memory['role']] = 1;
                     }
                 }
-                if (spawn && !spawn.spawning && spawn.pos.inRangeTo(creep, 1)) {
+                if (!renewCreep && spawn && !spawn.spawning && spawn.pos.inRangeTo(creep, 1) &&
+                        creep.ticksToLive + 50 < 1500) {
+                    renewCreep = true;
                     spawn.renewCreep(creep);
                 }
             });
@@ -96,33 +99,36 @@ export class SpawnUtil {
         }
         let roomNeedingTravelers = null;
         let roomNeedingDefenders = false;
-        _.forEach(Game.rooms, (currentRoom: Room) => {
-            if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 4) {
-                return;
-            }
-            if (currentRoom.find(FIND_HOSTILE_CREEPS).length) {
-                roomNeedingDefenders = true;
-            }
-            if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
-                if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {
-                    filter: (s: Structure) => {
-                        return s.structureType === STRUCTURE_SPAWN;
-                    }
-                }).length) {
-                    delete currentRoom.memory['sendBuilders'];
-                }
-
-                let numberOfSpots = 0;
-                let numberOfCreeps = currentRoom.find(FIND_MY_CREEPS).length;
-                _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
-                    numberOfSpots += sourceNumber;
-                });
-                if (numberOfCreeps >= numberOfSpots) {
+        if (!ticksTilNextScoutSpawn || !ticksTilNextTravelerSpawn) {
+            _.forEach(Game.rooms, (currentRoom: Room) => {
+                if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 4) {
                     return;
                 }
-                roomNeedingTravelers = currentRoom.name;
-            }
-        });
+                if (currentRoom.find(FIND_HOSTILE_CREEPS).length) {
+                    roomNeedingDefenders = true;
+                }
+                if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
+                    if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {
+                        filter: (s: Structure) => {
+                            return s.structureType === STRUCTURE_SPAWN;
+                        }
+                    }).length) {
+                        delete currentRoom.memory['sendBuilders'];
+                    }
+
+                    let numberOfSpots = 0;
+                    let numberOfCreeps = currentRoom.find(FIND_MY_CREEPS).length;
+                    _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
+                        numberOfSpots += sourceNumber;
+                    });
+                    if (numberOfCreeps >= numberOfSpots) {
+                        return;
+                    }
+                    roomNeedingTravelers = currentRoom.name;
+                }
+            });
+        }
+
 
         let needClaimers = RoomUtil.canClaimAnyRoom();
         if (!needClaimers) {
