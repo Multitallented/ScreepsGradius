@@ -13,16 +13,29 @@ export class RoomController {
 
     handle(room:Room) {
         if (room.controller && room.controller.my) {
+            this.checkHostiles(room);
             room.buildMemory();
             room.makeConstructionSites();
             this.spawnCreeps(room);
             TowerController.run(room);
-        } else if (room.controller && room.controller.reservation) {
+        } else if (room.controller && room.controller.reservation &&
+                room.controller.reservation.username === Memory['username']) {
+            this.checkHostiles(room);
             room.buildMemory();
             room.makeConstructionSites();
         } else {
             room.buildMemory();
             // TODO set flag?
+        }
+    }
+
+    checkHostiles(room:Room) {
+        // TODO gather more info
+        let hostiles:Array<Creep> = room.find(FIND_HOSTILE_CREEPS);
+        if (hostiles.length) {
+            room.memory['hostiles'] = hostiles.length;
+        } else {
+            delete room.memory['hostiles'];
         }
     }
 

@@ -12,6 +12,7 @@ export class Scout {
             creep.memory['originRoom'] = creep.room.name;
             delete creep.memory['path'];
             delete creep.memory['destination'];
+            delete creep.memory['destinationRoom'];
             LeaveRoomAction.setAction(creep, null);
             creep.runAction();
             return;

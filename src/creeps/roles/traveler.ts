@@ -56,6 +56,8 @@ export class Traveler {
                     creep.memory['role'] = newRole;
                     creep.setNextAction();
                     return;
+                } else {
+                    return;
                 }
             }
         }
@@ -64,6 +66,9 @@ export class Traveler {
             creep.runAction();
             return;
         }
+        LeaveRoomAction.setAction(creep, null);
+        creep.runAction();
+        return;
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {

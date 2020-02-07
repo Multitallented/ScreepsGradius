@@ -8,6 +8,7 @@ import {Builder} from "../../creeps/roles/builder";
 import {Scout} from "../../creeps/roles/scout";
 import {Claimer} from "../../creeps/roles/claimer";
 import {RoomUtil} from "../../rooms/room-util";
+import {Chaser} from "../../creeps/roles/chaser";
 
 export class SpawnUtil {
     static getCreepCount(room:Room):Object {
@@ -85,15 +86,21 @@ export class SpawnUtil {
         if (room.memory['ticksTilNextScoutSpawn']) {
             ticksTilNextScoutSpawn = room.memory['ticksTilNextScoutSpawn'];
         }
-        let roomNeedingHelp = null;
-        _.forEach(Game.rooms, (currentRoom:Room) => {
-            if (RoomUtil.roomDistance(room.name, currentRoom.name) > 4) {
+        let roomNeedingTravelers = null;
+        let roomNeedingDefenders = false;
+        _.forEach(Game.rooms, (currentRoom: Room) => {
+            if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 4) {
                 return;
             }
+            if (currentRoom.find(FIND_HOSTILE_CREEPS).length) {
+                roomNeedingDefenders = true;
+            }
             if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
-                if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
-                            return s.structureType === STRUCTURE_SPAWN;
-                        }}).length) {
+                if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {
+                    filter: (s: Structure) => {
+                        return s.structureType === STRUCTURE_SPAWN;
+                    }
+                }).length) {
                     delete currentRoom.memory['sendBuilders'];
                 }
 
@@ -105,16 +112,16 @@ export class SpawnUtil {
                 if (numberOfCreeps >= numberOfSpots) {
                     return;
                 }
-                roomNeedingHelp = currentRoom.name;
+                roomNeedingTravelers = currentRoom.name;
             }
         });
 
         let needClaimers = RoomUtil.canClaimAnyRoom();
         if (!needClaimers) {
-            let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT ];
-            _.forEach(directions, (direction:ExitConstant) => {
+            let directions: Array<ExitConstant> = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT];
+            _.forEach(directions, (direction: ExitConstant) => {
                 if (room.hasExit(direction)) {
-                    let adjacentRoom:Room = Game.rooms[room.getAdjacentRoomName(direction)];
+                    let adjacentRoom: Room = Game.rooms[room.getAdjacentRoomName(direction)];
                     if (adjacentRoom && adjacentRoom.controller && !adjacentRoom.controller.my && !adjacentRoom.controller.reservation) {
                         needClaimers = true;
                     }
@@ -137,8 +144,10 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.5);
         } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] && (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < 3)) {
             nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
-        } else if (roomNeedingHelp) {
-            nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0);
+        } else if (roomNeedingDefenders) {
+            nextCreepData = CreepSpawnData.build(Chaser.KEY, Chaser.buildBodyArray(Math.min(energyAvailable, 500)), 0.25);
+        } else if (roomNeedingTravelers) {
+            nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.1);
         } else if (!creepCount[Builder.KEY] || creepCount[Builder.KEY] < 3) {
             nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.75);
         } else if (!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 4) {

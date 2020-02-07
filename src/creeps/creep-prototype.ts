@@ -18,6 +18,8 @@ import {LeaveRoomAction} from "./actions/leave-room";
 import {Traveler} from "./roles/traveler";
 import {Homing} from "./roles/homing";
 import {TravelingAction} from "./actions/traveling";
+import {Chaser} from "./roles/chaser";
+import {AttackAction} from "./actions/attack";
 
 
 const moveToTarget = function() {
@@ -57,6 +59,9 @@ const setNextAction = function() {
         return;
     }
     switch (this.memory['role']) {
+        case Chaser.KEY:
+            Chaser.setAction(this);
+            break;
         case Homing.KEY:
             Homing.setAction(this);
             break;
@@ -89,6 +94,9 @@ const setNextAction = function() {
 
 const runAction = function() {
     switch (this.memory['action']) {
+        case AttackAction.KEY:
+            AttackAction.run(this);
+            break;
         case TravelingAction.KEY:
             TravelingAction.run(this);
             break;

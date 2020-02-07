@@ -14,7 +14,6 @@ export class Claimer {
             let bestRoom = RoomUtil.getBestRoom(creep.room, false);
             if (bestRoom) {
                 creep.memory['destinationRoom'] = bestRoom;
-                // TODO set Memory
             }
         }
         LeaveRoomAction.moveIntoRoom(creep);
