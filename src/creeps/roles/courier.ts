@@ -5,6 +5,7 @@ import {StructureUtil} from "../../structures/structure-util";
 import {PickupAction} from "../actions/pickup";
 import * as _ from "lodash";
 import {RoomUtil} from "../../rooms/room-util";
+import {MoveAction} from "../actions/move";
 
 export class Courier {
     static KEY = 'courier';
@@ -200,6 +201,12 @@ export class Courier {
         if (Courier.withdrawFromContainer(creep)) {
             return;
         }
+
+        let spawn = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+                return s.structureType === STRUCTURE_SPAWN;
+            }});
+        MoveAction.setActionTarget(creep, spawn);
+        creep.runAction();
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {
