@@ -21,6 +21,7 @@ import {TravelingAction} from "./actions/traveling";
 import {Chaser} from "./roles/chaser";
 import {AttackAction} from "./actions/attack";
 import {WaitAction} from "./actions/wait";
+import {MoveAction} from "./actions/move";
 
 
 const moveToTarget = function() {
@@ -95,6 +96,9 @@ const setNextAction = function() {
 
 const runAction = function() {
     switch (this.memory['action']) {
+        case MoveAction.KEY:
+            MoveAction.run(this);
+            break;
         case AttackAction.KEY:
             AttackAction.run(this);
             break;

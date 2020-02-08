@@ -79,8 +79,13 @@ export class RoomUtil {
             if (room && RoomUtil.roomDistance(room.name, key) > 3) {
                 return;
             }
-            let numberOfSources = roomData['sources']['qty'];
-            let numberOfSpots = roomData['sources']['spots'];
+            let numberOfSources = 0;
+            let numberOfSpots = 0;
+            if (roomData && roomData['sources']) {
+                numberOfSources = roomData['sources']['qty'];
+                numberOfSpots = roomData['sources']['spots'];
+            }
+
             if (numberOfSources > mostSources ||
                 (numberOfSources === mostSources && mostSpots > numberOfSpots)) {
                 bestRoom = key;

@@ -4,16 +4,16 @@ export class LeaveRoomAction {
 
     static getRandomExit(room:Room):ExitConstant {
         let directions = [ ];
-        if (room.getPositionAt(25,25).findClosestByRange(FIND_EXIT_TOP)) {
+        if (room.memory['exits'][FIND_EXIT_TOP]) {
             directions.push(FIND_EXIT_TOP);
         }
-        if (room.getPositionAt(25,25).findClosestByRange(FIND_EXIT_BOTTOM)) {
+        if (room.memory['exits'][FIND_EXIT_BOTTOM]) {
             directions.push(FIND_EXIT_BOTTOM);
         }
-        if (room.getPositionAt(25,25).findClosestByRange(FIND_EXIT_LEFT)) {
+        if (room.memory['exits'][FIND_EXIT_LEFT]) {
             directions.push(FIND_EXIT_LEFT);
         }
-        if (room.getPositionAt(25,25).findClosestByRange(FIND_EXIT_RIGHT)) {
+        if (room.memory['exits'][FIND_EXIT_RIGHT]) {
             directions.push(FIND_EXIT_RIGHT);
         }
         if (directions.length) {
@@ -83,11 +83,11 @@ export class LeaveRoomAction {
         if (!direction) {
             direction = LeaveRoomAction.getRandomExit(creep.room);
         }
-        let exitPoint = creep.pos.findClosestByPath(direction);
-        if (!exitPoint) {
+        let exitPoint = creep.pos.findClosestByRange(direction);
+        if (!exitPoint || !creep.room.memory['exits'][direction]) {
             direction = LeaveRoomAction.getRandomExit(creep.room);
-            if (!direction) {
-                exitPoint = creep.pos.findClosestByPath(direction);
+            if (!direction || !creep.room.memory['exits'][direction]) {
+                exitPoint = creep.pos.findClosestByRange(direction);
             }
         }
 

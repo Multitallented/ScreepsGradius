@@ -18,6 +18,8 @@ export class TransferAction {
                 (creep.room.controller.reservation || !creep.room.controller.my)) {
                 creep.memory['role'] = 'homing';
                 delete creep.memory['action'];
+                delete creep.memory['container'];
+                delete creep.memory['source'];
             }
 
             delete creep.memory['target'];
@@ -25,7 +27,9 @@ export class TransferAction {
             creep.setNextAction();
             return;
         }
-        if (!creep.pos.inRangeTo(structure, 1)) {
+        if (!creep.pos.inRangeTo(structure, 1) ||
+                (structure.structureType === STRUCTURE_CONTAINER && creep.memory['container'] &&
+                    !creep.pos.inRangeTo(structure, 0))) {
             creep.moveToTarget();
             return;
         }

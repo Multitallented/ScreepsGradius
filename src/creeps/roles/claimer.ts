@@ -11,19 +11,19 @@ export class Claimer {
 
     static setAction(creep:Creep) {
         let canClaimAnyRoom = RoomUtil.canClaimAnyRoom();
-        if (canClaimAnyRoom && !creep.memory['destinationRoom'] && Memory['roomData']) {
+        if (canClaimAnyRoom && !creep.memory['toRoom'] && Memory['roomData']) {
             let bestRoom = RoomUtil.getBestRoom(creep.room, false);
             if (bestRoom) {
-                creep.memory['destinationRoom'] = bestRoom;
+                creep.memory['endRoom'] = bestRoom;
             }
         }
         LeaveRoomAction.moveIntoRoom(creep);
 
-        if (!creep.memory['destinationRoom'] && (!creep.room.controller || creep.room.controller.my)) {
+        if (!creep.memory['endRoom'] && (!creep.room.controller || creep.room.controller.my)) {
             let directions:Array<ExitConstant> = [ FIND_EXIT_LEFT, FIND_EXIT_RIGHT, FIND_EXIT_BOTTOM, FIND_EXIT_TOP];
             let directionToTravel = null;
             _.forEach(directions, (direction:ExitConstant) => {
-                if (!creep.pos.findClosestByRange(direction)) {
+                if (!creep.room.memory['exits'][direction]) {
                     return;
                 }
                 let currentRoom = Game.rooms[creep.room.getAdjacentRoomName(direction)];
@@ -49,7 +49,7 @@ export class Claimer {
                     return;
                 }
             }
-        } else if (!canClaimAnyRoom || creep.room.name === creep.memory['destinationRoom']) {
+        } else if (!canClaimAnyRoom || creep.room.name === creep.memory['endRoom']) {
             if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom(creep.room, false)) {
                 ClaimControllerAction.setAction(creep);
                 creep.runAction();
@@ -61,7 +61,7 @@ export class Claimer {
             } else {
                 let bestRoomName = RoomUtil.getBestRoom(creep.room, true);
                 if (bestRoomName && bestRoomName !== creep.room.name && Game.rooms[bestRoomName]) {
-                    creep.memory['destinationRoom'] = bestRoomName;
+                    creep.memory['endRoom'] = bestRoomName;
                 } else {
                     LeaveRoomAction.setAction(creep, null);
                     creep.runAction();
@@ -70,8 +70,8 @@ export class Claimer {
             }
         }
 
-        if (creep.memory['destinationRoom']) {
-            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['destinationRoom']));
+        if (creep.memory['endRoom']) {
+            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['endRoom']));
             creep.runAction();
             return;
         }

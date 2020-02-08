@@ -2,7 +2,7 @@ import {CreepSpawnData} from "../../structures/spawns/creep-spawn-data";
 import {AttackAction} from "../actions/attack";
 import * as _ from "lodash";
 import {TravelingAction} from "../actions/traveling";
-import {LeaveRoomAction} from "../actions/leave-room";
+import {MoveAction} from "../actions/move";
 
 export class Chaser {
     static KEY = 'chaser';
@@ -14,19 +14,24 @@ export class Chaser {
             creep.runAction();
             return;
         }
+        let invaderStructure:Structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+        if (invaderStructure) {
+            AttackAction.setAction(creep, invaderStructure);
+            creep.runAction();
+            return;
+        }
 
         let hostilesExist = false;
-        _.forEach(Game.rooms, (room:Room) => {
-            if (!room || !room.memory['hostiles'] || room.name === creep.pos.roomName ||
-                    (room.controller && room.controller.owner != Memory['username'])) {
+        _.forEach(Memory['roomData'], (data:Object, roomName:string) => {
+            if (!data['hostiles'] || roomName === creep.pos.roomName) {
                 return;
             }
             hostilesExist = true;
-            let numberOfHostiles = room.memory['hostiles'];
+            let numberOfHostiles = data['hostiles'];
             if (creep.room.find(FIND_MY_CREEPS, {filter: (c:Creep) => {
                     return c.memory['attacker'];
                     }}).length >= numberOfHostiles) {
-                TravelingAction.setAction(creep, room.getPositionAt(25, 25));
+                TravelingAction.setAction(creep, new RoomPosition(25, 25, roomName));
                 creep.runAction();
                 return;
             }
@@ -38,9 +43,14 @@ export class Chaser {
             if (nearestSpawn && creep.pos.inRangeTo(nearestSpawn, 1)) {
                 nearestSpawn.recycleCreep(creep);
                 return;
+            } else if (nearestSpawn) {
+                MoveAction.setActionPos(creep, nearestSpawn.pos);
+                creep.runAction();
+                return;
             }
-            LeaveRoomAction.setAction(creep, null);
+            TravelingAction.setAction(creep, new RoomPosition(25, 25, creep.memory['homeRoom']));
             creep.runAction();
+            return;
         }
     }
 
@@ -48,8 +58,8 @@ export class Chaser {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, ATTACK ];
         energyAvailable -= 130;
         let partCount = { 'ATTACK': 1, 'MOVE': 1, 'TOUGH': 0 };
-        while (energyAvailable >= 10) {
-            if (partCount['MOVE'] / bodyArray.length < .33 && energyAvailable >= CreepSpawnData.getBodyPartCost(MOVE)) {
+        while (energyAvailable >= 50) {
+            if (partCount['MOVE'] / bodyArray.length < .75 && energyAvailable >= CreepSpawnData.getBodyPartCost(MOVE)) {
                 partCount['MOVE'] += 1;
                 bodyArray.unshift(MOVE);
                 energyAvailable -= CreepSpawnData.getBodyPartCost(MOVE);
@@ -57,10 +67,6 @@ export class Chaser {
                 partCount['ATTACK'] += 1;
                 bodyArray.unshift(ATTACK);
                 energyAvailable -= CreepSpawnData.getBodyPartCost(ATTACK);
-            } else {
-                partCount['TOUGH'] += 1;
-                bodyArray.unshift(TOUGH);
-                energyAvailable -= CreepSpawnData.getBodyPartCost(TOUGH);
             }
         }
         return bodyArray;

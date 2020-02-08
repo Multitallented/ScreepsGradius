@@ -99,13 +99,16 @@ export class SpawnUtil {
         }
         let roomNeedingTravelers = null;
         let roomNeedingDefenders = false;
+        _.forEach(Memory['roomData'], (data) => {
+            if (data['hostiles']) {
+                roomNeedingDefenders = true;
+            }
+        });
+
         if (!ticksTilNextScoutSpawn || !ticksTilNextTravelerSpawn) {
             _.forEach(Game.rooms, (currentRoom: Room) => {
                 if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 3) {
                     return;
-                }
-                if (currentRoom.find(FIND_HOSTILE_CREEPS).length) {
-                    roomNeedingDefenders = true;
                 }
                 if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
                     if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {

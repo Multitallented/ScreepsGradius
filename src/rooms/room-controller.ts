@@ -24,6 +24,7 @@ export class RoomController {
             room.buildMemory();
             room.makeConstructionSites();
         } else {
+            this.checkHostiles(room);
             room.buildMemory();
             // TODO set flag?
         }
@@ -34,10 +35,19 @@ export class RoomController {
         let hostiles:Array<Creep> = room.find(FIND_HOSTILE_CREEPS, {filter: (c:Creep) => {
                 return c.owner && (c.owner.username === 'Invader' || c.owner.username === 'kpopcowboy');
             }});
-        if (hostiles.length) {
-            room.memory['hostiles'] = hostiles.length;
+        let hostileStructures:Array<AnyOwnedStructure> = room.find(FIND_HOSTILE_STRUCTURES, {filter: (c:AnyOwnedStructure) => {
+                return c.owner && (c.owner.username === 'Invader' || c.owner.username === 'kpopcowboy');
+            }});
+        if (!Memory['roomData']) {
+            Memory['roomData'] = {};
+        }
+        if (!Memory['roomData'][room.name]) {
+            Memory['roomData'][room.name] = {};
+        }
+        if (hostiles.length || hostileStructures.length) {
+            Memory['roomData'][room.name]['hostiles'] = hostiles.length;
         } else {
-            delete room.memory['hostiles'];
+            delete Memory['roomData'][room.name]['hostiles'];
         }
     }
 
