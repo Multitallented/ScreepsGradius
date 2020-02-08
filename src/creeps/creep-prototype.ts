@@ -31,11 +31,11 @@ const moveToTarget = function() {
     }
     let moveMessage;
     if (this.memory['destination']) {
-        moveMessage = this.moveTo(this.memory['destination'].x, this.memory['destination'].y, {reusePath: 999});
+        moveMessage = this.moveTo(this.memory['destination'].x, this.memory['destination'].y, {reusePath: 999, maxRooms: 1});
     } else if (this.memory['target']) {
         let roomObject:RoomObject = Game.getObjectById(this.memory['target']);
         if (roomObject && roomObject.pos) {
-            moveMessage = this.moveTo(roomObject.pos, {reusePath: 999});
+            moveMessage = this.moveTo(roomObject.pos, {reusePath: 999, maxRooms: 1});
         } else {
             delete this.memory['target'];
         }

@@ -202,10 +202,6 @@ export class Courier {
             return;
         }
 
-        let spawn = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
-                return s.structureType === STRUCTURE_SPAWN;
-            }});
-        MoveAction.setActionTarget(creep, spawn);
         creep.runAction();
     }
 

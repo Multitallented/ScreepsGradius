@@ -23,7 +23,7 @@ export class AttackAction {
         return;
     }
 
-    static setAction(creep:Creep, invader:Creep|Structure) {
+    static setAction(creep:Creep, invader:Creep|Structure|PowerCreep) {
         creep.memory['target'] = invader.id;
         creep.memory['action'] = AttackAction.KEY;
         creep.say('');

@@ -39,7 +39,7 @@ export class Scout {
             creep.moveToTarget();
             return;
         }
-        WaitAction.setAction(creep);
+        WaitAction.setActionUntilReserved(creep);
     }
 
     static buildBodyArray(energyAvailable:number):Array<BodyPartConstant> {

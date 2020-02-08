@@ -29,18 +29,18 @@ export class CreepSpawnData {
 
     static getBodyPartValue(bodyPart:BodyPartConstant):number {
         switch (bodyPart) {
+            case RANGED_ATTACK:
+                return 130;
+            case ATTACK:
+                return 120;
+            case HEAL:
+                return 110;
             case MOVE:
                 return 100;
             case WORK:
                 return 25;
-            case ATTACK:
-                return 90;
-            case RANGED_ATTACK:
-                return 95;
-            case HEAL:
-                return 110;
             case CLAIM:
-                return 200;
+                return 90;
             case TOUGH:
                 return 5;
             case CARRY:

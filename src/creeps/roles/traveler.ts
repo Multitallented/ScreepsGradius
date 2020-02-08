@@ -79,6 +79,13 @@ export class Traveler {
             creep.runAction();
             return;
         }
+        let newRole:string = SpawnUtil.getNextTravelerRole(creep.room);
+        if (newRole) {
+            delete creep.memory['destinationRoom'];
+            creep.memory['role'] = newRole;
+            creep.setNextAction();
+            return;
+        }
         LeaveRoomAction.setAction(creep, null);
         creep.runAction();
         return;

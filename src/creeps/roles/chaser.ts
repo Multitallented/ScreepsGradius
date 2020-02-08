@@ -14,6 +14,12 @@ export class Chaser {
             creep.runAction();
             return;
         }
+        let powerCreep:PowerCreep = creep.pos.findClosestByRange(FIND_HOSTILE_POWER_CREEPS);
+        if (powerCreep) {
+            AttackAction.setAction(creep, powerCreep);
+            creep.runAction();
+            return;
+        }
         let invaderStructure:Structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
         if (invaderStructure) {
             AttackAction.setAction(creep, invaderStructure);

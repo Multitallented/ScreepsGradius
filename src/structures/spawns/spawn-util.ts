@@ -124,7 +124,7 @@ export class SpawnUtil {
                     _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
                         numberOfSpots += sourceNumber;
                     });
-                    if (numberOfCreeps >= numberOfSpots) {
+                    if (numberOfCreeps - 1 >= numberOfSpots) {
                         return;
                     }
                     roomNeedingTravelers = currentRoom.name;

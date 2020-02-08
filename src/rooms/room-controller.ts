@@ -38,13 +38,17 @@ export class RoomController {
         let hostileStructures:Array<AnyOwnedStructure> = room.find(FIND_HOSTILE_STRUCTURES, {filter: (c:AnyOwnedStructure) => {
                 return c.owner && (c.owner.username === 'Invader' || c.owner.username === 'kpopcowboy');
             }});
+        let hostilePowerCreeps:Array<PowerCreep> = room.find(FIND_HOSTILE_POWER_CREEPS, {filter: (c:PowerCreep) => {
+                return c.owner && (c.owner.username === 'Invader' || c.owner.username === 'kpopcowboy');
+            }});
+
         if (!Memory['roomData']) {
             Memory['roomData'] = {};
         }
         if (!Memory['roomData'][room.name]) {
             Memory['roomData'][room.name] = {};
         }
-        if (hostiles.length || hostileStructures.length) {
+        if (hostiles.length || hostileStructures.length || hostilePowerCreeps.length) {
             Memory['roomData'][room.name]['hostiles'] = hostiles.length;
         } else {
             delete Memory['roomData'][room.name]['hostiles'];
