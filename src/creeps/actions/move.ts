@@ -19,9 +19,8 @@ export class MoveAction {
                 MoveAction.setNewAction(creep);
                 return;
             }
-        } else {
-            creep.moveToTarget();
         }
+        creep.moveToTarget();
     }
 
     static setActionPos(creep:Creep, pos:RoomPosition) {
