@@ -70,7 +70,7 @@ const buildMemory = function() {
         this.memory['exits'][FIND_EXIT_TOP] = this.hasExit(FIND_EXIT_TOP);
         return;
     }
-    if (this.memory['exits'][FIND_EXIT_BOTTOM]) {
+    if (!this.memory['exits'][FIND_EXIT_BOTTOM]) {
         this.memory['exits'][FIND_EXIT_BOTTOM] = this.hasExit(FIND_EXIT_BOTTOM);
         return;
     }

@@ -14,7 +14,6 @@ export class SpawnUtil {
     static getCreepCount(spawn:StructureSpawn, room:Room):Object {
         let creepCount = {};
 
-        let renewCreep = false;
         _.forEach(room.find(FIND_MY_CREEPS,{filter: (creep) => {return creep.memory && creep.memory['role'];}}),
             (creep:Creep) => {
                 if (creep.memory['role']) {
@@ -23,11 +22,6 @@ export class SpawnUtil {
                     } else {
                         creepCount[creep.memory['role']] = 1;
                     }
-                }
-                if (!renewCreep && spawn && !spawn.spawning && spawn.pos.inRangeTo(creep, 1) &&
-                        creep.ticksToLive + 50 < 1500) {
-                    renewCreep = true;
-                    spawn.renewCreep(creep);
                 }
             });
         return creepCount;
@@ -124,7 +118,7 @@ export class SpawnUtil {
                     _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
                         numberOfSpots += sourceNumber;
                     });
-                    if (numberOfCreeps - 1 >= numberOfSpots) {
+                    if (numberOfCreeps - 1 >= Math.max(2, numberOfSpots)) {
                         return;
                     }
                     roomNeedingTravelers = currentRoom.name;
@@ -164,7 +158,7 @@ export class SpawnUtil {
         } else if (roomNeedingDefenders) {
             nextCreepData = CreepSpawnData.build(Chaser.KEY, Chaser.buildBodyArray(Math.min(energyAvailable, 500)), 0.25);
         } else if (roomNeedingTravelers && ticksTilNextTravelerSpawn < 1) {
-            nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.1);
+            nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 800)), 0.1);
         } else if (needClaimers) {
             nextCreepData = CreepSpawnData.build(Claimer.KEY, Claimer.buildBodyArray(Math.min(energyAvailable, 700)), 0.9);
         } else if (ticksTilNextScoutSpawn < 1) {

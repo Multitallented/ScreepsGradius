@@ -27,9 +27,15 @@ export class TransferAction {
             creep.setNextAction();
             return;
         }
-        if (!creep.pos.inRangeTo(structure, 1) ||
-                (structure.structureType === STRUCTURE_CONTAINER && creep.memory['container'] &&
-                    !creep.pos.inRangeTo(structure, 0))) {
+        let inMinerRangeOfSource = true;
+        let source = null;
+        if (creep.memory['source'] && creep.memory['role'] === 'miner') {
+            source = Game.getObjectById(creep.memory['source']);
+            if (source && source.pos) {
+                inMinerRangeOfSource = creep.pos.inRangeTo(source, 1);
+            }
+        }
+        if (!creep.pos.inRangeTo(structure, 1) || !inMinerRangeOfSource) {
             creep.moveToTarget();
             return;
         }

@@ -9,6 +9,7 @@ export class Traveler {
 
     static setDestinationRoom(creep:Creep) {
         let helpRoom = null;
+        let helpReallyNeeded = false;
         _.forEach(Game.rooms, (room:Room) => {
             if (room.name === creep.memory['destinationRoom']) {
                 return;
@@ -20,10 +21,12 @@ export class Traveler {
                 _.forEach(room.memory['sources'], (sourceNumber) => {
                     numberOfSpots += sourceNumber;
                 });
-                if (numberOfCreeps > numberOfSpots) {
-                    return;
+                if (numberOfCreeps - 1 > Math.max(2, numberOfSpots)) {
+                    helpReallyNeeded = true;
+                    helpRoom = room.name;
+                } else if (!helpReallyNeeded && numberOfCreeps - 4 > Math.max(2, numberOfSpots)) {
+                    helpRoom = room.name;
                 }
-                helpRoom = room.name;
             }
         });
         if (helpRoom) {
@@ -86,8 +89,8 @@ export class Traveler {
             creep.setNextAction();
             return;
         }
-        LeaveRoomAction.setAction(creep, null);
-        creep.runAction();
+        creep.memory['role'] = 'scout';
+        creep.setNextAction();
         return;
     }
 
