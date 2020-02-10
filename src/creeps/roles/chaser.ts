@@ -73,6 +73,10 @@ export class Chaser {
                 partCount['ATTACK'] += 1;
                 bodyArray.unshift(ATTACK);
                 energyAvailable -= CreepSpawnData.getBodyPartCost(ATTACK);
+            } else {
+                partCount['MOVE'] += 1;
+                bodyArray.unshift(MOVE);
+                energyAvailable -= CreepSpawnData.getBodyPartCost(MOVE);
             }
         }
         return bodyArray;
