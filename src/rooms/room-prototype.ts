@@ -70,15 +70,15 @@ const buildMemory = function() {
         this.memory['exits'][FIND_EXIT_TOP] = this.hasExit(FIND_EXIT_TOP);
         return;
     }
-    if (!this.memory['exits'][FIND_EXIT_BOTTOM]) {
+    if (Object.keys(this.memory['exits']).indexOf("" + FIND_EXIT_BOTTOM) === -1) {
         this.memory['exits'][FIND_EXIT_BOTTOM] = this.hasExit(FIND_EXIT_BOTTOM);
         return;
     }
-    if (!this.memory['exits'][FIND_EXIT_LEFT]) {
+    if (Object.keys(this.memory['exits']).indexOf("" + FIND_EXIT_LEFT) === -1) {
         this.memory['exits'][FIND_EXIT_LEFT] = this.hasExit(FIND_EXIT_LEFT);
         return;
     }
-    if (!this.memory['exits'][FIND_EXIT_RIGHT]) {
+    if (Object.keys(this.memory['exits']).indexOf("" + FIND_EXIT_RIGHT) === -1) {
         this.memory['exits'][FIND_EXIT_RIGHT] = this.hasExit(FIND_EXIT_RIGHT);
         return;
     }

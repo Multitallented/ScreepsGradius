@@ -5,6 +5,7 @@ import {Jack} from "./jack";
 import {WithdrawAction} from "../actions/withdraw";
 import {RepairAction} from "../actions/repair";
 import * as _ from "lodash";
+import {StructureUtil} from "../../structures/structure-util";
 
 export class Builder {
     static KEY =  'builder';
@@ -39,9 +40,11 @@ export class Builder {
             if (closestStructureNeedingRepair != null) {
                 RepairAction.setAction(creep, closestStructureNeedingRepair);
             } else {
-                let closestConstructionSite = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
-                if (closestConstructionSite != null) {
-                    BuildAction.setAction(creep, closestConstructionSite);
+                let constructionSites:Array<ConstructionSite> = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
+
+                if (constructionSites.length) {
+                    StructureUtil.sortByPriority(constructionSites,  null);
+                    BuildAction.setAction(creep, constructionSites[0]);
                 } else {
                     UpgradeControllerAction.setAction(creep);
                 }
