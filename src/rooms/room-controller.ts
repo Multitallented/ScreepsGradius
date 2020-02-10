@@ -31,6 +31,9 @@ export class RoomController {
     }
 
     checkHostiles(room:Room) {
+        if (!room.controller) {
+            return;
+        }
         // TODO gather more info
         let hostiles:Array<Creep> = room.find(FIND_HOSTILE_CREEPS, {filter: (c:Creep) => {
                 return c.owner && (c.owner.username === 'Invader' || c.owner.username === 'kpopcowboy');
@@ -49,7 +52,7 @@ export class RoomController {
             Memory['roomData'][room.name] = {};
         }
         if (hostiles.length || hostileStructures.length || hostilePowerCreeps.length) {
-            Memory['roomData'][room.name]['hostiles'] = hostiles.length;
+            Memory['roomData'][room.name]['hostiles'] = Math.max(1, hostiles.length + hostilePowerCreeps.length);
         } else {
             delete Memory['roomData'][room.name]['hostiles'];
         }
