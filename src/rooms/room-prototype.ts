@@ -196,12 +196,14 @@ const makeConstructionSites = function() {
             });
         }
     }
-    _.forEach(this.memory['sites2'], (structureType:StructureConstant, key:string) => {
-        let roomPosition = new RoomPosition(+key.split(":")[0], +key.split(":")[1], this.name);
-        if (RoomUtil.canPlaceRampart(roomPosition)) {
-            constructionSites.push(new ConstructionSiteData(roomPosition, structureType));
-        }
-    });
+    if (controllerLevel > 1) {
+        _.forEach(this.memory['sites2'], (structureType:StructureConstant, key:string) => {
+            let roomPosition = new RoomPosition(+key.split(":")[0], +key.split(":")[1], this.name);
+            if (RoomUtil.canPlaceRampart(roomPosition)) {
+                constructionSites.push(new ConstructionSiteData(roomPosition, structureType));
+            }
+        });
+    }
     if (constructionSites.length > 0) {
         StructureUtil.sortByPriority(constructionSites, null);
         this.createConstructionSite(constructionSites[0].pos, constructionSites[0].structureType);
@@ -265,24 +267,24 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             if (spotHasNoWall) {
                 if (exitSize === 0) {
                     if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 2, this.name))) {
-                        this.memory['sites'][0][(x - 1) + ":2"] = STRUCTURE_WALL;
+                        this.memory['sites'][2][(x - 1) + ":2"] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 1, this.name))) {
-                        this.memory['sites'][0][(x - 1) + ":1"] = STRUCTURE_WALL;
+                        this.memory['sites'][2][(x - 1) + ":1"] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
                 if (isRampart) {
                     this.memory['sites2'][x + ":2"] = STRUCTURE_RAMPART;
                 } else {
-                    this.memory['sites'][0][x + ":2"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][x + ":2"] = STRUCTURE_WALL;
                 }
             } else if (exitSize) {
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, 2, this.name))) {
-                    this.memory['sites'][0][x + ":2"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][x + ":2"] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, 1, this.name))) {
-                    this.memory['sites'][0][x + ":1"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][x + ":1"] = STRUCTURE_WALL;
                 }
                 exits.push(x - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -290,9 +292,9 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             exitExists = exitExists || spotHasNoWall;
         }
         if (exits.length) {
-            delete this.memory['sites'][0][(exits[0] - 1) + ":2"];
-            delete this.memory['sites'][0][exits[0] + ":2"];
-            delete this.memory['sites'][0][(exits[0] + 1) + ":2"];
+            delete this.memory['sites'][2][(exits[0] - 1) + ":2"];
+            delete this.memory['sites'][2][exits[0] + ":2"];
+            delete this.memory['sites'][2][(exits[0] + 1) + ":2"];
             this.memory['sites2'][(exits[0] - 1) + ":2"] = STRUCTURE_RAMPART;
             this.memory['sites2'][exits[0] + ":2"] = STRUCTURE_RAMPART;
             this.memory['sites2'][(exits[0] + 1) + ":2"] = STRUCTURE_RAMPART;
@@ -313,24 +315,24 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             if (spotHasNoWall) {
                 if (exitSize === 0) {
                     if (RoomUtil.isSpotOpen(new RoomPosition(2, y-1, this.name))) {
-                        this.memory['sites'][0]["2:" + (y - 1)] = STRUCTURE_WALL;
+                        this.memory['sites'][2]["2:" + (y - 1)] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(1, y-1, this.name))) {
-                        this.memory['sites'][0]["1:" + (y - 1)] = STRUCTURE_WALL;
+                        this.memory['sites'][2]["1:" + (y - 1)] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
                 if (isRampart) {
                     this.memory['sites2']["2:" + y] = STRUCTURE_RAMPART;
                 } else {
-                    this.memory['sites'][0]["2:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["2:" + y] = STRUCTURE_WALL;
                 }
             } else if (exitSize) {
                 if (RoomUtil.isSpotOpen(new RoomPosition(2, y, this.name))) {
-                    this.memory['sites'][0]["2:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["2:" + y] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(1, y, this.name))) {
-                    this.memory['sites'][0]["1:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["1:" + y] = STRUCTURE_WALL;
                 }
                 exits.push(y - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -338,9 +340,9 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             exitExists = exitExists || spotHasNoWall;
         }
         if (exits.length) {
-            delete this.memory['sites'][0]["2:" + (exits[0] - 1)];
-            delete this.memory['sites'][0]["2:" + exits[0]];
-            delete this.memory['sites'][0]["2:" + (exits[0] + 1)];
+            delete this.memory['sites'][2]["2:" + (exits[0] - 1)];
+            delete this.memory['sites'][2]["2:" + exits[0]];
+            delete this.memory['sites'][2]["2:" + (exits[0] + 1)];
             this.memory['sites2']["2:" + (exits[0] - 1)] = STRUCTURE_RAMPART;
             this.memory['sites2']["2:" + exits[0]] = STRUCTURE_RAMPART;
             this.memory['sites2']["2:" + (exits[0] + 1)] = STRUCTURE_RAMPART;
@@ -361,24 +363,24 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             if (spotHasNoWall) {
                 if (exitSize === 0) {
                     if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 47, this.name))) {
-                        this.memory['sites'][0][(x - 1) + ":47"] = STRUCTURE_WALL;
+                        this.memory['sites'][2][(x - 1) + ":47"] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 48, this.name))) {
-                        this.memory['sites'][0][(x - 1) + ":48"] = STRUCTURE_WALL;
+                        this.memory['sites'][2][(x - 1) + ":48"] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
                 if (isRampart) {
                     this.memory['sites2'][x + ":47"] = STRUCTURE_RAMPART;
                 } else {
-                    this.memory['sites'][0][x + ":47"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][x + ":47"] = STRUCTURE_WALL;
                 }
             } else if (exitSize) {
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, 47, this.name))) {
-                    this.memory['sites'][0][x + ":47"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][x + ":47"] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, 48, this.name))) {
-                    this.memory['sites'][0][x + ":48"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][x + ":48"] = STRUCTURE_WALL;
                 }
                 exits.push(x - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -386,9 +388,9 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             exitExists = exitExists || spotHasNoWall;
         }
         if (exits.length) {
-            delete this.memory['sites'][0][(exits[0] - 1) + ":47"];
-            delete this.memory['sites'][0][exits[0] + ":47"];
-            delete this.memory['sites'][0][(exits[0] + 1) + ":47"];
+            delete this.memory['sites'][2][(exits[0] - 1) + ":47"];
+            delete this.memory['sites'][2][exits[0] + ":47"];
+            delete this.memory['sites'][2][(exits[0] + 1) + ":47"];
             this.memory['sites2'][(exits[0] - 1) + ":47"] = STRUCTURE_RAMPART;
             this.memory['sites2'][exits[0] + ":47"] = STRUCTURE_RAMPART;
             this.memory['sites2'][(exits[0] + 1) + ":47"] = STRUCTURE_RAMPART;
@@ -409,24 +411,24 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             if (spotHasNoWall) {
                 if (exitSize === 0) {
                     if (RoomUtil.isSpotOpen(new RoomPosition(47, y-1, this.name))) {
-                        this.memory['sites'][0]["47:" + (y - 1)] = STRUCTURE_WALL;
+                        this.memory['sites'][2]["47:" + (y - 1)] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(48, y-1, this.name))) {
-                        this.memory['sites'][0]["48:" + (y - 1)] = STRUCTURE_WALL;
+                        this.memory['sites'][2]["48:" + (y - 1)] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
                 if (isRampart) {
                     this.memory['sites2']["47:" + y] = STRUCTURE_RAMPART;
                 } else {
-                    this.memory['sites'][0]["47:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["47:" + y] = STRUCTURE_WALL;
                 }
             } else if (exitSize) {
                 if (RoomUtil.isSpotOpen(new RoomPosition(47, y, this.name))) {
-                    this.memory['sites'][0]["47:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["47:" + y] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(48, y, this.name))) {
-                    this.memory['sites'][0]["48:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["48:" + y] = STRUCTURE_WALL;
                 }
                 exits.push(y - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -434,9 +436,9 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             exitExists = exitExists || spotHasNoWall;
         }
         if (exits.length) {
-            delete this.memory['sites'][0]["47:" + (exits[0] - 1)];
-            delete this.memory['sites'][0]["47:" + exits[0]];
-            delete this.memory['sites'][0]["47:" + (exits[0] + 1)];
+            delete this.memory['sites'][2]["47:" + (exits[0] - 1)];
+            delete this.memory['sites'][2]["47:" + exits[0]];
+            delete this.memory['sites'][2]["47:" + (exits[0] + 1)];
             this.memory['sites2']["47:" + (exits[0] - 1)] = STRUCTURE_RAMPART;
             this.memory['sites2']["47:" + exits[0]] = STRUCTURE_RAMPART;
             this.memory['sites2']["47:" + (exits[0] + 1)] = STRUCTURE_RAMPART;
