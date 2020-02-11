@@ -46,7 +46,7 @@ export class Miner {
         }
         if (creep.memory['link']) {
             let link:Structure = Game.getObjectById(creep.memory['link']);
-            if (link && link['store'].getFreeCapacity() > 0) {
+            if (link && link['store'].getFreeCapacity(RESOURCE_ENERGY) > 0) {
                 return link;
             }
         }

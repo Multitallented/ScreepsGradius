@@ -27,7 +27,7 @@ export class LinkController {
             return;
         }
         if (lowestLink && highestLink && lowestLink !== highestLink) {
-            let difference = Math.round(highestLink.store.energy - lowestLink.store.energy / 2);
+            let difference = Math.round((highestLink.store.energy - lowestLink.store.energy) / 2);
             if (difference > 0) {
                 highestLink.transferEnergy(lowestLink, difference);
             }

@@ -144,7 +144,7 @@ export class Courier {
 
     static withdrawFromContainer(creep:Creep) {
         let containers:Array<Structure> = creep.room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
-                return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
+                return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_LINK || s.structureType === STRUCTURE_STORAGE) &&
                     s['store'].getCapacity(RESOURCE_ENERGY) !== s['store'].getFreeCapacity(RESOURCE_ENERGY);
             }});
         containers.sort((x:Structure, y:Structure):number => {
