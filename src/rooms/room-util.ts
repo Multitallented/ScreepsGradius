@@ -32,6 +32,16 @@ export class RoomUtil {
         });
         return isOpen;
     }
+    static canPlaceRampart(pos:RoomPosition):boolean {
+        let isOpen = true;
+        _.forEach(Game.rooms[pos.roomName].lookAt(pos), (s:LookAtResultWithPos) => {
+            if ((s.type === 'structure' && s.structure.structureType !== STRUCTURE_RAMPART) ||
+                    (s.type === 'terrain' && s.terrain === 'wall')) {
+                isOpen = false;
+            }
+        });
+        return isOpen;
+    }
 
     static getFirstOpenAdjacentSpot(pos:RoomPosition):RoomPosition {
         let positionMap = {};
@@ -44,6 +54,10 @@ export class RoomUtil {
             if (!positionMap[s.x + ":" + s.y]) {
                 return;
             }
+            if (RoomUtil.hasPlannedStructureAt(new RoomPosition(s.x, s.y, pos.roomName))) {
+                delete positionMap[s.x + ":" + s.y];
+                return;
+            }
             if (RoomUtil.isOpen(s)) {
                 delete positionMap[s.x + ":" + s.y];
             }
@@ -54,6 +68,61 @@ export class RoomUtil {
             }
         }
         return null;
+    }
+
+    static placeContainerAndLink(pos:RoomPosition, linkNumber:number) {
+        let room:Room = Game.rooms[pos.roomName];
+        if (!room) {
+            return;
+        }
+        let positionMap = {};
+        for (let i = -1; i < 2; i++) {
+            for (let j = -1; j < 2; j++) {
+                positionMap[(pos.x + i) + ":" + (pos.y + j)] = new RoomPosition(pos.x + i, pos.y + j, pos.roomName);
+            }
+        }
+        let containerPos = null;
+        let linkPos = null;
+        _.forEach(Game.rooms[pos.roomName].lookAtArea(pos.y-1, pos.x-1, pos.y+1, pos.x+1, true), (s:LookAtResultWithPos) => {
+            if (!positionMap[s.x + ":" + s.y]) {
+                return;
+            }
+            if (s.type === 'structure' && s['structureType'] === STRUCTURE_CONTAINER) {
+                containerPos = new RoomPosition(s.x, s.y, room.name);
+                delete positionMap[s.x + ":" + s.y];
+                return;
+            }
+            if (s.type === 'structure' && s['structureType'] === STRUCTURE_LINK) {
+                linkPos = new RoomPosition(s.x, s.y, room.name);
+                delete positionMap[s.x + ":" + s.y];
+                return;
+            }
+            if (RoomUtil.isOpen(s)) {
+                delete positionMap[s.x + ":" + s.y];
+                return;
+            }
+        });
+        if (containerPos && linkPos) {
+            return;
+        }
+        for (let key in positionMap) {
+            if (key && positionMap[key]) {
+                if (!containerPos) {
+                    containerPos = positionMap[key];
+                    room.memory['sites'][0][key] = STRUCTURE_CONTAINER;
+                } else if (!linkPos) {
+                    linkPos = positionMap[key];
+                    room.memory['sites'][linkNumber][key] = STRUCTURE_LINK;
+                }
+            }
+        }
+        if (!linkPos && containerPos) {
+            let nextAvailablePosition = RoomUtil.getFirstOpenAdjacentSpot(containerPos);
+            if (nextAvailablePosition) {
+                linkPos = nextAvailablePosition;
+                room.memory['sites'][linkNumber][linkPos.x + ":" + linkPos.y] = STRUCTURE_LINK;
+            }
+        }
     }
 
     static crowDistance(pos1: RoomPosition, pos2: RoomPosition):number {
@@ -143,7 +212,8 @@ export class RoomUtil {
             return false;
         }
         for (let i = 0; i < 9; i++) {
-            if (room.memory['sites'][i] && room.memory['sites'][i][roomPosition.x + ":" + roomPosition.y]) {
+            let key = roomPosition.x + ":" + roomPosition.y;
+            if (room.memory['sites'][i] && room.memory['sites'][i][key]) {
                 return true;
             }
         }
@@ -175,6 +245,10 @@ export class RoomUtil {
                 if (numberAlreadyPlanned < CONTROLLER_STRUCTURES[structureType][i]) {
                     numberAlreadyPlanned++;
                     room.memory['sites'][i][s.pos.x + ":" + s.pos.y] = structureType;
+                    if (structureType === STRUCTURE_SPAWN || structureType === STRUCTURE_STORAGE ||
+                            structureType === STRUCTURE_TOWER || structureType === STRUCTURE_LINK) {
+                        room.memory['sites2'][s.pos.x + ":" + s.pos.y] = STRUCTURE_RAMPART;
+                    }
                     return;
                 }
             }
