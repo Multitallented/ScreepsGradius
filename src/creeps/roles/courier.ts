@@ -187,11 +187,14 @@ export class Courier {
         if (creep.memory['delivering'] && Courier.unloadResources(creep)) {
             return;
         }
-        if (Courier.pickUpEnergy(creep, alreadyTaggedTargets)) {
-            return;
-        }
-        if (Courier.withdrawFromTombstone(creep, alreadyTaggedTargets)) {
-            return;
+        let hostiles:Array<Creep> = creep.room.find(FIND_HOSTILE_CREEPS);
+        if (!hostiles.length) {
+            if (Courier.pickUpEnergy(creep, alreadyTaggedTargets)) {
+                return;
+            }
+            if (Courier.withdrawFromTombstone(creep, alreadyTaggedTargets)) {
+                return;
+            }
         }
 
         if (Courier.withdrawResourcesFromContainer(creep)) {

@@ -30,9 +30,7 @@ export class Claimer {
                 if (!currentRoom) {
                     return;
                 }
-                if (currentRoom.controller && !currentRoom.controller.my &&
-                        (!currentRoom.controller.reservation || (currentRoom.controller.reservation.username === Memory['username'] &&
-                        currentRoom.controller.reservation.ticksToEnd < 2))) {
+                if (currentRoom.controller && !currentRoom.controller.my && !currentRoom.controller.reservation) {
                     directionToTravel = direction;
                 }
             });
