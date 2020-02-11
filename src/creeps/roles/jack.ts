@@ -32,7 +32,8 @@ export class Jack {
             case UpgradeControllerAction.KEY:
             default:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                        return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
+                        return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE ||
+                            s.structureType === STRUCTURE_LINK) &&
                             s['store'].energy > 0;
                     }});
                 if (closestContainer != null) {

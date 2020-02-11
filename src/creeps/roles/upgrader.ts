@@ -9,7 +9,8 @@ export class Upgrader {
         switch (creep.memory['action']) {
             case UpgradeControllerAction.KEY:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                        return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
+                        return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE ||
+                            s.structureType === STRUCTURE_LINK) &&
                             s['store'].energy > 0;
                     }});
                 if (closestContainer != null) {

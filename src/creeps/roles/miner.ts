@@ -6,6 +6,24 @@ import {TransferAction} from "../actions/transfer";
 export class Miner {
     static KEY = 'miner';
     static findNearestContainer(creep:Creep):Structure {
+        if (!creep.memory['link'] && creep.memory['source']) {
+            let source:Source = Game.getObjectById(creep.memory['source']);
+            let startPos:RoomPosition = creep.pos;
+            if (source != null) {
+                startPos = source.pos;
+            }
+            let closestLink = startPos.findClosestByRange(FIND_MY_STRUCTURES, {filter: (s:Structure) => {
+                    return s.structureType === STRUCTURE_LINK && source.pos.inRangeTo(s.pos, 3);
+                }});
+
+            if (closestLink != null) {
+                if (source != null) {
+                    creep.memory['link'] = closestLink.id;
+                }
+                return closestLink;
+            }
+        }
+
         if (!creep.memory['container']) {
             let source = null;
             if (creep.memory['source']) {
@@ -26,7 +44,16 @@ export class Miner {
                 return closestContainer;
             }
         }
-        return Game.getObjectById(creep.memory['container']);
+        if (creep.memory['link']) {
+            let link:Structure = Game.getObjectById(creep.memory['link']);
+            if (link && link['store'].getFreeCapacity() > 0) {
+                return link;
+            }
+        }
+        if (creep.memory['container']) {
+            return Game.getObjectById(creep.memory['container']);
+        }
+        return null;
     }
 
     static setAction(creep:Creep) {

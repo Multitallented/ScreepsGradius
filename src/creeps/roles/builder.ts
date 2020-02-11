@@ -34,8 +34,7 @@ export class Builder {
         let alreadyTaggedTargets = Builder.getAlreadyTaggedTargets(creep);
         if (creep.store.energy > 0) {
             let closestStructureNeedingRepair:Structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                    return s.structureType !== STRUCTURE_WALL && s.structureType !== STRUCTURE_RAMPART &&
-                        s.hitsMax && Builder.needsRepair(s.structureType, s.hits, s.hitsMax) && !alreadyTaggedTargets[s.id];
+                    return s.hitsMax && Builder.needsRepair(s.structureType, s.hits, s.hitsMax) && !alreadyTaggedTargets[s.id];
                 }});
             if (closestStructureNeedingRepair != null) {
                 RepairAction.setAction(creep, closestStructureNeedingRepair);
@@ -51,7 +50,8 @@ export class Builder {
             }
         } else {
             let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
-                    return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) &&
+                    return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE ||
+                        s.structureType === STRUCTURE_LINK) &&
                         s['store'].energy > 0;
                 }});
             if (closestContainer) {
