@@ -159,7 +159,7 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Chaser.KEY, Chaser.buildBodyArray(Math.min(energyAvailable, 500)), 0.25);
         } else if (roomNeedingTravelers && ticksTilNextTravelerSpawn < 1) {
             nextCreepData = CreepSpawnData.build('traveler', Builder.buildBodyArray(Math.min(energyAvailable, 800)), 0.1);
-        } else if (needClaimers) {
+        } else if (needClaimers && ticksTilNextTravelerSpawn < 1) {
             nextCreepData = CreepSpawnData.build(Claimer.KEY, Claimer.buildBodyArray(Math.min(energyAvailable, 700)), 0.9);
         } else if (ticksTilNextScoutSpawn < 1) {
             nextCreepData = CreepSpawnData.build(Scout.KEY, Scout.buildBodyArray(Math.min(energyAvailable, 50)), 0.75);

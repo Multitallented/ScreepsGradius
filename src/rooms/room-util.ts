@@ -87,12 +87,12 @@ export class RoomUtil {
             if (!positionMap[s.x + ":" + s.y]) {
                 return;
             }
-            if (s.type === 'structure' && s['structureType'] === STRUCTURE_CONTAINER) {
+            if (s.type === 'structure' && s.structure.structureType === STRUCTURE_CONTAINER) {
                 containerPos = new RoomPosition(s.x, s.y, room.name);
                 delete positionMap[s.x + ":" + s.y];
                 return;
             }
-            if (s.type === 'structure' && s['structureType'] === STRUCTURE_LINK) {
+            if (s.type === 'structure' && s.structure.structureType === STRUCTURE_LINK) {
                 linkPos = new RoomPosition(s.x, s.y, room.name);
                 delete positionMap[s.x + ":" + s.y];
                 return;
@@ -102,6 +102,12 @@ export class RoomUtil {
                 return;
             }
         });
+        if (containerPos) {
+            room.memory['sites'][0][containerPos.x + ":" + containerPos.y] = STRUCTURE_CONTAINER;
+        }
+        if (linkPos) {
+            room.memory['sites'][0][linkPos.x + ":" + linkPos.y] = STRUCTURE_LINK;
+        }
         if (containerPos && linkPos) {
             return;
         }

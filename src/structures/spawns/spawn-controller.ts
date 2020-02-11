@@ -1,6 +1,7 @@
 import {SpawnPrototype} from "./spawn-prototype";
 import {CreepSpawnData} from "./creep-spawn-data";
 import {Scout} from "../../creeps/roles/scout";
+import {Claimer} from "../../creeps/roles/claimer";
 
 export class SpawnController {
     static run(spawn:StructureSpawn) {
@@ -39,6 +40,8 @@ export class SpawnController {
                     if (Scout.KEY === nextCreepToSpawn.options['memory']['role']) {
                         spawn.room.memory['ticksTilNextScoutSpawn'] = 120;
                     } else if ('traveler' === nextCreepToSpawn.options['memory']['role']) {
+                        spawn.room.memory['ticksTilNextTravelerSpawn'] = 60;
+                    } else if (Claimer.KEY === nextCreepToSpawn.options['memory']['role']) {
                         spawn.room.memory['ticksTilNextTravelerSpawn'] = 60;
                     }
                 }

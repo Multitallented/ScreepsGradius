@@ -10,6 +10,7 @@ export class StructureUtil {
             case STRUCTURE_EXTENSION:
                 return 100;
             case STRUCTURE_CONTAINER:
+            case STRUCTURE_LINK:
                 return 90;
             case STRUCTURE_STORAGE:
                 return 75;
