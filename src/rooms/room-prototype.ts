@@ -277,13 +277,26 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
             y = dynamicCoord;
         }
         let isRampart = false;
-        let spotHasNoWall = _.filter(this.lookAt(x, y), (c:LookAtResultWithPos) => {
-            if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
-                c.structure.structureType !== STRUCTURE_WALL) {
-                isRampart = true;
-            }
-            return c.type === 'terrain' && c.terrain === 'wall';
-        }).length < 1;
+        let spotHasNoWall = false;
+        if (isX) {
+            let newY = y === 2 ? 0 : 49;
+            spotHasNoWall = _.filter(this.lookAt(x, newY), (c:LookAtResultWithPos) => {
+                if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
+                    c.structure.structureType !== STRUCTURE_WALL) {
+                    isRampart = true;
+                }
+                return c.type === 'terrain' && c.terrain === 'wall';
+            }).length < 1;
+        } else {
+            let newX = x === 2 ? 0 : 49;
+            spotHasNoWall = _.filter(this.lookAt(newX, y), (c:LookAtResultWithPos) => {
+                if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
+                    c.structure.structureType !== STRUCTURE_WALL) {
+                    isRampart = true;
+                }
+                return c.type === 'terrain' && c.terrain === 'wall';
+            }).length < 1;
+        }
         if (spotHasNoWall) {
             if (exitSize === 0) {
                 if (isX) {
@@ -293,12 +306,20 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                     if (RoomUtil.isSpotOpen(new RoomPosition(x - 1, y, this.name))) {
                         this.memory['sites'][2][(x - 2) + ":" + y] = STRUCTURE_WALL;
                     }
+                    let newY = y === 2 ? 1 : 48;
+                    if (RoomUtil.isSpotOpen(new RoomPosition(x - 1, newY, this.name))) {
+                        this.memory['sites'][2][(x - 2) + ":" + newY] = STRUCTURE_WALL;
+                    }
                 } else {
                     if (RoomUtil.isSpotOpen(new RoomPosition(x, y - 1, this.name))) {
                         this.memory['sites'][2][x + ":" + (y - 1)] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(x, y - 1, this.name))) {
                         this.memory['sites'][2][x + ":" + (y - 2)] = STRUCTURE_WALL;
+                    }
+                    let newX = x === 2 ? 1 : 48;
+                    if (RoomUtil.isSpotOpen(new RoomPosition(newX, y - 1, this.name))) {
+                        this.memory['sites'][2][newX + ":" + (y - 2)] = STRUCTURE_WALL;
                     }
                 }
             }
@@ -316,12 +337,20 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                 if (RoomUtil.isSpotOpen(new RoomPosition(x + 1, y, this.name))) {
                     this.memory['sites'][2][(x + 1) + ":" + y] = STRUCTURE_WALL;
                 }
+                let newY = y === 2 ? 1 : 48;
+                if (RoomUtil.isSpotOpen(new RoomPosition(x + 1, newY, this.name))) {
+                    this.memory['sites'][2][(x + 1) + ":" + newY] = STRUCTURE_WALL;
+                }
             } else {
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, y, this.name))) {
                     this.memory['sites'][2][x + ":" + y] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, y + 1, this.name))) {
                     this.memory['sites'][2][x + ":" + (y + 1)] = STRUCTURE_WALL;
+                }
+                let newX = x === 2 ? 1 : 48;
+                if (RoomUtil.isSpotOpen(new RoomPosition(newX, y + 1, this.name))) {
+                    this.memory['sites'][2][newX + ":" + (y + 1)] = STRUCTURE_WALL;
                 }
             }
             exits.push(dynamicCoord - Math.round(exitSize / 2));
