@@ -255,198 +255,97 @@ const getAdjacentRoomName = function(direction:ExitConstant):string {
 
 const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
     let exitExists = false;
-    if (exit === FIND_EXIT_TOP) {
-        let exits = [];
-        let exitSize = 0;
-        for (let x=2; x<49; x++) {
-            let isRampart = false;
-            let spotHasNoWall = _.filter(this.lookAt(x, 0), (c:LookAtResultWithPos) => {
-                if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
-                        c.structure.structureType !== STRUCTURE_WALL) {
-                    isRampart = true;
-                }
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (spotHasNoWall) {
-                if (exitSize === 0) {
-                    if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 2, this.name))) {
-                        this.memory['sites'][2][(x - 1) + ":2"] = STRUCTURE_WALL;
-                    }
-                    if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 1, this.name))) {
-                        this.memory['sites'][2][(x - 2) + ":2"] = STRUCTURE_WALL;
-                    }
-                }
-                exitSize += 1;
-                if (isRampart) {
-                    this.memory['sites2'][x + ":2"] = STRUCTURE_RAMPART;
-                } else {
-                    this.memory['sites'][2][x + ":2"] = STRUCTURE_WALL;
-                }
-            } else if (exitSize) {
-                if (RoomUtil.isSpotOpen(new RoomPosition(x, 2, this.name))) {
-                    this.memory['sites'][2][x + ":2"] = STRUCTURE_WALL;
-                }
-                if (RoomUtil.isSpotOpen(new RoomPosition(x, 1, this.name))) {
-                    this.memory['sites'][2][(x + 1) + ":2"] = STRUCTURE_WALL;
-                }
-                exits.push(x - Math.round(exitSize / 2));
-                exitSize = 0;
+    let x = -1;
+    let y = -1;
+    let isX = false;
+    let exits = [];
+    let exitSize = 0;
+    for (let dynamicCoord=2; dynamicCoord<49; dynamicCoord++) {
+        if (exit === FIND_EXIT_TOP) {
+            y = 2;
+            x = dynamicCoord;
+            isX = true;
+        } else if (exit === FIND_EXIT_BOTTOM) {
+            y = 47;
+            x = dynamicCoord;
+            isX = true;
+        } else if (exit === FIND_EXIT_RIGHT) {
+            x = 47;
+            y = dynamicCoord;
+        } else if (exit === FIND_EXIT_LEFT) {
+            x = 2;
+            y = dynamicCoord;
+        }
+        let isRampart = false;
+        let spotHasNoWall = _.filter(this.lookAt(x, y), (c:LookAtResultWithPos) => {
+            if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
+                c.structure.structureType !== STRUCTURE_WALL) {
+                isRampart = true;
             }
-            exitExists = exitExists || spotHasNoWall;
-        }
-        if (exits.length) {
-            delete this.memory['sites'][2][(exits[0] - 1) + ":2"];
-            delete this.memory['sites'][2][exits[0] + ":2"];
-            delete this.memory['sites'][2][(exits[0] + 1) + ":2"];
-            this.memory['sites2'][(exits[0] - 1) + ":2"] = STRUCTURE_RAMPART;
-            this.memory['sites2'][exits[0] + ":2"] = STRUCTURE_RAMPART;
-            this.memory['sites2'][(exits[0] + 1) + ":2"] = STRUCTURE_RAMPART;
-        }
-        return exitExists;
-    } else if (exit === FIND_EXIT_LEFT) {
-        let exits = [];
-        let exitSize = 0;
-        for (let y=2; y<49; y++) {
-            let isRampart = false;
-            let spotHasNoWall = _.filter(this.lookAt(0, y), (c:LookAtResultWithPos) => {
-                if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
-                    c.structure.structureType !== STRUCTURE_WALL) {
-                    isRampart = true;
-                }
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (spotHasNoWall) {
-                if (exitSize === 0) {
-                    if (RoomUtil.isSpotOpen(new RoomPosition(2, y-1, this.name))) {
-                        this.memory['sites'][2]["2:" + (y - 1)] = STRUCTURE_WALL;
+            return c.type === 'terrain' && c.terrain === 'wall';
+        }).length < 1;
+        if (spotHasNoWall) {
+            if (exitSize === 0) {
+                if (isX) {
+                    if (RoomUtil.isSpotOpen(new RoomPosition(x - 1, y, this.name))) {
+                        this.memory['sites'][2][(x - 1) + ":" + y] = STRUCTURE_WALL;
                     }
-                    if (RoomUtil.isSpotOpen(new RoomPosition(1, y-1, this.name))) {
-                        this.memory['sites'][2]["2:" + (y - 2)] = STRUCTURE_WALL;
+                    if (RoomUtil.isSpotOpen(new RoomPosition(x - 1, y, this.name))) {
+                        this.memory['sites'][2][(x - 2) + ":" + y] = STRUCTURE_WALL;
                     }
-                }
-                exitSize += 1;
-                if (isRampart) {
-                    this.memory['sites2']["2:" + y] = STRUCTURE_RAMPART;
                 } else {
-                    this.memory['sites'][2]["2:" + y] = STRUCTURE_WALL;
+                    if (RoomUtil.isSpotOpen(new RoomPosition(x, y - 1, this.name))) {
+                        this.memory['sites'][2][x + ":" + (y - 1)] = STRUCTURE_WALL;
+                    }
+                    if (RoomUtil.isSpotOpen(new RoomPosition(x, y - 1, this.name))) {
+                        this.memory['sites'][2][x + ":" + (y - 2)] = STRUCTURE_WALL;
+                    }
                 }
-            } else if (exitSize) {
-                if (RoomUtil.isSpotOpen(new RoomPosition(2, y, this.name))) {
-                    this.memory['sites'][2]["2:" + y] = STRUCTURE_WALL;
-                }
-                if (RoomUtil.isSpotOpen(new RoomPosition(1, y, this.name))) {
-                    this.memory['sites'][2]["2:" + (y + 1)] = STRUCTURE_WALL;
-                }
-                exits.push(y - Math.round(exitSize / 2));
-                exitSize = 0;
             }
-            exitExists = exitExists || spotHasNoWall;
-        }
-        if (exits.length) {
-            delete this.memory['sites'][2]["2:" + (exits[0] - 1)];
-            delete this.memory['sites'][2]["2:" + exits[0]];
-            delete this.memory['sites'][2]["2:" + (exits[0] + 1)];
-            this.memory['sites2']["2:" + (exits[0] - 1)] = STRUCTURE_RAMPART;
-            this.memory['sites2']["2:" + exits[0]] = STRUCTURE_RAMPART;
-            this.memory['sites2']["2:" + (exits[0] + 1)] = STRUCTURE_RAMPART;
-        }
-        return exitExists;
-    } else if (exit === FIND_EXIT_BOTTOM) {
-        let exits = [];
-        let exitSize = 0;
-        for (let x=2; x<49; x++) {
-            let isRampart = false;
-            let spotHasNoWall = _.filter(this.lookAt(x, 49), (c:LookAtResultWithPos) => {
-                if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
-                    c.structure.structureType !== STRUCTURE_WALL) {
-                    isRampart = true;
-                }
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (spotHasNoWall) {
-                if (exitSize === 0) {
-                    if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 47, this.name))) {
-                        this.memory['sites'][2][(x - 1) + ":47"] = STRUCTURE_WALL;
-                    }
-                    if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 48, this.name))) {
-                        this.memory['sites'][2][(x - 2) + ":47"] = STRUCTURE_WALL;
-                    }
-                }
-                exitSize += 1;
-                if (isRampart) {
-                    this.memory['sites2'][x + ":47"] = STRUCTURE_RAMPART;
-                } else {
-                    this.memory['sites'][2][x + ":47"] = STRUCTURE_WALL;
-                }
-            } else if (exitSize) {
-                if (RoomUtil.isSpotOpen(new RoomPosition(x, 47, this.name))) {
-                    this.memory['sites'][2][x + ":47"] = STRUCTURE_WALL;
-                }
-                if (RoomUtil.isSpotOpen(new RoomPosition(x, 48, this.name))) {
-                    this.memory['sites'][2][(x + 1) + ":47"] = STRUCTURE_WALL;
-                }
-                exits.push(x - Math.round(exitSize / 2));
-                exitSize = 0;
+            exitSize += 1;
+            if (isRampart) {
+                this.memory['sites2'][x + ":" + y] = STRUCTURE_RAMPART;
+            } else {
+                this.memory['sites'][2][x + ":" + y] = STRUCTURE_WALL;
             }
-            exitExists = exitExists || spotHasNoWall;
-        }
-        if (exits.length) {
-            delete this.memory['sites'][2][(exits[0] - 1) + ":47"];
-            delete this.memory['sites'][2][exits[0] + ":47"];
-            delete this.memory['sites'][2][(exits[0] + 1) + ":47"];
-            this.memory['sites2'][(exits[0] - 1) + ":47"] = STRUCTURE_RAMPART;
-            this.memory['sites2'][exits[0] + ":47"] = STRUCTURE_RAMPART;
-            this.memory['sites2'][(exits[0] + 1) + ":47"] = STRUCTURE_RAMPART;
-        }
-        return exitExists;
-    } else if (exit === FIND_EXIT_RIGHT) {
-        let exits = [];
-        let exitSize = 0;
-        for (let y=2; y<49; y++) {
-            let isRampart = false;
-            let spotHasNoWall = _.filter(this.lookAt(49, y), (c:LookAtResultWithPos) => {
-                if (c.type === 'structure' && c.structure.structureType !== STRUCTURE_RAMPART &&
-                    c.structure.structureType !== STRUCTURE_WALL) {
-                    isRampart = true;
+        } else if (exitSize) {
+            if (isX) {
+                if (RoomUtil.isSpotOpen(new RoomPosition(x, y, this.name))) {
+                    this.memory['sites'][2][x + ":" + y] = STRUCTURE_WALL;
                 }
-                return c.type === 'terrain' && c.terrain === 'wall';
-            }).length < 1;
-            if (spotHasNoWall) {
-                if (exitSize === 0) {
-                    if (RoomUtil.isSpotOpen(new RoomPosition(47, y-1, this.name))) {
-                        this.memory['sites'][2]["47:" + (y - 1)] = STRUCTURE_WALL;
-                    }
-                    if (RoomUtil.isSpotOpen(new RoomPosition(48, y-1, this.name))) {
-                        this.memory['sites'][2]["47:" + (y - 2)] = STRUCTURE_WALL;
-                    }
+                if (RoomUtil.isSpotOpen(new RoomPosition(x + 1, y, this.name))) {
+                    this.memory['sites'][2][(x + 1) + ":" + y] = STRUCTURE_WALL;
                 }
-                exitSize += 1;
-                if (isRampart) {
-                    this.memory['sites2']["47:" + y] = STRUCTURE_RAMPART;
-                } else {
-                    this.memory['sites'][2]["47:" + y] = STRUCTURE_WALL;
+            } else {
+                if (RoomUtil.isSpotOpen(new RoomPosition(x, y, this.name))) {
+                    this.memory['sites'][2][x + ":" + y] = STRUCTURE_WALL;
                 }
-            } else if (exitSize) {
-                if (RoomUtil.isSpotOpen(new RoomPosition(47, y, this.name))) {
-                    this.memory['sites'][2]["47:" + y] = STRUCTURE_WALL;
+                if (RoomUtil.isSpotOpen(new RoomPosition(x, y + 1, this.name))) {
+                    this.memory['sites'][2][x + ":" + (y + 1)] = STRUCTURE_WALL;
                 }
-                if (RoomUtil.isSpotOpen(new RoomPosition(48, y, this.name))) {
-                    this.memory['sites'][2]["47:" + (y + 1)] = STRUCTURE_WALL;
-                }
-                exits.push(y - Math.round(exitSize / 2));
-                exitSize = 0;
             }
-            exitExists = exitExists || spotHasNoWall;
+            exits.push(dynamicCoord - Math.round(exitSize / 2));
+            exitSize = 0;
         }
-        if (exits.length) {
-            delete this.memory['sites'][2]["47:" + (exits[0] - 1)];
-            delete this.memory['sites'][2]["47:" + exits[0]];
-            delete this.memory['sites'][2]["47:" + (exits[0] + 1)];
-            this.memory['sites2']["47:" + (exits[0] - 1)] = STRUCTURE_RAMPART;
-            this.memory['sites2']["47:" + exits[0]] = STRUCTURE_RAMPART;
-            this.memory['sites2']["47:" + (exits[0] + 1)] = STRUCTURE_RAMPART;
+        exitExists = exitExists || spotHasNoWall;
+    }
+
+    if (exits.length) {
+        if (isX) {
+            delete this.memory['sites'][2][(exits[0] - 1) + ":" + y];
+            delete this.memory['sites'][2][exits[0] + ":" + y];
+            delete this.memory['sites'][2][(exits[0] + 1) + ":" + y];
+            this.memory['sites2'][(exits[0] - 1) + ":" + y] = STRUCTURE_RAMPART;
+            this.memory['sites2'][exits[0] + ":" + y] = STRUCTURE_RAMPART;
+            this.memory['sites2'][(exits[0] + 1) + ":" + y] = STRUCTURE_RAMPART;
+        } else {
+            delete this.memory['sites'][2][x + ":" + (exits[0] - 1)];
+            delete this.memory['sites'][2][x + ":" + exits[0]];
+            delete this.memory['sites'][2][x + ":" + (exits[0] + 1)];
+            this.memory['sites2'][x + ":" + (exits[0] - 1)] = STRUCTURE_RAMPART;
+            this.memory['sites2'][x + ":" + exits[0]] = STRUCTURE_RAMPART;
+            this.memory['sites2'][x + ":" + (exits[0] + 1)] = STRUCTURE_RAMPART;
         }
-        return exitExists;
     }
     return exitExists;
 };
