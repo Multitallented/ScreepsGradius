@@ -35,7 +35,7 @@ export class TransferAction {
                 inMinerRangeOfSource = creep.pos.inRangeTo(source, 1);
             }
         }
-        if (!creep.pos.inRangeTo(structure, 1) || !inMinerRangeOfSource) {
+        if (!creep.pos.inRangeTo(structure, 1) || (!inMinerRangeOfSource && structure.structureType !== STRUCTURE_LINK)) {
             creep.moveToTarget();
             return;
         }

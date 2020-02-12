@@ -206,11 +206,14 @@ const makeConstructionSites = function() {
     }
     if (constructionSites.length > 0) {
         StructureUtil.sortByPriority(constructionSites, null);
+        console.log(constructionSites[0].pos.roomName + " " + constructionSites[0].structureType + ": " + constructionSites[0].pos.x + "x " + constructionSites[0].pos.y + "y");
         this.createConstructionSite(constructionSites[0].pos, constructionSites[0].structureType);
         if (numberConstructionSites < 2 && constructionSites.length > 1) {
+            console.log(constructionSites[1].pos.roomName + " " + constructionSites[1].structureType + ": " + constructionSites[1].pos.x + "x " + constructionSites[1].pos.y + "y");
             this.createConstructionSite(constructionSites[1].pos, constructionSites[1].structureType);
         }
         if (numberConstructionSites < 1 && constructionSites.length > 2) {
+            console.log(constructionSites[2].pos.roomName + " " + constructionSites[2].structureType + ": " + constructionSites[2].pos.x + "x " + constructionSites[2].pos.y + "y");
             this.createConstructionSite(constructionSites[2].pos, constructionSites[2].structureType);
         }
     }
@@ -270,7 +273,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                         this.memory['sites'][2][(x - 1) + ":2"] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 1, this.name))) {
-                        this.memory['sites'][2][(x - 1) + ":1"] = STRUCTURE_WALL;
+                        this.memory['sites'][2][(x - 2) + ":2"] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
@@ -284,7 +287,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                     this.memory['sites'][2][x + ":2"] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, 1, this.name))) {
-                    this.memory['sites'][2][x + ":1"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][(x + 1) + ":2"] = STRUCTURE_WALL;
                 }
                 exits.push(x - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -318,7 +321,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                         this.memory['sites'][2]["2:" + (y - 1)] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(1, y-1, this.name))) {
-                        this.memory['sites'][2]["1:" + (y - 1)] = STRUCTURE_WALL;
+                        this.memory['sites'][2]["2:" + (y - 2)] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
@@ -332,7 +335,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                     this.memory['sites'][2]["2:" + y] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(1, y, this.name))) {
-                    this.memory['sites'][2]["1:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["2:" + (y + 1)] = STRUCTURE_WALL;
                 }
                 exits.push(y - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -366,7 +369,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                         this.memory['sites'][2][(x - 1) + ":47"] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(x-1, 48, this.name))) {
-                        this.memory['sites'][2][(x - 1) + ":48"] = STRUCTURE_WALL;
+                        this.memory['sites'][2][(x - 2) + ":47"] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
@@ -380,7 +383,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                     this.memory['sites'][2][x + ":47"] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(x, 48, this.name))) {
-                    this.memory['sites'][2][x + ":48"] = STRUCTURE_WALL;
+                    this.memory['sites'][2][(x + 1) + ":47"] = STRUCTURE_WALL;
                 }
                 exits.push(x - Math.round(exitSize / 2));
                 exitSize = 0;
@@ -414,7 +417,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                         this.memory['sites'][2]["47:" + (y - 1)] = STRUCTURE_WALL;
                     }
                     if (RoomUtil.isSpotOpen(new RoomPosition(48, y-1, this.name))) {
-                        this.memory['sites'][2]["48:" + (y - 1)] = STRUCTURE_WALL;
+                        this.memory['sites'][2]["47:" + (y - 2)] = STRUCTURE_WALL;
                     }
                 }
                 exitSize += 1;
@@ -428,7 +431,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
                     this.memory['sites'][2]["47:" + y] = STRUCTURE_WALL;
                 }
                 if (RoomUtil.isSpotOpen(new RoomPosition(48, y, this.name))) {
-                    this.memory['sites'][2]["48:" + y] = STRUCTURE_WALL;
+                    this.memory['sites'][2]["47:" + (y + 1)] = STRUCTURE_WALL;
                 }
                 exits.push(y - Math.round(exitSize / 2));
                 exitSize = 0;

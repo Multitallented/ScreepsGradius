@@ -35,7 +35,7 @@ export class RoomUtil {
     static canPlaceRampart(pos:RoomPosition):boolean {
         let isOpen = true;
         _.forEach(Game.rooms[pos.roomName].lookAt(pos), (s:LookAtResultWithPos) => {
-            if ((s.type === 'structure' && s.structure.structureType !== STRUCTURE_RAMPART) ||
+            if ((s.type === 'structure' && s.structure.structureType === STRUCTURE_RAMPART) ||
                     (s.type === 'terrain' && s.terrain === 'wall')) {
                 isOpen = false;
             }
