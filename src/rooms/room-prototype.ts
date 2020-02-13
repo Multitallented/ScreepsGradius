@@ -106,6 +106,11 @@ const buildMemory = function() {
         if (containerLocationsNeeded.length) {
             this.memory['center'] = RoomUtil.getCenterOfArray(containerLocationsNeeded, this);
         }
+
+        let minerals = this.find(FIND_MINERALS);
+        if (minerals.length) {
+            this.memory['sites'][6][minerals[0].pos.x + ":" + minerals[0].pos.y] = STRUCTURE_EXTRACTOR;
+        }
         this.memory.containerStructure = true;
         return;
     }

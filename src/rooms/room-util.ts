@@ -106,7 +106,7 @@ export class RoomUtil {
             room.memory['sites'][0][containerPos.x + ":" + containerPos.y] = STRUCTURE_CONTAINER;
         }
         if (linkPos) {
-            room.memory['sites'][0][linkPos.x + ":" + linkPos.y] = STRUCTURE_LINK;
+            room.memory['sites'][5][linkPos.x + ":" + linkPos.y] = STRUCTURE_LINK;
         }
         if (containerPos && linkPos) {
             return;

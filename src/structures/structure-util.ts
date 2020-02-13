@@ -9,9 +9,11 @@ export class StructureUtil {
                 return 125;
             case STRUCTURE_EXTENSION:
                 return 100;
+            case STRUCTURE_EXTRACTOR:
             case STRUCTURE_CONTAINER:
             case STRUCTURE_LINK:
                 return 90;
+            case STRUCTURE_TERMINAL:
             case STRUCTURE_STORAGE:
                 return 75;
             case STRUCTURE_ROAD:
