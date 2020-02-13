@@ -149,14 +149,12 @@ const buildMemory = function() {
     if (!this.memory.exitRoads && this.memory.center) {
         let directions:Array<ExitConstant> = [ FIND_EXIT_TOP, FIND_EXIT_LEFT, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT ];
         _.forEach(directions, (direction:ExitConstant) => {
-            if (this.getPositionAt(25, 25).findClosestByRange(direction)) {
-                let startPosition:RoomPosition = this.getPositionAt(25, 25);
-                let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
-                if (exitPoint) {
-                    let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
-                        {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
-                    RoomUtil.planRoadAlongPath(this, path);
-                }
+            let startPosition:RoomPosition = this.getPositionAt(25, 25);
+            let exitPoint:RoomPosition = startPosition.findClosestByPath(direction);
+            if (exitPoint) {
+                let path:Array<PathStep> = startPosition.findPathTo(exitPoint.x, exitPoint.y,
+                    {ignoreCreeps: true, costCallback: RoomUtil.getPlannedCostMatrix(this)});
+                RoomUtil.planRoadAlongPath(this, path);
             }
         });
         this.memory['exitRoads'] = true;
@@ -359,21 +357,21 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
         exitExists = exitExists || spotHasNoWall;
     }
 
-    if (exits.length) {
+    for (let exitIndex = 0; exitIndex < exits.length; exitIndex++) {
         if (isX) {
-            delete this.memory['sites'][2][(exits[0] - 1) + ":" + y];
-            delete this.memory['sites'][2][exits[0] + ":" + y];
-            delete this.memory['sites'][2][(exits[0] + 1) + ":" + y];
-            this.memory['sites2'][(exits[0] - 1) + ":" + y] = STRUCTURE_RAMPART;
-            this.memory['sites2'][exits[0] + ":" + y] = STRUCTURE_RAMPART;
-            this.memory['sites2'][(exits[0] + 1) + ":" + y] = STRUCTURE_RAMPART;
+            delete this.memory['sites'][2][(exits[exitIndex] - 1) + ":" + y];
+            delete this.memory['sites'][2][exits[exitIndex] + ":" + y];
+            delete this.memory['sites'][2][(exits[exitIndex] + 1) + ":" + y];
+            this.memory['sites2'][(exits[exitIndex] - 1) + ":" + y] = STRUCTURE_RAMPART;
+            this.memory['sites2'][exits[exitIndex] + ":" + y] = STRUCTURE_RAMPART;
+            this.memory['sites2'][(exits[exitIndex] + 1) + ":" + y] = STRUCTURE_RAMPART;
         } else {
-            delete this.memory['sites'][2][x + ":" + (exits[0] - 1)];
-            delete this.memory['sites'][2][x + ":" + exits[0]];
-            delete this.memory['sites'][2][x + ":" + (exits[0] + 1)];
-            this.memory['sites2'][x + ":" + (exits[0] - 1)] = STRUCTURE_RAMPART;
-            this.memory['sites2'][x + ":" + exits[0]] = STRUCTURE_RAMPART;
-            this.memory['sites2'][x + ":" + (exits[0] + 1)] = STRUCTURE_RAMPART;
+            delete this.memory['sites'][2][x + ":" + (exits[exitIndex] - 1)];
+            delete this.memory['sites'][2][x + ":" + exits[exitIndex]];
+            delete this.memory['sites'][2][x + ":" + (exits[exitIndex] + 1)];
+            this.memory['sites2'][x + ":" + (exits[exitIndex] - 1)] = STRUCTURE_RAMPART;
+            this.memory['sites2'][x + ":" + exits[exitIndex]] = STRUCTURE_RAMPART;
+            this.memory['sites2'][x + ":" + (exits[exitIndex] + 1)] = STRUCTURE_RAMPART;
         }
     }
     return exitExists;

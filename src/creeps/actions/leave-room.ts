@@ -64,7 +64,7 @@ export class LeaveRoomAction {
             let route = Game.map.findRoute(creep.room, creep.memory['endRoom']);
             if (route && route['length']) {
                 creep.memory['toRoom'] = route[0].room;
-                creep.memory['destination'] = creep.pos.findClosestByRange(route[0].exit);
+                creep.memory['destination'] = creep.pos.findClosestByPath(route[0].exit);
                 creep.moveToTarget();
             }
             creep.memory['action'] = 'traveling';
@@ -83,11 +83,11 @@ export class LeaveRoomAction {
         if (!direction) {
             direction = LeaveRoomAction.getRandomExit(creep.room);
         }
-        let exitPoint = creep.pos.findClosestByRange(direction);
+        let exitPoint = creep.pos.findClosestByPath(direction);
         if (!exitPoint || !creep.room.memory['exits'][direction]) {
             direction = LeaveRoomAction.getRandomExit(creep.room);
             if (!direction || !creep.room.memory['exits'][direction]) {
-                exitPoint = creep.pos.findClosestByRange(direction);
+                exitPoint = creep.pos.findClosestByPath(direction);
             }
         }
 

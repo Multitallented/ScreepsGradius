@@ -25,7 +25,7 @@ export class TravelingAction {
             let route = Game.map.findRoute(creep.room, creep.memory['endRoom']);
             if (route && route['length']) {
                 creep.memory['toRoom'] = route[0].room;
-                creep.memory['destination'] = creep.pos.findClosestByRange(route[0].exit);
+                creep.memory['destination'] = creep.pos.findClosestByPath(route[0].exit);
                 creep.moveToTarget();
             } else {
                 delete creep.memory['destination'];
@@ -38,7 +38,7 @@ export class TravelingAction {
             creep.memory['fromRoom'] = creep.room.name;
             let exitDirection = creep.room.findExitTo(creep.memory['toRoom']);
             if (exitDirection && creep.room.memory['exits'][exitDirection]) {
-                creep.memory['destination'] = creep.pos.findClosestByRange(<ExitConstant> exitDirection);
+                creep.memory['destination'] = creep.pos.findClosestByPath(<ExitConstant> exitDirection);
             } else {
                 delete creep.memory['destination'];
                 delete creep.memory['toRoom'];
@@ -55,7 +55,7 @@ export class TravelingAction {
         let route = Game.map.findRoute(creep.room, pos.roomName);
         if (route && route['length']) {
             creep.memory['toRoom'] = route[0].room;
-            creep.memory['destination'] = creep.pos.findClosestByRange(route[0].exit);
+            creep.memory['destination'] = creep.pos.findClosestByPath(route[0].exit);
             creep.moveToTarget();
         }
         creep.memory['action'] = TravelingAction.KEY;
