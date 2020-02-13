@@ -126,6 +126,10 @@ const buildMemory = function() {
         RoomUtil.planBuildings(this, STRUCTURE_POWER_SPAWN);
         return;
     }
+    if (!this.memory[STRUCTURE_TERMINAL + 'Structure'] && this.memory.center && this.controller && this.controller.my) {
+        RoomUtil.planBuildings(this, STRUCTURE_TERMINAL);
+        return;
+    }
 
     if (!this.memory.sourceRoads) {
         let pointsOfImportance = this.find(FIND_SOURCES);
@@ -252,6 +256,9 @@ const getAdjacentRoomName = function(direction:ExitConstant):string {
 };
 
 const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
+    if (!this.memory['sites2']) {
+        this.memory['sites2'] = {};
+    }
     let exitExists = false;
     let x = -1;
     let y = -1;
@@ -357,6 +364,7 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
         exitExists = exitExists || spotHasNoWall;
     }
 
+    // TODO check if exit works or if needs to shift
     for (let exitIndex = 0; exitIndex < exits.length; exitIndex++) {
         if (isX) {
             delete this.memory['sites'][2][(exits[exitIndex] - 1) + ":" + y];

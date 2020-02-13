@@ -36,7 +36,7 @@ export class RoomUtil {
         let isOpen = true;
         _.forEach(Game.rooms[pos.roomName].lookAt(pos), (s:LookAtResultWithPos) => {
             if ((s.type === 'structure' && s.structure.structureType === STRUCTURE_RAMPART) ||
-                    (s.type === 'terrain' && s.terrain === 'wall')) {
+                    (s.type === 'terrain' && s.terrain === 'wall') || s.type === 'constructionSite') {
                 isOpen = false;
             }
         });
