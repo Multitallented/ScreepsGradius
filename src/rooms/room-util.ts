@@ -252,7 +252,8 @@ export class RoomUtil {
                     numberAlreadyPlanned++;
                     room.memory['sites'][i][s.pos.x + ":" + s.pos.y] = structureType;
                     if (structureType === STRUCTURE_SPAWN || structureType === STRUCTURE_STORAGE ||
-                            structureType === STRUCTURE_TOWER || structureType === STRUCTURE_LINK) {
+                            structureType === STRUCTURE_TOWER || structureType === STRUCTURE_LINK ||
+                            structureType === STRUCTURE_TERMINAL || structureType === STRUCTURE_LAB) {
                         room.memory['sites2'][s.pos.x + ":" + s.pos.y] = STRUCTURE_RAMPART;
                     }
                     return;
