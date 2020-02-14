@@ -101,7 +101,9 @@ export class SpawnUtil {
 
         if (!ticksTilNextScoutSpawn || !ticksTilNextTravelerSpawn) {
             _.forEach(Game.rooms, (currentRoom: Room) => {
-                if (!currentRoom || RoomUtil.roomDistance(room.name, currentRoom.name) > 3) {
+                const roomDistance = RoomUtil.getDistanceBetweenTwoRooms(room.name, currentRoom.name);
+                if (!currentRoom || roomDistance > 3 ||
+                        (roomDistance > 1 && currentRoom.controller && !currentRoom.controller.my)) {
                     return;
                 }
                 if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {

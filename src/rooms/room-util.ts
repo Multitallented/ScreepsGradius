@@ -142,7 +142,7 @@ export class RoomUtil {
         return Game.gcl.level > numberOfOwnedRooms;
     }
 
-    static getBestRoom(room:Room, reserve:boolean):string {
+    static getBestRoomToClaim(room:Room, reserve:boolean):string {
         let mostSources = 0;
         let mostSpots = 0;
         let bestRoom = null;
@@ -154,7 +154,7 @@ export class RoomUtil {
             if (currentRoom && reserve && currentRoom.canReserve(Memory['username'])) {
                 return;
             }
-            if (room && RoomUtil.roomDistance(room.name, key) > 3) {
+            if (room && RoomUtil.getDistanceBetweenTwoRooms(room.name, key) > 3) {
                 return;
             }
             let numberOfSources = 0;
@@ -174,7 +174,7 @@ export class RoomUtil {
         return bestRoom;
     }
 
-    static roomDistance(room1Name:string, room2Name:string):number {
+    static getDistanceBetweenTwoRooms(room1Name:string, room2Name:string):number {
         let is1West = room1Name.indexOf("W") !== -1;
         let is1North = room1Name.indexOf("N") !== -1;
         let split1Name = room1Name.slice(1).split(is1North ? "N" : "S");

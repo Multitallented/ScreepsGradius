@@ -5,10 +5,10 @@ describe("RoomUtil Tests", function() {
         require('../mocks/game')();
     });
 
-    test("RoomUtil roomDistance should work", function() {
-        expect(RoomUtil.roomDistance("W19N19", "W19N14")).toBe(5);
-        expect(RoomUtil.roomDistance("W19N19", "W19N15")).toBe(4);
-        expect(RoomUtil.roomDistance("E1N19", "W1N19")).toBe(2);
+    test("RoomUtil getDistanceBetweenTwoRooms should work", function() {
+        expect(RoomUtil.getDistanceBetweenTwoRooms("W19N19", "W19N14")).toBe(5);
+        expect(RoomUtil.getDistanceBetweenTwoRooms("W19N19", "W19N15")).toBe(4);
+        expect(RoomUtil.getDistanceBetweenTwoRooms("E1N19", "W1N19")).toBe(2);
     });
 
     test("RoomUtil crowDistance", function() {

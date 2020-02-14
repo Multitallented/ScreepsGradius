@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import {LeaveRoomAction} from "../actions/leave-room";
 import {SpawnUtil} from "../../structures/spawns/spawn-util";
 import {TravelingAction} from "../actions/traveling";
+import {RoomUtil} from "../../rooms/room-util";
 
 export class Traveler {
     static KEY = 'traveler';
@@ -23,6 +24,10 @@ export class Traveler {
             if (numberOfCreeps - 4 < Math.max(2, numberOfSpots) && room.controller && room.controller.my) {
                 emergencyHelpNeeded = true;
                 helpRoom = room.name;
+            }
+            const roomDistance = RoomUtil.getDistanceBetweenTwoRooms(room.name, creep.room.name);
+            if (roomDistance > 1) {
+                return;
             }
             if ((room.controller && room.controller.reservation &&
                     room.controller.reservation.username === Memory['username']) || room.memory['sendBuilders']) {

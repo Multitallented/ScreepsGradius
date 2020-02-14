@@ -12,7 +12,7 @@ export class Claimer {
     static setAction(creep:Creep) {
         let canClaimAnyRoom = RoomUtil.canClaimAnyRoom();
         if (canClaimAnyRoom && !creep.memory['toRoom'] && Memory['roomData']) {
-            let bestRoom = RoomUtil.getBestRoom(creep.room, false);
+            let bestRoom = RoomUtil.getBestRoomToClaim(creep.room, false);
             if (bestRoom) {
                 creep.memory['endRoom'] = bestRoom;
             }
@@ -48,7 +48,7 @@ export class Claimer {
                 }
             }
         } else if (!canClaimAnyRoom || creep.room.name === creep.memory['endRoom']) {
-            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoom(creep.room, false)) {
+            if (canClaimAnyRoom && creep.room.name === RoomUtil.getBestRoomToClaim(creep.room, false)) {
                 ClaimControllerAction.setAction(creep);
                 creep.runAction();
                 return;
@@ -57,7 +57,7 @@ export class Claimer {
                 creep.runAction();
                 return;
             } else {
-                let bestRoomName = RoomUtil.getBestRoom(creep.room, true);
+                let bestRoomName = RoomUtil.getBestRoomToClaim(creep.room, true);
                 if (bestRoomName && bestRoomName !== creep.room.name && Game.rooms[bestRoomName]) {
                     creep.memory['endRoom'] = bestRoomName;
                 } else {
