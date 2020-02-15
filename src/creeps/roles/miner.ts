@@ -99,7 +99,7 @@ export class Miner {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, CARRY, WORK ];
         energyAvailable -= 200;
         let partCount = { 'WORK': 1, 'MOVE': 1, 'CARRY': 1 };
-        while (energyAvailable >= 50) {
+        while (energyAvailable >= 50 && bodyArray.length < 30) {
             if (partCount['WORK'] < 8 && energyAvailable >= CreepSpawnData.getBodyPartCost(WORK)) {
                 bodyArray.unshift(WORK);
                 partCount['WORK'] += 1;

@@ -162,7 +162,7 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Builder.KEY, Builder.buildBodyArray(Math.min(energyAvailable, 600)), 0.5);
 
         } else if (structureCount[STRUCTURE_EXTENSION] && structureCount[STRUCTURE_CONTAINER] &&
-                (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < Math.max(3, Math.min(0, 4 - structureCount[STRUCTURE_LINK])))) {
+                (!creepCount[Courier.KEY] || creepCount[Courier.KEY] < Math.max(3, Math.min(2, 4 - structureCount[STRUCTURE_LINK])))) {
             nextCreepData = CreepSpawnData.build(Courier.KEY, Courier.buildBodyArray(energyAvailable), 0.75);
 
         } else if (roomNeedingDefenders) {
@@ -184,7 +184,7 @@ export class SpawnUtil {
             nextCreepData = CreepSpawnData.build(Upgrader.KEY, Upgrader.buildBodyArray(energyAvailable), 0.75);
 
         } else if ((!creepCount[Upgrader.KEY] || creepCount[Upgrader.KEY] < 2) && structureCount[STRUCTURE_LINK]) {
-            nextCreepData = CreepSpawnData.build(Upgrader.KEY, Miner.buildBodyArray(energyAvailable), 0.75);
+            nextCreepData = CreepSpawnData.build(Upgrader.KEY, Miner.buildBodyArray(Math.min(1100, energyAvailable)), 0.5);
 
         }
         return nextCreepData;

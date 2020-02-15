@@ -50,7 +50,7 @@ export class Jack {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, CARRY, WORK ];
         energyAvailable -= 200;
         let partCount = { 'WORK': 1, 'MOVE': 1, 'CARRY': 1 };
-        while (energyAvailable >= 50) {
+        while (energyAvailable >= 50 && bodyArray.length < 30) {
             if (partCount['MOVE'] <= partCount['WORK'] && partCount['MOVE'] <= partCount['CARRY']) {
                 partCount['MOVE'] += 1;
                 bodyArray.unshift(MOVE);

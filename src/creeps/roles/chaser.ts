@@ -64,7 +64,7 @@ export class Chaser {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, ATTACK ];
         energyAvailable -= 130;
         let partCount = { 'ATTACK': 1, 'MOVE': 1, 'TOUGH': 0 };
-        while (energyAvailable >= 50) {
+        while (energyAvailable >= 50 && bodyArray.length < 30) {
             if (partCount['MOVE'] / bodyArray.length < .75 && energyAvailable >= CreepSpawnData.getBodyPartCost(MOVE)) {
                 partCount['MOVE'] += 1;
                 bodyArray.unshift(MOVE);

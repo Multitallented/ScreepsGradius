@@ -264,6 +264,12 @@ const findExitAndPlanWalls = function(exit:ExitConstant):boolean {
     if (!this.memory['sites2']) {
         this.memory['sites2'] = {};
     }
+    if (!this.memory['sites']) {
+        this.memory['sites'] = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}};
+    }
+    if (!this.memory['sites'][2]) {
+        this.memory['sites'][2] = {};
+    }
     let exitExists = false;
     let x = -1;
     let y = -1;

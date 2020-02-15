@@ -5,7 +5,6 @@ import {StructureUtil} from "../../structures/structure-util";
 import {PickupAction} from "../actions/pickup";
 import * as _ from "lodash";
 import {RoomUtil} from "../../rooms/room-util";
-import {MoveAction} from "../actions/move";
 
 export class Courier {
     static KEY = 'courier';
@@ -14,8 +13,9 @@ export class Courier {
         let storageStructures:Array<Structure> = creep.room.find(FIND_STRUCTURES, {filter: (s:Structure) => {
                 return (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_STORAGE ||
                     s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_TOWER ||
-                    s.structureType === STRUCTURE_CONTAINER) &&
-                    (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER || !alreadyTaggedTargets[s.id]) &&
+                    s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_TERMINAL) &&
+                    (s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_TERMINAL ||
+                        s.structureType === STRUCTURE_CONTAINER || !alreadyTaggedTargets[s.id]) &&
                     s['store'].getCapacity(RESOURCE_ENERGY) > s['store'].getUsedCapacity(RESOURCE_ENERGY);
             }});
 
@@ -212,7 +212,7 @@ export class Courier {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, CARRY ];
         energyAvailable -= 100;
         let partCount = { 'MOVE': 1, 'CARRY': 1 };
-        while (energyAvailable >= 50) {
+        while (energyAvailable >= 50 && bodyArray.length < 30) {
             if (partCount['MOVE'] <= partCount['CARRY']) {
                 partCount['MOVE'] += 1;
                 bodyArray.unshift(MOVE);

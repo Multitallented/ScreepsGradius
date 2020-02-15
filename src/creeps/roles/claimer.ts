@@ -79,7 +79,7 @@ export class Claimer {
         let bodyArray:Array<BodyPartConstant> = [ MOVE, CLAIM ];
         energyAvailable -= 650;
         let partCount = { 'CLAIM': 1, 'MOVE': 1, 'TOUGH': 0 };
-        while (energyAvailable >= 10) {
+        while (energyAvailable >= 10 && bodyArray.length < 30) {
             if (partCount['MOVE'] - 3 < partCount['TOUGH']) {
                 partCount['MOVE'] += 1;
                 bodyArray.unshift(MOVE);
