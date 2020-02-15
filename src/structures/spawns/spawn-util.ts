@@ -39,6 +39,18 @@ export class SpawnUtil {
         return structureCount;
     }
 
+    static getNumberOfSources(room:Room): number {
+        let numberOfSources;
+        if (room.memory['sources']) {
+            numberOfSources = Object.keys(room.memory['sources']).length;
+        } else if (Memory[room.name] && Memory[room.name]['roomData']) {
+            numberOfSources = Memory[room.name]['roomData'][room.name]['sources']['qty'];
+        } else {
+            numberOfSources = room.find(FIND_SOURCES).length;
+        }
+        return numberOfSources;
+    }
+
     static getNextTravelerRole(room:Room): string {
         let creepCount = SpawnUtil.getCreepCount(null, room);
         let structureCount = SpawnUtil.getStructureCount(room);
@@ -71,18 +83,11 @@ export class SpawnUtil {
     }
 
     static getNextCreepToSpawn(spawn:StructureSpawn): CreepSpawnData {
-        let room = spawn.room;
-        let creepCount = SpawnUtil.getCreepCount(spawn, room);
-        let structureCount = SpawnUtil.getStructureCount(room);
-        let energyAvailable = room.energyAvailable;
-        let numberOfSources;
-        if (room.memory['sources']) {
-            numberOfSources = Object.keys(room.memory['sources']).length;
-        } else if (Memory[room.name] && Memory[room.name]['roomData']) {
-            numberOfSources = Memory[room.name]['roomData'][room.name]['sources']['qty'];
-        } else {
-            numberOfSources = room.find(FIND_SOURCES).length;
-        }
+        const room = spawn.room;
+        const creepCount = SpawnUtil.getCreepCount(spawn, room);
+        const structureCount = SpawnUtil.getStructureCount(room);
+        const energyAvailable = room.energyAvailable;
+        const numberOfSources = SpawnUtil.getNumberOfSources(room);
         let ticksTilNextScoutSpawn = 0;
         if (room.memory['ticksTilNextScoutSpawn']) {
             ticksTilNextScoutSpawn = room.memory['ticksTilNextScoutSpawn'];
@@ -99,48 +104,11 @@ export class SpawnUtil {
             }
         });
 
-        if (!ticksTilNextScoutSpawn || !ticksTilNextTravelerSpawn) {
-            _.forEach(Game.rooms, (currentRoom: Room) => {
-                const roomDistance = RoomUtil.getDistanceBetweenTwoRooms(room.name, currentRoom.name);
-                if (!currentRoom || roomDistance > 3 ||
-                        (roomDistance > 1 && currentRoom.controller && !currentRoom.controller.my)) {
-                    return;
-                }
-                if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
-                    if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {
-                        filter: (s: Structure) => {
-                            return s.structureType === STRUCTURE_SPAWN;
-                        }
-                    }).length) {
-                        delete currentRoom.memory['sendBuilders'];
-                    }
-
-                    let numberOfSpots = 0;
-                    let numberOfCreeps = currentRoom.find(FIND_MY_CREEPS).length;
-                    _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
-                        numberOfSpots += sourceNumber;
-                    });
-                    if (numberOfCreeps - 1 >= Math.max(2, numberOfSpots)) {
-                        return;
-                    }
-                    roomNeedingTravelers = currentRoom.name;
-                }
-            });
+        if (!ticksTilNextTravelerSpawn) {
+            roomNeedingTravelers = SpawnUtil.getRoomThatNeedsTravelers(room);
         }
 
-
-        let needClaimers = RoomUtil.canClaimAnyRoom();
-        if (!needClaimers) {
-            let directions: Array<ExitConstant> = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT];
-            _.forEach(directions, (direction: ExitConstant) => {
-                if (room.getPositionAt(25, 25).findClosestByRange(direction)) {
-                    let adjacentRoom: Room = Game.rooms[room.getAdjacentRoomName(direction)];
-                    if (adjacentRoom && adjacentRoom.controller && !adjacentRoom.controller.my && !adjacentRoom.controller.reservation) {
-                        needClaimers = true;
-                    }
-                }
-            });
-        }
+        let needClaimers = RoomUtil.canClaimAnyRoom() || SpawnUtil.claimerNeededInAdjacentRoom(room);
 
         let nextCreepData = null;
         if (!creepCount[Jack.KEY] && !creepCount[Upgrader.KEY] && !creepCount[Courier.KEY]) {
@@ -188,5 +156,53 @@ export class SpawnUtil {
 
         }
         return nextCreepData;
+    }
+
+    static claimerNeededInAdjacentRoom(room: Room) {
+        let needClaimers = false;
+        let directions: Array<ExitConstant> = [FIND_EXIT_TOP, FIND_EXIT_BOTTOM, FIND_EXIT_RIGHT, FIND_EXIT_LEFT];
+        _.forEach(directions, (direction: ExitConstant) => {
+            if (!needClaimers && room.getPositionAt(25, 25).findClosestByRange(direction)) {
+                let adjacentRoom: Room = Game.rooms[room.getAdjacentRoomName(direction)];
+                if (adjacentRoom && adjacentRoom.controller && !adjacentRoom.controller.my && !adjacentRoom.controller.reservation) {
+                    needClaimers = true;
+                }
+            }
+        });
+        return needClaimers;
+    }
+
+    static getRoomThatNeedsTravelers(room:Room):Room {
+        let roomNeedingTravelers = null;
+        _.forEach(Game.rooms, (currentRoom: Room) => {
+            if (roomNeedingTravelers) {
+                return;
+            }
+            const roomDistance = RoomUtil.getDistanceBetweenTwoRooms(room.name, currentRoom.name);
+            if (!currentRoom || roomDistance > 3 ||
+                (roomDistance > 1 && currentRoom.controller && !currentRoom.controller.my)) {
+                return;
+            }
+            if ((currentRoom.controller && currentRoom.controller.reservation) || currentRoom.memory['sendBuilders']) {
+                if (currentRoom.memory['sendBuilders'] && currentRoom.find(FIND_MY_STRUCTURES, {
+                    filter: (s: Structure) => {
+                        return s.structureType === STRUCTURE_SPAWN;
+                    }
+                }).length) {
+                    delete currentRoom.memory['sendBuilders'];
+                }
+
+                let numberOfSpots = 0;
+                let numberOfCreeps = currentRoom.find(FIND_MY_CREEPS).length;
+                _.forEach(currentRoom.memory['sources'], (sourceNumber) => {
+                    numberOfSpots += sourceNumber;
+                });
+                if (numberOfCreeps - 1 >= Math.max(2, numberOfSpots)) {
+                    return;
+                }
+                roomNeedingTravelers = currentRoom.name;
+            }
+        });
+        return roomNeedingTravelers;
     }
 }
