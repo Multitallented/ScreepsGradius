@@ -37,7 +37,9 @@ export class Traveler {
                     helpRoom = room.name;
                 } else if (!emergencyHelpNeeded && !helpReallyNeeded && numberOfCreeps - 4 < Math.max(2, numberOfSpots)) {
                     helpRoom = room.name;
-                }
+                } else if (!emergencyHelpNeeded && !helpReallyNeeded) {
+                     helpRoom = room.name;
+                 }
             }
         });
         if (helpRoom) {
@@ -75,6 +77,18 @@ export class Traveler {
 
             if (!creep.room.controller) {
                 Traveler.setEndRoom(creep);
+            } else if (creep.room.controller.my) {
+                let endRoom = creep.memory['endRoom'];
+                Traveler.setEndRoom(creep);
+                if (creep.memory['endRoom'] === endRoom) {
+                    let nextTravelerRole:string = SpawnUtil.getNextTravelerRole(creep.room);
+                    if (nextTravelerRole) {
+                        delete creep.memory['endRoom'];
+                        creep.memory['role'] = nextTravelerRole;
+                        creep.setNextAction();
+                        return;
+                    }
+                }
             } else {
                 let nextTravelerRole:string = SpawnUtil.getNextTravelerRole(creep.room);
                 if (nextTravelerRole) {
@@ -93,12 +107,14 @@ export class Traveler {
             creep.runAction();
             return;
         }
-        let newRole:string = SpawnUtil.getNextTravelerRole(creep.room);
-        if (newRole) {
-            delete creep.memory['endRoom'];
-            creep.memory['role'] = newRole;
-            creep.setNextAction();
-            return;
+        if (creep.room.controller && !creep.room.controller.my) {
+            let newRole:string = SpawnUtil.getNextTravelerRole(creep.room);
+            if (newRole) {
+                delete creep.memory['endRoom'];
+                creep.memory['role'] = newRole;
+                creep.setNextAction();
+                return;
+            }
         }
         creep.memory['role'] = 'scout';
         creep.setNextAction();

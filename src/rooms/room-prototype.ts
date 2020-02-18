@@ -12,6 +12,12 @@ const findNextEnergySource = function(pos:RoomPosition):Source {
             } else {
                 creepCount[creep.memory['target']] = 1;
             }
+        } else if (creep && creep.memory && creep.memory['source']) {
+            if (creepCount[creep.memory['source']]) {
+                creepCount[creep.memory['source']] += 1;
+            } else {
+                creepCount[creep.memory['source']] = 1;
+            }
         }
     });
     let possibleSources = [];
@@ -31,8 +37,7 @@ const findNextEnergySource = function(pos:RoomPosition):Source {
             return 0;
         }
     });
-    // return pos.findClosestByPath(this.find(FIND_SOURCES)) as Source;
-    return possibleSources.length > 0 ? possibleSources[0] : pos.findClosestByRange(FIND_SOURCES);
+    return possibleSources.length > 0 ? possibleSources[0] : null;
 };
 
 const displayMessage = function(pos:RoomPosition, message: string) {

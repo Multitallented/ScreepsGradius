@@ -30,6 +30,9 @@ export class SpawnUtil {
     static getStructureCount(room:Room):Object {
         let structureCount = {};
         _.forEach(room.find(FIND_STRUCTURES), (s:Structure) => {
+            if (s.structureType === STRUCTURE_CONTAINER && s['store'].getUsedCapacity(RESOURCE_ENERGY) > 1000) {
+                structureCount[s.structureType + '_full'] = true;
+            }
             if (structureCount[s.structureType]) {
                 structureCount[s.structureType] += 1;
             } else {
@@ -55,6 +58,9 @@ export class SpawnUtil {
         let creepCount = SpawnUtil.getCreepCount(null, room);
         let structureCount = SpawnUtil.getStructureCount(room);
         let roomClaimed = room.controller && room.controller.my;
+        if (!roomClaimed && structureCount[STRUCTURE_CONTAINER + '_full']) {
+            return Upgrader.KEY;
+        }
         let numberOfSources;
         if (room.memory['sources']) {
             numberOfSources = Object.keys(room.memory['sources']).length;

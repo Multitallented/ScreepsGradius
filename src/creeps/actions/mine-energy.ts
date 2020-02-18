@@ -21,6 +21,7 @@ export class MineEnergyAction {
             if (newSource) {
                 creep.memory['target'] = newSource.id;
             } else {
+                creep.setNextAction();
                 return;
             }
         }

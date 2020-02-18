@@ -7,7 +7,12 @@ export class Upgrader {
     static KEY = 'upgrader';
     static setAction(creep:Creep) {
         switch (creep.memory['action']) {
+            case WithdrawAction.KEY:
+            case MineEnergyAction.KEY:
+                UpgradeControllerAction.setAction(creep);
+                break;
             case UpgradeControllerAction.KEY:
+            default:
                 let closestContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s:Structure) => {
                         return (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE ||
                             s.structureType === STRUCTURE_LINK) &&
@@ -18,11 +23,6 @@ export class Upgrader {
                     break;
                 }
                 MineEnergyAction.setAction(creep);
-                break;
-            case WithdrawAction.KEY:
-            case MineEnergyAction.KEY:
-            default:
-                UpgradeControllerAction.setAction(creep);
                 break;
         }
         creep.runAction();
