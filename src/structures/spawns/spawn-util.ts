@@ -114,7 +114,8 @@ export class SpawnUtil {
             roomNeedingTravelers = SpawnUtil.getRoomThatNeedsTravelers(room);
         }
 
-        let needClaimers = RoomUtil.canClaimAnyRoom() || SpawnUtil.claimerNeededInAdjacentRoom(room);
+        let needClaimers = room.energyCapacityAvailable >= 650 &&
+            (RoomUtil.canClaimAnyRoom() || SpawnUtil.claimerNeededInAdjacentRoom(room));
 
         let nextCreepData = null;
         if (!creepCount[Jack.KEY] && !creepCount[Upgrader.KEY] && !creepCount[Courier.KEY]) {
