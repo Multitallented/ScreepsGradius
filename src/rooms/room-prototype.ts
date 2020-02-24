@@ -94,6 +94,10 @@ const buildMemory = function() {
         return;
     }
 
+    if (!this.controller || (!this.controller.reservation && !this.controller.my)) {
+        return;
+    }
+
     if (!this.memory.containerStructure) {
         let sources = this.find(FIND_SOURCES);
         let containerLocationsNeeded = [];
