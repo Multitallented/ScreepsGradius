@@ -148,7 +148,7 @@ export class RoomUtil {
         let bestRoom = null;
         _.forEach(Memory['roomData'], (roomData, key) => {
             let currentRoom = Game.rooms[key];
-            if (!currentRoom || !currentRoom.controller) {
+            if (!currentRoom || !currentRoom.controller || currentRoom.controller.my) {
                 return;
             }
             if (currentRoom && reserve && currentRoom.canReserve(Memory['username'])) {

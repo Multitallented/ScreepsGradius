@@ -38,8 +38,8 @@ export class Traveler {
                 } else if (!emergencyHelpNeeded && !helpReallyNeeded && numberOfCreeps - 4 < Math.max(2, numberOfSpots)) {
                     helpRoom = room.name;
                 } else if (!emergencyHelpNeeded && !helpReallyNeeded) {
-                     helpRoom = room.name;
-                 }
+                    helpRoom = room.name;
+                }
             }
         });
         if (helpRoom) {
